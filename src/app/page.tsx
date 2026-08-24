@@ -1,69 +1,11 @@
-import Image from "next/image";
+import Link from "next/link";
+import { VisitorShell } from "@/components/visitor/visitor-shell";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Icon } from "@/components/ui/icons";
+import { Input } from "@/components/ui/input";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+export default function HomePage() {
+  return <VisitorShell><div className="visitor-stack"><section className="visitor-hero"><Icon className="visitor-hero__mark" name="tree" size={132} strokeWidth={1} /><div className="visitor-hero__content"><p className="visitor-kicker">Forest Lake Memorial Park</p><h1>A peaceful way to find a resting place.</h1><p>Use GraveNav to locate a loved one with dignity, clarity, and confidence as you walk through the grounds.</p></div></section><Card id="visitor-search"><CardHeader><CardTitle className="card-title-with-icon"><Icon className="text-green" name="search" size={22} />Find a gravesite</CardTitle></CardHeader><CardContent><form action="/results" className="visitor-search-form" method="get"><Input label="Deceased name" name="query" placeholder="Enter first or last name" icon="userSearch" /><button className="filter-link" type="button"><Icon name="sliders" size={17} />Advanced filters <span>(section, block, date)</span></button><Button className="button--full" icon="search" size="lg" type="submit">Search gravesite</Button></form></CardContent></Card><Alert icon="info" title="First-time visitor?" variant="info">Use search to find a specific grave. Once located, the map can provide walking directions from your current location within the park.<Link className="alert-link" href="/map">View park map <Icon className="inline-icon" name="arrowUpRight" size={15} /></Link></Alert><section className="visitor-info-card"><div><p className="visitor-kicker">On the way</p><h2>Keep this tool close</h2><p>The visitor layout keeps search, map, and helpful context within easy reach on a phone.</p></div><span className="visitor-info-card__icon"><Icon name="walk" size={21} /></span></section><footer className="visitor-footer"><p>© 2024 Forest Lake Memorial Park. All rights reserved.</p><Link href="/">Privacy notice</Link></footer></div></VisitorShell>;
 }
