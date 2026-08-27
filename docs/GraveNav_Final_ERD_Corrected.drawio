@@ -1,0 +1,182 @@
+<mxfile host="app.diagrams.net" agent="GraveNav ERD">
+  <diagram id="gravenav-erd" name="GraveNav Final ERD">
+    <mxGraphModel dx="1720" dy="958" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="SITE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(21, 101, 192);&quot;&gt;SITE&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK site_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;site_name :TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;address : TEXT&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;boundary_geom : geography(Polygon,4326) nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;geo_transform_json : jsonb nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;created_at : TIMESTAMP&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;updated_at : TIMESTAMP&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="245" x="22.5" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="AREA" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(63, 143, 76);&quot;&gt;AREA&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK area_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK site_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;area_code : VARCHAR&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;area_name : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;area_category : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;boundary_geom : geography(Polygon,4326) nullable&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="162" width="280" x="5" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="SECTOR" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(63, 143, 76);&quot;&gt;SECTOR&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK sector_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK area_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;sector_code : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;sector_name : TEXT nullable&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="128" width="165" x="340" y="319" as="geometry" />
+        </mxCell>
+        <mxCell id="BLOCK" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(63, 143, 76);&quot;&gt;BLOCK&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK block_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK sector_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;block_number : SMALLINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;block_name : TEXT nullable&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;pricing_tier : ENUM(STD, PRM, SPR) restricted nullable&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="146" width="295" x="560" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="LOT_OWNER" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(155, 59, 59);&quot;&gt;LOT_OWNER&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK lot_owner_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;first_name : TEXT restricted&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;middle_name : TEXT&amp;nbsp; nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;last_name : TEXT restricted&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;suffix : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;aliases : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;address : TEXT restricted&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;representative_name : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;representative_contact : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;representative_relation : TEXT nullable&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="236" width="215" x="537.5" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="LOT" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(63, 143, 76);&quot;&gt;LOT&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK lot_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK block_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK lot_owner_id : BIGINT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;lot_code : TEXT unique within block&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;legacy_location_code : text&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;legacy_pa_number : text nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;status : ENUM(AVAILABLE/BOOKED/HOLD)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;length_m : DOUBLE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;width_m : DOUBLE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;px_loc_x : INT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;px_loc_y : INT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;location_geom : geography(Point,4326) nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;coordinate_accuracy_m : DOUBLE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;coordinate_status : ENUM(pending/verified/rejected) default pending&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;coordinate_verified : BOOL default false&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;created_at : TIMESTAMP&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;updated_at : TIMESTAMP&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="361" width="280" x="935" y="302" as="geometry" />
+        </mxCell>
+        <mxCell id="DECEASED" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(155, 59, 59);&quot;&gt;DECEASED&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK deceased_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;display_name : TEXT&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;birth_date : DATE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;death_date : DATE nullable&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;public_display : BOOL default false&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;cause_of_death : TEXT restricted nullable&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="162" width="160" x="377.5" y="917.5" as="geometry" />
+        </mxCell>
+        <mxCell id="BURIAL_RECORD" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(155, 59, 59);&quot;&gt;BURIAL_RECORD&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK burial_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK deceased_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK lot_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK created_by : uuid&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK updated_by : uuid&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;interment_order_number: TEXT&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;reference_no : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;interment_date : DATE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;record_status : ENUM(active/archived/pending)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;interment_status : ENUM(PERMANENT/TEMPORARY)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;remains_type : ENUM(FRESH/ASH/BONE)&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;exhumation_date : DATE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;service_provider : TEXT restricted nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;record_source : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;quality_notes : TEXT restricted nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;created_at : TIMESTAMP&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;updated_at : TIMESTAMP&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="361" width="300" x="690" y="818" as="geometry" />
+        </mxCell>
+        <mxCell id="PHOTO" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(155, 59, 59);&quot;&gt;PHOTO&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK photo_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK burial_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK uploaded_by : uuid&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK reviewed_by : uuid nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;storage_path : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;file_name : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;caption : TEXT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;captured_at : DATE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;approval_status : ENUM(pending/approved/rejected)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;public_display : BOOL default false&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;created_at : TIMESTAMP&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="250" width="280" x="1200" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="MAP_NODE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(21, 101, 192);&quot;&gt;MAP_NODE&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK node_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK site_id : BIGINT&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;node_name : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;node_type : ENUM(entrance/junction/landmark)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;px_loc_x : INT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;px_loc_y : INT nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;location_geom : geography(Point,4326) nullable&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="260" x="330" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="MAP_EDGE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(166, 124, 0);&quot;&gt;MAP_EDGE&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK edge_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK from_node_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK to_node_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;path_geom : geography(LineString,4326) nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;distance_m : DOUBLE nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;edge_type : ENUM(path/road/entrance)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;is_restricted : BOOL&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="260" x="675" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ROLE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(21, 101, 192);&quot;&gt;ROLE&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK role_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;role_name : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;description :TEXT&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="112.5" x="1301.25" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="ACCOUNT" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(21, 101, 192);&quot;&gt;ACCOUNT&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK/FK account_id : uuid = auth.users.id&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK role_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;UK username : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;is_active : BOOL default true&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;created_at : TIMESTAMP&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;updated_at : TIMESTAMP&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="162" width="215" x="1250" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="AUDIT_LOG" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#6b7280;fillColor=#ffffff;verticalAlign=top;align=left;spacing=0;shadow=0;" value="&lt;div style=&quot;font-size: 15px; font-weight: bold; color: rgb(255, 255, 255); text-align: center; padding: 7px 3px; background-color: rgb(155, 59, 59);&quot;&gt;AUDIT_LOG&lt;/div&gt;&lt;div style=&quot;font-size: 11px; padding: 6px 8px; color: rgb(31, 41, 55); background-color: rgb(255, 255, 255);&quot;&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;PK audit_id : BIGINT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;FK actor_account_id : uuid nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;action : ENUM(insert/update/delete/verify/approve)&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;table_name : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;record_id : TEXT&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;old_values : jsonb nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;new_values : jsonb nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;ip_address : inet restricted nullable&lt;/div&gt;&lt;div style=&quot;line-height:18px;&quot;&gt;created_at : TIMESTAMP default now()&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="219" width="280" x="1565" y="461.5" as="geometry" />
+        </mxCell>
+        <mxCell id="e100" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="AREA" value="contains" source="SITE">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="145" y="240" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e101" edge="1" parent="1" source="SITE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="MAP_NODE" value="has">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e102" edge="1" parent="1" source="AREA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="SECTOR" value="contains">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="312.5" y="350" />
+              <mxPoint x="312.5" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e103" edge="1" parent="1" source="SECTOR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" target="BLOCK" value="contains">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="532.5" y="351" />
+              <mxPoint x="532.5" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e104" edge="1" parent="1" source="BLOCK" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="LOT" value="contains">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e105" edge="1" parent="1" source="LOT_OWNER" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERzeroToOne;startFill=0;" target="LOT" value="purchases">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="717.53" y="688" />
+              <mxPoint x="717.53" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e106" edge="1" parent="1" source="DECEASED" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="BURIAL_RECORD" value="has">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e107" edge="1" parent="1" source="LOT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="BURIAL_RECORD" value="hosts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e108" edge="1" parent="1" source="ROLE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="ACCOUNT" value="assigns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e109" edge="1" parent="1" source="ACCOUNT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="BURIAL_RECORD" value="created_by">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="850" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e110" edge="1" parent="1" source="BURIAL_RECORD" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="PHOTO" value="has">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="990" />
+              <mxPoint x="1140" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e111" edge="1" parent="1" source="ACCOUNT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="PHOTO" value="uploaded_by">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1322.47" y="610" />
+              <mxPoint x="1322.47" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e113" edge="1" parent="1" source="ACCOUNT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;" target="AUDIT_LOG" value="performs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e114" edge="1" parent="1" source="MAP_NODE" target="MAP_EDGE" value="to_node_id (destination)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="155" />
+              <mxPoint x="600" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e117" edge="1" parent="1" source="MAP_NODE" target="MAP_EDGE" value="from_node_id (origin)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="560" y="120" />
+              <mxPoint x="560" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e115" edge="1" parent="1" source="ACCOUNT" target="BURIAL_RECORD" value="updated_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1360" y="820" />
+              <mxPoint x="1360" y="870" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e116" edge="1" parent="1" source="ACCOUNT" target="PHOTO" value="reviewed_by" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6b7280;endArrow=ERzeroToMany;endFill=0;fontSize=10;startArrow=ERmandOne;startFill=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1390" y="625" />
+              <mxPoint x="1390" y="690" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="correction_note_0" value="Corrected: SITE has many AREA records; AREA.site_id references SITE.site_id." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1160" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_1" value="Corrected: one BURIAL_RECORD may have zero or many PHOTO records." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1184" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_2" value="Corrected: MAP_EDGE has separate from_node_id and to_node_id relationships; each edge has one origin and one destination node." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1208" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_3" value="Constraint: lot_code is unique within block unless the group confirms global uniqueness." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1232" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_4" value="Constraint: public-display and coordinate status defaults prevent unapproved data from appearing publicly." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1256" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_5" value="Implementation: add foreign keys, CHECK constraints, indexes, RLS policies, and audit triggers in SQL migration." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1280" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_6" value="Corrected: created_by / updated_by and uploaded_by / reviewed_by are separate account references." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1304" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_7" value="Privacy: cause_of_death, purchaser, representative, financial, quality, and audit fields are administrator-only." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1328" width="1450" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="correction_note_8" value="Use Supabase Auth for passwords; ACCOUNT.account_id references auth.users.id." vertex="1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#374151;">
+          <mxGeometry x="40" y="1352" width="1450" height="22" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,171 @@
+erDiagram
+    SITE ||--o{ AREA : contains
+    SITE ||--o{ MAP_NODE : contains
+    AREA ||--o{ SECTOR : contains
+    SECTOR ||--o{ BLOCK : contains
+    BLOCK ||--o{ LOT : contains
+    LOT_OWNER ||--o{ LOT : purchases
+    LOT ||--o{ BURIAL_RECORD : hosts
+    DECEASED ||--o{ BURIAL_RECORD : has
+    BURIAL_RECORD ||--o{ PHOTO : has
+    ROLE ||--o{ ACCOUNT : assigns
+    ACCOUNT ||--o{ AUDIT_LOG : performs
+    ACCOUNT ||--o{ BURIAL_RECORD : creates
+    ACCOUNT ||--o{ BURIAL_RECORD : updates
+    ACCOUNT ||--o{ PHOTO : uploads
+    ACCOUNT ||--o{ PHOTO : reviews
+    MAP_NODE ||--o{ MAP_EDGE : origin
+    MAP_NODE ||--o{ MAP_EDGE : destination
+
+    SITE {
+        bigint site_id PK
+        text site_name
+        text address
+        geography boundary_geom "Polygon, 4326, nullable"
+        jsonb geo_transform_json "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+    AREA {
+        bigint area_id PK
+        bigint site_id FK
+        varchar area_code
+        text area_name
+        text area_category
+        geography boundary_geom "Polygon, 4326, nullable"
+    }
+    SECTOR {
+        bigint sector_id PK
+        bigint area_id FK
+        text sector_code
+        text sector_name "nullable"
+    }
+    BLOCK {
+        bigint block_id PK
+        bigint sector_id FK
+        smallint block_number
+        text block_name "nullable"
+        text pricing_tier "group enum: STD, PRM, SPR; restricted nullable"
+    }
+    LOT_OWNER {
+        bigint lot_owner_id PK
+        text first_name "restricted"
+        text middle_name "nullable"
+        text last_name "restricted"
+        text suffix "nullable"
+        text aliases "nullable"
+        text address "restricted"
+        text representative_name "nullable"
+        text representative_contact "nullable"
+        text representative_relation "nullable"
+    }
+    LOT {
+        bigint lot_id PK
+        bigint block_id FK
+        bigint lot_owner_id FK "nullable"
+        text lot_code "unique within block"
+        text legacy_location_code
+        text legacy_pa_number "nullable"
+        text status "group enum: AVAILABLE, BOOKED, HOLD"
+        double length_m "nullable"
+        double width_m "nullable"
+        integer px_loc_x "nullable"
+        integer px_loc_y "nullable"
+        geography location_geom "Point, 4326, nullable"
+        double coordinate_accuracy_m "nullable"
+        text coordinate_status "pending, verified, rejected; default pending"
+        boolean coordinate_verified "default false"
+        timestamp created_at
+        timestamp updated_at
+    }
+    DECEASED {
+        bigint deceased_id PK
+        text display_name
+        date birth_date "nullable"
+        date death_date "nullable"
+        boolean public_display "default false"
+        text cause_of_death "restricted nullable"
+    }
+    BURIAL_RECORD {
+        bigint burial_id PK
+        bigint deceased_id FK
+        bigint lot_id FK
+        uuid created_by FK "nullable"
+        uuid updated_by FK "nullable"
+        text interment_order_number "unique within lot where applicable"
+        text reference_no "nullable"
+        date interment_date "nullable"
+        text record_status "active, archived, pending"
+        text interment_status "group values: PERMANENT, TEMPORARY"
+        text remains_type "group values: FRESH, ASH, BONE"
+        date exhumation_date "nullable"
+        text service_provider "restricted nullable"
+        text record_source "nullable"
+        text quality_notes "restricted nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+    PHOTO {
+        bigint photo_id PK
+        bigint burial_id FK
+        uuid uploaded_by FK
+        uuid reviewed_by FK "nullable"
+        text storage_path
+        text file_name
+        text caption "nullable"
+        date captured_at "nullable"
+        text approval_status "pending, approved, rejected"
+        boolean public_display "default false"
+        timestamp created_at
+    }
+    MAP_NODE {
+        bigint node_id PK
+        bigint site_id FK
+        text node_name
+        text node_type "entrance, junction, landmark"
+        integer px_loc_x "nullable"
+        integer px_loc_y "nullable"
+        geography location_geom "Point, 4326, nullable"
+    }
+    MAP_EDGE {
+        bigint edge_id PK
+        bigint from_node_id FK
+        bigint to_node_id FK
+        geography path_geom "LineString, 4326, nullable"
+        double distance_m "nullable"
+        text edge_type "path, road, entrance"
+        boolean is_restricted
+    }
+    ROLE {
+        bigint role_id PK
+        text role_name UK
+        text description
+    }
+    ACCOUNT {
+        uuid account_id PK, FK "references auth.users.id"
+        bigint role_id FK
+        text username UK
+        boolean is_active "default true"
+        timestamp created_at
+        timestamp updated_at
+    }
+    AUDIT_LOG {
+        bigint audit_id PK
+        uuid actor_account_id FK "nullable"
+        text action "insert, update, delete, verify, approve"
+        text table_name
+        text record_id
+        jsonb old_values "nullable"
+        jsonb new_values "nullable"
+        inet ip_address "restricted nullable"
+        timestamp created_at "default now"
+    }
+
+    %% Implementation notes:
+    %% - ACCOUNT.account_id references auth.users.id; never store passwords or password hashes.
+    %% - Add RLS policies so anonymous users can read only approved public fields.
+    %% - Keep LOT_OWNER, ACCOUNT, ROLE, AUDIT_LOG, financial, quality, service-provider, and cause-of-death fields administrator-only.
+    %% - Add CHECK (from_node_id <> to_node_id) on MAP_EDGE.
+    %% - Add UNIQUE(block_id, lot_code) and UNIQUE(lot_id, interment_order_number) where applicable.
+    %% - Use appropriate ON DELETE actions and audit triggers in the SQL migration.
+    %% - Do not invent GPS coordinates; coordinate fields remain nullable until collected and verified.
