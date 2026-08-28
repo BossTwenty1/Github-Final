@@ -1,0 +1,2 @@
+-- Intentionally empty local seed. The project does not contain cemetery records,
+-- real deceased data, coordinates, or credentials.
