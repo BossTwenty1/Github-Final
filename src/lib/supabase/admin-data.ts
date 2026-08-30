@@ -87,6 +87,13 @@ export async function getAvailableBurialPlots() {
 
 export async function createBurialRecord(input: BurialRecordInput) {
   const client = requireClient();
+  const { error: transactionError } = await client.rpc("admin_create_burial_record", burialRecordRpcPayload(input));
+  if (!transactionError) return;
+  if (!isMissingRpcError(transactionError)) throw transactionError;
+  await createBurialRecordWithCleanup(client, input);
+}
+
+async function createBurialRecordWithCleanup(client: SupabaseClient, input: BurialRecordInput) {
   const userId = await getCurrentUserId(client);
   await assertAvailableLot(client, input.lotId);
   const { data: deceased, error: deceasedError } = await client.from("deceased").insert({
@@ -119,6 +126,13 @@ export async function createBurialRecord(input: BurialRecordInput) {
 
 export async function updateBurialRecord(burialId: number, input: BurialRecordInput) {
   const client = requireClient();
+  const { error: transactionError } = await client.rpc("admin_update_burial_record", { p_burial_id: burialId, ...burialRecordRpcPayload(input) });
+  if (!transactionError) return;
+  if (!isMissingRpcError(transactionError)) throw transactionError;
+  await updateBurialRecordWithCleanup(client, burialId, input);
+}
+
+async function updateBurialRecordWithCleanup(client: SupabaseClient, burialId: number, input: BurialRecordInput) {
   const userId = await getCurrentUserId(client);
   const { data: current, error: currentError } = await client.from("burial_record").select(BURIAL_WRITE_COLUMNS).eq("burial_id", burialId).single();
   if (currentError || !current) throw currentError || new Error("The burial record could not be found.");
@@ -159,6 +173,13 @@ export async function updateBurialRecord(burialId: number, input: BurialRecordIn
 
 export async function deleteBurialRecord(burialId: number) {
   const client = requireClient();
+  const { error: transactionError } = await client.rpc("admin_delete_burial_record", { p_burial_id: burialId });
+  if (!transactionError) return;
+  if (!isMissingRpcError(transactionError)) throw transactionError;
+  await deleteBurialRecordWithCleanup(client, burialId);
+}
+
+async function deleteBurialRecordWithCleanup(client: SupabaseClient, burialId: number) {
   const { data: current, error: currentError } = await client.from("burial_record").select(BURIAL_WRITE_COLUMNS).eq("burial_id", burialId).single();
   if (currentError || !current) throw currentError || new Error("The burial record could not be found.");
   const { count, error: countError } = await client.from("burial_record").select("burial_id", { count: "exact", head: true }).eq("deceased_id", current.deceased_id);
@@ -434,4 +455,26 @@ function parsePoint(value: unknown) {
   const coordinates = (value as { coordinates?: unknown }).coordinates;
   if (!Array.isArray(coordinates) || coordinates.length < 2 || typeof coordinates[0] !== "number" || typeof coordinates[1] !== "number") return null;
   return { longitude: coordinates[0], latitude: coordinates[1] };
+}
+
+function burialRecordRpcPayload(input: BurialRecordInput) {
+  return {
+    p_display_name: input.name,
+    p_birth_date: input.birthDate || null,
+    p_death_date: input.deathDate || null,
+    p_public_display: input.publicDisplay,
+    p_lot_id: input.lotId,
+    p_interment_date: input.intermentDate || null,
+    p_record_status: input.recordStatus || "pending",
+    p_interment_status: input.intermentStatus,
+    p_remains_type: input.remainsType,
+    p_reference_no: input.referenceNo || null,
+    p_service_provider: input.serviceProvider || null,
+    p_record_source: input.recordSource || null,
+    p_quality_notes: input.qualityNotes || null,
+  };
+}
+
+function isMissingRpcError(error: { code?: string; message?: string }) {
+  return error.code === "PGRST202" || error.code === "42883" || /function .* does not exist|could not find the function/i.test(error.message || "");
 }
