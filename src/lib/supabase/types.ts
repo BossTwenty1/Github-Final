@@ -56,6 +56,7 @@ export type AdminLot = {
   lotId: number;
   lotCode: string;
   areaId: number;
+  blockId: number | null;
   lotOwnerId: number | null;
   legacyLocationCode: string | null;
   legacyPaNumber: string | null;
@@ -66,6 +67,7 @@ export type AdminLot = {
   pxLocY: number | null;
   coordinateStatus: "pending" | "verified" | "rejected";
   coordinateVerified: boolean;
+  coordinateAccuracyM: number | null;
   location: { longitude: number; latitude: number } | null;
   updatedAt: string;
 };
@@ -107,7 +109,18 @@ export type AuditLogEntry = {
   action: string;
   table_name: string;
   record_id: string;
-  old_values: Record<string, unknown> | null;
-  new_values: Record<string, unknown> | null;
+  old_values?: Record<string, unknown> | null;
+  new_values?: Record<string, unknown> | null;
   created_at: string;
+};
+
+export type AdminPhoto = {
+  photoId: number;
+  burialId: number;
+  fileName: string;
+  caption: string | null;
+  capturedAt: string | null;
+  approvalStatus: "pending" | "approved" | "rejected";
+  publicDisplay: boolean;
+  createdAt: string;
 };

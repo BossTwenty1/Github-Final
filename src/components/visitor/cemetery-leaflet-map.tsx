@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CircleMarker, GeoJSON, MapContainer, Marker, Tooltip, ZoomControl, useMap } from "react-leaflet";
+import { CircleMarker, GeoJSON, MapContainer, Marker, Polyline, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import { CRS, divIcon, type LeafletMouseEvent } from "leaflet";
+import { Alert } from "@/components/ui/alert";
 import { schematicMapBounds } from "@/lib/map-layout";
 import { loadPhaseOneMapData, projectPhaseOneLocation, type PhaseOneAreaFeature, type PhaseOneMapData } from "@/lib/phase1-map-data";
 import type { PublicBurialRecord } from "@/lib/supabase/types";
+import type { PhaseOneRoute } from "@/lib/phase1-routing";
 
 const areaLabelIcon = divIcon({ className: "phase-one-area-label-anchor", html: "", iconSize: [1, 1], iconAnchor: [0, 0] });
 
@@ -14,29 +16,34 @@ type CemeteryLeafletMapProps = {
   selectedPlot: string;
   onSelectPlot: (plot: string) => void;
   onSelectZone: (zone: string) => void;
+  mapData?: PhaseOneMapData | null;
+  route?: PhaseOneRoute | null;
 };
 
-export function CemeteryLeafletMap({ records, selectedPlot, onSelectPlot, onSelectZone }: CemeteryLeafletMapProps) {
+export function CemeteryLeafletMap({ records, selectedPlot, onSelectPlot, onSelectZone, mapData, route }: CemeteryLeafletMapProps) {
   return <MapContainer aria-label="Forest Lake Memorial Park plan map" bounds={schematicMapBounds} crs={CRS.Simple} maxZoom={2} minZoom={-2} scrollWheelZoom zoomControl={false} zoomSnap={0.25} zoomDelta={0.25}>
     <ZoomControl position="topright" />
     <MapResetControl />
-    <PhaseOneGeometryLayer onSelectPlot={onSelectPlot} onSelectZone={onSelectZone} records={records} selectedPlot={selectedPlot} />
+    <PhaseOneGeometryLayer initialMapData={mapData} onSelectPlot={onSelectPlot} onSelectZone={onSelectZone} records={records} route={route} selectedPlot={selectedPlot} />
   </MapContainer>;
 }
 
-function PhaseOneGeometryLayer({ onSelectPlot, onSelectZone, records, selectedPlot }: { onSelectPlot: (plot: string) => void; onSelectZone: (zone: string) => void; records: PublicBurialRecord[]; selectedPlot: string }) {
-  const [mapData, setMapData] = useState<PhaseOneMapData | null>(null);
+function PhaseOneGeometryLayer({ initialMapData, onSelectPlot, onSelectZone, records, route, selectedPlot }: { initialMapData?: PhaseOneMapData | null; onSelectPlot: (plot: string) => void; onSelectZone: (zone: string) => void; records: PublicBurialRecord[]; route?: PhaseOneRoute | null; selectedPlot: string }) {
+  const [loadedMapData, setLoadedMapData] = useState<PhaseOneMapData | null>(null);
   const [showVectors, setShowVectors] = useState(true);
+  const mapData = initialMapData || loadedMapData;
 
   useEffect(() => {
+    if (initialMapData) return;
     const controller = new AbortController();
-    void loadPhaseOneMapData(controller.signal).then(setMapData).catch((reason: unknown) => {
-      if (!(reason instanceof DOMException && reason.name === "AbortError")) setMapData(null);
+    void loadPhaseOneMapData(controller.signal).then(setLoadedMapData).catch((reason: unknown) => {
+      if (!(reason instanceof DOMException && reason.name === "AbortError")) setLoadedMapData(null);
     });
     return () => controller.abort();
-  }, []);
+  }, [initialMapData]);
 
   return <>
+    {mapData?.warnings.length ? <Alert icon="alert" title="Map data needs review" variant="warning">{mapData.warnings.length} map feature{mapData.warnings.length === 1 ? "" : "s"} could not be displayed.</Alert> : null}
     <button aria-pressed={showVectors} className="phase-one-map-toggle" onClick={() => setShowVectors((visible) => !visible)} type="button">
       {showVectors ? "Hide KML roads and paths" : "Show KML roads and paths"}
     </button>
@@ -61,6 +68,7 @@ function PhaseOneGeometryLayer({ onSelectPlot, onSelectZone, records, selectedPl
         <GeoJSON data={mapData.edges} style={(feature) => ({ color: feature?.properties?.edge_type === "road" ? "#59636a" : "#a9693d", opacity: 0.86, weight: feature?.properties?.edge_type === "road" ? 5 : 3 })} />
         {mapData.nodes.map((node) => <CircleMarker center={node.schematicPosition} key={node.properties?.id || node.id || node.schematicPosition.join("-")} pathOptions={{ color: node.properties?.node_type === "edge_endpoint" ? "#a9693d" : "#006b3c", fillColor: node.properties?.node_type === "edge_endpoint" ? "#f4b26a" : "#006b3c", fillOpacity: 0.95, weight: 2 }} radius={node.properties?.node_type === "edge_endpoint" ? 3 : 5} />)}
       </> : null}
+      {route ? <Polyline positions={route.coordinates} pathOptions={{ color: "#0b6f48", opacity: 0.95, weight: 6 }} /> : null}
       {records.filter((record) => Boolean(record.location)).map((record) => {
         const position = record.location ? projectPhaseOneLocation(mapData, record.location) : null;
         if (!position) return null;

@@ -53,7 +53,7 @@ Visitors do not need accounts. Administrators and managers need individually app
 
 Copy `.env.example` to `.env.local`, then use the local URL and anonymous key printed by `npx supabase status`. Keep the local Supabase stack running before starting the frontend. This fallback is separate from the hosted development project; do not run schema pushes from this frontend task.
 
-The public visitor surfaces query only the approved active public view. Administrator surfaces use authenticated RLS policies, and account provisioning remains a protected server-only operation. Photo uploads stay disabled until the private Storage bucket and signed-URL policies are confirmed.
+The public visitor surfaces query only the approved active public view. Administrator surfaces use authenticated RLS policies, and account provisioning remains a protected server-only operation. Optional photo uploads use the private bucket named by `NEXT_PUBLIC_SUPABASE_PHOTOS_BUCKET`; uploads are validated, stored as pending, and kept non-public until an administrator review workflow approves them. Storage policies must permit only authenticated active staff to upload and manage objects.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

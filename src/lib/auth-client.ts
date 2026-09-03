@@ -8,21 +8,33 @@ export async function signOut() {
   return supabase.auth.signOut();
 }
 
-export async function restoreSessionFromAuthUrl() {
+let authRestorePromise: Promise<boolean> | null = null;
+
+export function restoreSessionFromAuthUrl() {
+  authRestorePromise ??= restoreSessionFromAuthUrlOnce();
+  return authRestorePromise;
+}
+
+async function restoreSessionFromAuthUrlOnce() {
+  const query = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const code = query.get("code");
+  const accessToken = hash.get("access_token");
+  const refreshToken = hash.get("refresh_token");
+
+  // Remove one-time codes, bearer tokens, and error details before any async
+  // exchange can fail or the browser can retain the callback URL in history.
+  window.history.replaceState({}, document.title, window.location.pathname);
+
   const supabase = getBrowserSupabase();
   if (!supabase) return false;
 
-  const query = new URLSearchParams(window.location.search);
-  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
   if (hash.has("error")) return false;
 
-  const code = query.get("code");
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) return false;
   } else {
-    const accessToken = hash.get("access_token");
-    const refreshToken = hash.get("refresh_token");
     if (accessToken && refreshToken) {
       const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
       if (error) return false;

@@ -2,19 +2,45 @@
 
 import { getBrowserSupabase } from "./config";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { AdminAccount, AdminLot, AdminRecord, AuditLogEntry, BurialPlotOption, LotOwner, PlotAreaOption } from "./types";
+import type { AdminAccount, AdminLot, AdminPhoto, AdminRecord, AuditLogEntry, BurialPlotOption, LotOwner, PlotAreaOption } from "./types";
 
 const RECORD_COLUMNS = "burial_id,deceased_id,lot_id,interment_date,record_status,interment_status,remains_type,reference_no,service_provider,record_source,quality_notes,created_by,updated_by,updated_at";
 const DECEASED_COLUMNS = "deceased_id,display_name,birth_date,death_date,public_display";
 const BURIAL_WRITE_COLUMNS = "burial_id,deceased_id,lot_id,created_by,updated_by,interment_order_number,reference_no,interment_date,record_status,interment_status,remains_type,exhumation_date,service_provider,record_source,quality_notes";
 const LOT_COLUMNS = "lot_id,lot_code,area_id,block_id,lot_owner_id,legacy_location_code,legacy_pa_number,status,length_m,width_m,px_loc_x,px_loc_y,location_geom,coordinate_accuracy_m,coordinate_status,coordinate_verified,updated_at";
 const OWNER_COLUMNS = "lot_owner_id,first_name,middle_name,last_name,suffix,aliases,address,representative_name,representative_contact,representative_relation";
+const PHOTO_COLUMNS = "photo_id,burial_id,file_name,caption,captured_at,approval_status,public_display,created_at";
+const DEFAULT_PAGE_SIZE = 50;
+const MAX_PAGE_SIZE = 100;
 
-export async function getAdminRecords() {
+export type PageResult<T> = { items: T[]; hasMore: boolean; total: number | null };
+type PageOptions = { page?: number; pageSize?: number };
+type OwnerPageOptions = PageOptions & { search?: string };
+type LotRow = { lot_id: number; lot_code: string; area_id: number; block_id: number | null; lot_owner_id: number | null; legacy_location_code: string | null; legacy_pa_number: string | null; status: "AVAILABLE" | "BOOKED" | "HOLD"; length_m: number | null; width_m: number | null; px_loc_x: number | null; px_loc_y: number | null; location_geom: unknown; coordinate_accuracy_m: number | null; coordinate_status: "pending" | "verified" | "rejected"; coordinate_verified: boolean; updated_at: string; location: { longitude: number; latitude: number } | null };
+type OwnerRow = { lot_owner_id: number; first_name: string; middle_name: string | null; last_name: string; suffix: string | null; aliases: string | null; address: string; representative_name: string | null; representative_contact: string | null; representative_relation: string | null };
+
+export async function getAdminRecords(options: PageOptions = {}) {
+  return (await getAdminRecordsPage(options)).items;
+}
+
+export async function getAllAdminRecords() {
+  const items: AdminRecord[] = [];
+  let page = 0;
+  let nextPage: PageResult<AdminRecord>;
+  do {
+    nextPage = await getAdminRecordsPage({ page });
+    items.push(...nextPage.items);
+    page += 1;
+  } while (nextPage.hasMore);
+  return items;
+}
+
+export async function getAdminRecordsPage(options: PageOptions = {}): Promise<PageResult<AdminRecord>> {
   const client = requireClient();
-  const { data: records, error } = await client.from("burial_record").select(RECORD_COLUMNS).order("updated_at", { ascending: false });
+  const { from, to } = pageRange(options);
+  const { data: records, error, count } = await client.from("burial_record").select(RECORD_COLUMNS, { count: "exact" }).order("updated_at", { ascending: false }).range(from, to);
   if (error) throw error;
-  if (!records?.length) return [] as AdminRecord[];
+  if (!records?.length) return { items: [], hasMore: false, total: count };
 
   const deceasedIds = records.map((record) => record.deceased_id);
   const lotIds = records.map((record) => record.lot_id);
@@ -31,7 +57,7 @@ export async function getAdminRecords() {
   const deceasedById = new Map((deceased || []).map((item) => [item.deceased_id, item]));
   const lotById = new Map((lots || []).map((item) => [item.lot_id, item]));
   const areaById = new Map((areas || []).map((item) => [item.area_id, item]));
-  return records.map((record) => {
+  const items = records.map((record) => {
     const deceasedRecord = deceasedById.get(record.deceased_id);
     const lot = lotById.get(record.lot_id);
     const area = lot?.area_id ? areaById.get(lot.area_id) : undefined;
@@ -60,6 +86,7 @@ export async function getAdminRecords() {
       coordinateVerified: Boolean(lot?.coordinate_verified),
     } satisfies AdminRecord;
   });
+  return { items, hasMore: hasMore(from, items.length, count), total: count };
 }
 
 export async function getAvailableBurialPlots() {
@@ -202,19 +229,30 @@ export async function updateBurialStatus(burialId: number, recordStatus: AdminRe
   if (error) throw error;
 }
 
-export async function getLotsForVerification() {
-  const client = requireClient();
-  const { data, error } = await client.from("lot").select(LOT_COLUMNS).order("updated_at", { ascending: false });
-  if (error) throw error;
-  return (data || []).map((lot) => ({ ...lot, location: parsePoint(lot.location_geom) }));
+export async function getLotsForVerification(options: PageOptions = {}) {
+  return (await getLotsForVerificationPage(options)).items;
 }
 
-export async function getAdminLots() {
-  const lots = await getLotsForVerification();
-  return lots.map((lot) => ({
+export async function getLotsForVerificationPage(options: PageOptions = {}): Promise<PageResult<LotRow>> {
+  const client = requireClient();
+  const { from, to } = pageRange(options);
+  const { data, error, count } = await client.from("lot").select(LOT_COLUMNS, { count: "exact" }).order("updated_at", { ascending: false }).range(from, to);
+  if (error) throw error;
+  const items = (data || []).map((lot) => ({ ...lot, location: parsePoint(lot.location_geom) }));
+  return { items, hasMore: hasMore(from, items.length, count), total: count };
+}
+
+export async function getAdminLots(options: PageOptions = {}) {
+  return (await getAdminLotsPage(options)).items;
+}
+
+export async function getAdminLotsPage(options: PageOptions = {}): Promise<PageResult<AdminLot>> {
+  const lotsPage = await getLotsForVerificationPage(options);
+  return { ...lotsPage, items: lotsPage.items.map((lot) => ({
     lotId: lot.lot_id,
     lotCode: lot.lot_code,
     areaId: lot.area_id,
+    blockId: lot.block_id,
     lotOwnerId: lot.lot_owner_id,
     legacyLocationCode: lot.legacy_location_code,
     legacyPaNumber: lot.legacy_pa_number,
@@ -225,9 +263,10 @@ export async function getAdminLots() {
     pxLocY: lot.px_loc_y,
     coordinateStatus: lot.coordinate_status,
     coordinateVerified: Boolean(lot.coordinate_verified),
+    coordinateAccuracyM: lot.coordinate_accuracy_m,
     location: lot.location,
     updatedAt: lot.updated_at,
-  } satisfies AdminLot));
+  } satisfies AdminLot)) };
 }
 
 export async function getPlotAreas() {
@@ -239,32 +278,36 @@ export async function getPlotAreas() {
 
 export async function createLot(input: LotInput) {
   const client = requireClient();
+  const coordinate = coordinatePayload(input);
   const { error } = await client.from("lot").insert({
     area_id: input.areaId,
-    block_id: null,
+    block_id: input.blockId ?? null,
     lot_owner_id: input.lotOwnerId,
     lot_code: input.lotCode,
-    legacy_location_code: input.legacyLocationCode || null,
+    legacy_location_code: input.legacyLocationCode?.trim() || null,
     legacy_pa_number: input.legacyPaNumber || null,
     status: input.status,
     length_m: input.lengthM,
     width_m: input.widthM,
+    ...coordinate,
   });
   if (error) throw error;
 }
 
 export async function updateLot(lotId: number, input: LotInput) {
   const client = requireClient();
+  const coordinate = coordinatePayload(input);
   const { error } = await client.from("lot").update({
     area_id: input.areaId,
-    block_id: null,
+    block_id: input.blockId ?? null,
     lot_owner_id: input.lotOwnerId,
     lot_code: input.lotCode,
-    legacy_location_code: input.legacyLocationCode || null,
+    legacy_location_code: input.legacyLocationCode?.trim() || null,
     legacy_pa_number: input.legacyPaNumber || null,
     status: input.status,
     length_m: input.lengthM,
     width_m: input.widthM,
+    ...coordinate,
   }).eq("lot_id", lotId);
   if (error) throw error;
 }
@@ -300,16 +343,29 @@ export async function getAdminAccounts() {
   })) as AdminAccount[];
 }
 
-export async function getLotOwners() {
-  const client = requireClient();
-  const { data, error } = await client.from("lot_owner").select(OWNER_COLUMNS).order("last_name");
-  if (error) throw error;
-  return data || [];
+export async function getLotOwners(options: OwnerPageOptions = {}) {
+  return (await getLotOwnersPage(options)).items;
 }
 
-export async function getOwnerRecords() {
-  const owners = await getLotOwners();
-  return owners.map((owner) => ({
+export async function getLotOwnersPage(options: OwnerPageOptions = {}): Promise<PageResult<OwnerRow>> {
+  const client = requireClient();
+  const { from, to } = pageRange(options);
+  let query = client.from("lot_owner").select(OWNER_COLUMNS, { count: "exact" });
+  const search = safeOwnerSearch(options.search);
+  if (search) query = query.or(`first_name.ilike.*${search}*,last_name.ilike.*${search}*,aliases.ilike.*${search}*`);
+  const { data, error, count } = await query.order("last_name").range(from, to);
+  if (error) throw error;
+  const items = data || [];
+  return { items, hasMore: hasMore(from, items.length, count), total: count };
+}
+
+export async function getOwnerRecords(options: OwnerPageOptions = {}) {
+  return (await getOwnerRecordsPage(options)).items;
+}
+
+export async function getOwnerRecordsPage(options: OwnerPageOptions = {}): Promise<PageResult<LotOwner>> {
+  const ownersPage = await getLotOwnersPage(options);
+  return { ...ownersPage, items: ownersPage.items.map((owner) => ({
     lotOwnerId: owner.lot_owner_id,
     firstName: owner.first_name,
     middleName: owner.middle_name,
@@ -320,7 +376,7 @@ export async function getOwnerRecords() {
     representativeName: owner.representative_name,
     representativeContact: owner.representative_contact,
     representativeRelation: owner.representative_relation,
-  } satisfies LotOwner));
+  } satisfies LotOwner)) };
 }
 
 export async function createLotOwner(input: OwnerInput) {
@@ -354,24 +410,89 @@ export async function accountAction(action: "approve" | "activate" | "deactivate
   if (error) throw error;
 }
 
-export async function getAuditLog(exportRows = false) {
+export async function getAuditLog(exportRows = false, options: PageOptions = {}) {
   const client = requireClient();
   if (exportRows) {
     const { data, error } = await client.rpc("export_audit_log", { p_from: null, p_to: null });
     if (error) throw error;
     return (data || []) as AuditLogEntry[];
   }
-  const { data, error } = await client.from("audit_log").select("audit_id,actor_account_id,action,table_name,record_id,old_values,new_values,created_at").order("created_at", { ascending: false }).limit(100);
+  return (await getAuditLogPage(options)).items;
+}
+
+export async function getAuditLogPage(options: PageOptions = {}): Promise<PageResult<AuditLogEntry>> {
+  const client = requireClient();
+  const { from, to } = pageRange(options);
+  const { data, error, count } = await client.from("audit_log").select("audit_id,actor_account_id,action,table_name,record_id,created_at", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
   if (error) throw error;
-  return (data || []) as AuditLogEntry[];
+  const items = (data || []) as AuditLogEntry[];
+  return { items, hasMore: hasMore(from, items.length, count), total: count };
 }
 
 export async function getStorageStatus() {
-  const client = getBrowserSupabase();
   const bucket = process.env.NEXT_PUBLIC_SUPABASE_PHOTOS_BUCKET;
-  if (!client || !bucket) return { configured: false, bucket: null };
-  const { error } = await client.storage.getBucket(bucket);
-  return { configured: !error, bucket };
+  // Bucket metadata endpoints are administrative and should not be called
+  // with the browser key. The upload operation below is the authoritative
+  // capability check and will return a safe error if the bucket is missing or
+  // its Storage policies do not allow the current account.
+  return { configured: Boolean(getBrowserSupabase() && bucket), bucket: bucket || null };
+}
+
+export async function uploadBurialPhoto(input: { burialId: number; file: File; caption?: string; capturedAt?: string }) {
+  const client = requireClient();
+  const bucket = process.env.NEXT_PUBLIC_SUPABASE_PHOTOS_BUCKET;
+  if (!bucket) throw new Error("Photo storage is not configured for this Supabase environment.");
+  const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+  if (!allowedTypes.has(input.file.type)) throw new Error("Use a JPG, PNG, or WebP image.");
+  if (input.file.size > 10 * 1024 * 1024) throw new Error("Images must be 10 MB or smaller.");
+  const userId = await getCurrentUserId(client);
+  const fileName = input.file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-120) || "photo";
+  const storagePath = `burial/${input.burialId}/${crypto.randomUUID()}-${fileName}`;
+  const { error: uploadError } = await client.storage.from(bucket).upload(storagePath, input.file, { contentType: input.file.type, upsert: false });
+  if (uploadError) throw uploadError;
+  const { error: metadataError } = await client.from("photo").insert({
+    burial_id: input.burialId,
+    uploaded_by: userId,
+    storage_path: storagePath,
+    file_name: input.file.name,
+    caption: input.caption?.trim() || null,
+    captured_at: input.capturedAt || null,
+    approval_status: "pending",
+    public_display: false,
+  });
+  if (metadataError) {
+    await client.storage.from(bucket).remove([storagePath]);
+    throw metadataError;
+  }
+}
+
+export async function getAdminPhotos(options: PageOptions = {}) {
+  const client = requireClient();
+  const { from, to } = pageRange(options);
+  const { data, error, count } = await client.from("photo").select(PHOTO_COLUMNS, { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+  if (error) throw error;
+  const items = (data || []).map((photo) => ({
+    photoId: photo.photo_id,
+    burialId: photo.burial_id,
+    fileName: photo.file_name,
+    caption: photo.caption,
+    capturedAt: photo.captured_at,
+    approvalStatus: photo.approval_status,
+    publicDisplay: Boolean(photo.public_display),
+    createdAt: photo.created_at,
+  })) as AdminPhoto[];
+  return { items, hasMore: hasMore(from, items.length, count), total: count } satisfies PageResult<AdminPhoto>;
+}
+
+export async function updatePhotoReview(photoId: number, approvalStatus: AdminPhoto["approvalStatus"]) {
+  const client = requireClient();
+  const userId = await getCurrentUserId(client);
+  const { error } = await client.from("photo").update({
+    approval_status: approvalStatus,
+    public_display: approvalStatus === "approved",
+    reviewed_by: userId,
+  }).eq("photo_id", photoId);
+  if (error) throw error;
 }
 
 export type BurialRecordInput = {
@@ -392,6 +513,7 @@ export type BurialRecordInput = {
 
 export type LotInput = {
   areaId: number;
+  blockId?: number | null;
   lotOwnerId: number | null;
   lotCode: string;
   legacyLocationCode?: string;
@@ -399,6 +521,11 @@ export type LotInput = {
   status: "AVAILABLE" | "BOOKED" | "HOLD";
   lengthM: number | null;
   widthM: number | null;
+  longitude?: number | null;
+  latitude?: number | null;
+  coordinateAccuracyM?: number | null;
+  coordinateStatus?: "pending" | "verified" | "rejected";
+  coordinateVerified?: boolean;
 };
 
 export type OwnerInput = {
@@ -451,10 +578,29 @@ async function assertAvailableLot(client: SupabaseClient, lotId: number, ignoreB
 }
 
 function parsePoint(value: unknown) {
-  if (!value || typeof value !== "object" || !("coordinates" in value)) return null;
-  const coordinates = (value as { coordinates?: unknown }).coordinates;
-  if (!Array.isArray(coordinates) || coordinates.length < 2 || typeof coordinates[0] !== "number" || typeof coordinates[1] !== "number") return null;
-  return { longitude: coordinates[0], latitude: coordinates[1] };
+  const coordinates = getPointCoordinates(value);
+  return coordinates ? { longitude: coordinates[0], latitude: coordinates[1] } : null;
+}
+
+function getPointCoordinates(value: unknown): [number, number] | null {
+  if (value && typeof value === "object" && "coordinates" in value) {
+    const coordinates = (value as { coordinates?: unknown }).coordinates;
+    if (Array.isArray(coordinates) && coordinates.length >= 2 && typeof coordinates[0] === "number" && typeof coordinates[1] === "number") return [coordinates[0], coordinates[1]];
+  }
+  if (typeof value !== "string") return null;
+  const normalized = value.replace(/^\s*SRID=\d+\s*;\s*/i, "");
+  try {
+    const parsed = JSON.parse(normalized) as { coordinates?: unknown };
+    const coordinates = parsed.coordinates;
+    if (Array.isArray(coordinates) && coordinates.length >= 2 && typeof coordinates[0] === "number" && typeof coordinates[1] === "number") return [coordinates[0], coordinates[1]];
+  } catch {
+    // PostgREST may return geography as WKT text.
+  }
+  const match = normalized.match(/^\s*POINT\s*\(\s*([^\s,]+)\s+([^\s,)]+)\s*\)\s*$/i);
+  if (!match) return null;
+  const longitude = Number(match[1]);
+  const latitude = Number(match[2]);
+  return Number.isFinite(longitude) && Number.isFinite(latitude) ? [longitude, latitude] : null;
 }
 
 function burialRecordRpcPayload(input: BurialRecordInput) {
@@ -477,4 +623,37 @@ function burialRecordRpcPayload(input: BurialRecordInput) {
 
 function isMissingRpcError(error: { code?: string; message?: string }) {
   return error.code === "PGRST202" || error.code === "42883" || /function .* does not exist|could not find the function/i.test(error.message || "");
+}
+
+function coordinatePayload(input: LotInput) {
+  const hasLongitude = input.longitude !== null && input.longitude !== undefined;
+  const hasLatitude = input.latitude !== null && input.latitude !== undefined;
+  if (hasLongitude !== hasLatitude) throw new Error("Enter both longitude and latitude, or leave both coordinates blank.");
+  if (!hasLongitude) return { location_geom: null, coordinate_accuracy_m: null, coordinate_status: "pending", coordinate_verified: false };
+  const longitude = Number(input.longitude);
+  const latitude = Number(input.latitude);
+  const accuracy = input.coordinateAccuracyM === null || input.coordinateAccuracyM === undefined ? null : Number(input.coordinateAccuracyM);
+  if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180 || !Number.isFinite(latitude) || latitude < -90 || latitude > 90) throw new Error("Enter valid longitude and latitude values.");
+  if (accuracy !== null && (!Number.isFinite(accuracy) || accuracy < 0)) throw new Error("Coordinate accuracy must be zero or greater.");
+  return {
+    location_geom: { type: "Point", coordinates: [longitude, latitude] },
+    coordinate_accuracy_m: accuracy,
+    coordinate_status: input.coordinateStatus || "pending",
+    coordinate_verified: Boolean(input.coordinateVerified),
+  };
+}
+
+function pageRange(options: PageOptions) {
+  const page = Number.isInteger(options.page) && (options.page || 0) >= 0 ? options.page || 0 : 0;
+  const pageSize = Number.isInteger(options.pageSize) && (options.pageSize || 0) > 0 ? Math.min(options.pageSize || DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE) : DEFAULT_PAGE_SIZE;
+  const from = page * pageSize;
+  return { from, to: from + pageSize - 1 };
+}
+
+function safeOwnerSearch(value: string | undefined) {
+  return value?.trim().replace(/[^a-zA-Z0-9À-ž\s'._-]/g, "").slice(0, 80) || "";
+}
+
+function hasMore(from: number, itemCount: number, total: number | null) {
+  return total === null ? itemCount > 0 : from + itemCount < total;
 }

@@ -1,9 +1,10 @@
 erDiagram
     SITE ||--o{ AREA : contains
     SITE ||--o{ MAP_NODE : contains
+    AREA ||--o{ LOT : contains
     AREA ||--o{ SECTOR : contains
     SECTOR ||--o{ BLOCK : contains
-    BLOCK ||--o{ LOT : contains
+    BLOCK ||--o{ LOT : legacy_linkage
     LOT_OWNER ||--o{ LOT : purchases
     LOT ||--o{ BURIAL_RECORD : hosts
     DECEASED ||--o{ BURIAL_RECORD : has
@@ -61,9 +62,10 @@ erDiagram
     }
     LOT {
         bigint lot_id PK
-        bigint block_id FK
+        bigint area_id FK
+        bigint block_id FK "nullable legacy compatibility"
         bigint lot_owner_id FK "nullable"
-        text lot_code "unique within block"
+        text lot_code "unique within area"
         text legacy_location_code
         text legacy_pa_number "nullable"
         text status "group enum: AVAILABLE, BOOKED, HOLD"
@@ -166,6 +168,8 @@ erDiagram
     %% - Add RLS policies so anonymous users can read only approved public fields.
     %% - Keep LOT_OWNER, ACCOUNT, ROLE, AUDIT_LOG, financial, quality, service-provider, and cause-of-death fields administrator-only.
     %% - Add CHECK (from_node_id <> to_node_id) on MAP_EDGE.
-    %% - Add UNIQUE(block_id, lot_code) and UNIQUE(lot_id, interment_order_number) where applicable.
+    %% - New plots use area_id directly: site -> area/garden -> plot.
+    %% - block_id is nullable legacy compatibility; enforce UNIQUE(area_id, lot_code).
+    %% - Add UNIQUE(lot_id, interment_order_number) where applicable.
     %% - Use appropriate ON DELETE actions and audit triggers in the SQL migration.
     %% - Do not invent GPS coordinates; coordinate fields remain nullable until collected and verified.

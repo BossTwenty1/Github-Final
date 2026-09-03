@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@/components/ui/table";
+import { loadPhaseOneMapData, loadPhaseOneMapDataFromSupabase, type PhaseOneMapData } from "@/lib/phase1-map-data";
 import { getAdminRecords } from "@/lib/supabase/admin-data";
 import type { AdminRecord, PublicBurialRecord } from "@/lib/supabase/types";
 
@@ -19,6 +20,8 @@ export function AdminCemeteryMap() {
   const [records, setRecords] = useState<AdminRecord[]>([]);
   const [selectedPlot, setSelectedPlot] = useState("");
   const [selectedGarden, setSelectedGarden] = useState<string | null>(null);
+  const [mapData, setMapData] = useState<PhaseOneMapData | null>(null);
+  const [mapSource, setMapSource] = useState<"database" | "fallback" | "loading">("loading");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -28,6 +31,26 @@ export function AdminCemeteryMap() {
     }).catch((reason: unknown) => {
       if (active) setError(errorMessage(reason));
     });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void loadPhaseOneMapDataFromSupabase().then((result) => {
+      if (!active) return;
+      setMapData(result);
+      setMapSource("database");
+    }).catch(() => loadPhaseOneMapData().then((result) => {
+      if (!active) return;
+      setMapData(result);
+      setMapSource("fallback");
+    }).catch((reason: unknown) => {
+      if (!active) return;
+      setMapSource("fallback");
+      setError((current) => current || errorMessage(reason));
+    }));
     return () => {
       active = false;
     };
@@ -43,13 +66,14 @@ export function AdminCemeteryMap() {
       <CemeteryLeafletMap
         onSelectPlot={setSelectedPlot}
         onSelectZone={setSelectedGarden}
+        mapData={mapData}
         records={mappedRecords}
         selectedPlot={selectedPlot}
       />
     </div>
     <div className="map-disclaimer" role="note">
-      <strong>{selectedRecord?.plot || selectedGarden || "KML map reference"}</strong>
-      <span>{selectedRecord ? `${selectedRecord.name} selected. ` : selectedGarden ? "Garden area selected. " : "The Phase 1 KML geometry is shared with the visitor map. "}Only real database GPS coordinates are plotted; missing coordinates are not fabricated.</span>
+      <strong>{selectedRecord?.plot || selectedGarden || "Phase 1 map"}</strong>
+      <span>{selectedRecord ? `${selectedRecord.name} selected. ` : selectedGarden ? "Garden area selected. " : "The Phase 1 network is loaded from the administrator data source. "}{mapSource === "database" ? "Source: Supabase map tables. " : mapSource === "fallback" ? "Source: local cleaned GeoJSON fallback. " : "Loading map source. "}Only real database GPS coordinates are plotted; missing coordinates are not fabricated.</span>
     </div>
     <div className="map-legend">
       <span><i className="legend-dot legend-dot--reference" />KML garden, road, and walkway geometry</span>

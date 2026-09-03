@@ -4,5 +4,5 @@ import { requireStaff } from "@/lib/auth";
 
 export default async function AdminPendingAccountsRoute() {
   await requireStaff("ADMIN");
-  return <AdminShell active="Account Management"><AdminAccountsPage /></AdminShell>;
+  return <AdminShell active="Account Management"><AdminAccountsPage pendingOnly /></AdminShell>;
 }
