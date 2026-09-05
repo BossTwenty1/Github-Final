@@ -10,7 +10,7 @@ import type {
 import { schematicImageHeight, schematicImageWidth } from "@/lib/map-layout";
 import { getBrowserSupabase } from "@/lib/supabase/config";
 
-export const phaseOneGeoJsonUrl = "/maps/forest-lake-phase1-cleaned-network.geojson";
+export const phaseOneGeoJsonUrl = "/maps/forest-lake-phase1-routing-network.geojson";
 
 export type PhaseOneMapProperties = {
   id?: string;

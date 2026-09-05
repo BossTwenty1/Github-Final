@@ -10,6 +10,7 @@ export type StaffAccount = {
 };
 
 export type PublicBurialRecord = {
+  matchType?: "exact" | "matched" | "similar";
   id: string;
   name: string;
   birthDate: string | null;
@@ -28,6 +29,7 @@ export type PublicBurialRecord = {
 };
 
 export type AdminRecord = {
+  revision: number;
   burialId: number;
   name: string;
   deceasedId: number;
@@ -53,6 +55,7 @@ export type AdminRecord = {
 };
 
 export type AdminLot = {
+  revision: number;
   lotId: number;
   lotCode: string;
   areaId: number;
@@ -73,6 +76,7 @@ export type AdminLot = {
 };
 
 export type LotOwner = {
+  revision: number;
   lotOwnerId: number;
   firstName: string;
   middleName: string | null;
@@ -99,6 +103,7 @@ export type BurialPlotOption = {
 };
 
 export type AdminAccount = StaffAccount & {
+  revision: number;
   createdAt: string;
   approvedAt: string | null;
 };
@@ -115,6 +120,7 @@ export type AuditLogEntry = {
 };
 
 export type AdminPhoto = {
+  revision: number;
   photoId: number;
   burialId: number;
   fileName: string;

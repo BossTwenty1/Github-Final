@@ -8,6 +8,7 @@ import { signOut } from "@/lib/auth-client";
 import type { StaffAccount } from "@/lib/supabase/types";
 import { localSupabaseConfig } from "@/lib/supabase/config";
 import { AdminSidebar } from "./admin-sidebar";
+import { StaffContext } from "./staff-context";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
@@ -42,7 +43,7 @@ export function AdminShellClient({ children, active, staff }: { children: ReactN
           <button className="admin-logout-button" disabled={loggingOut} onClick={logout} type="button">{loggingOut ? "Signing out..." : "Sign out"}</button>
         </div>
       </header>
-      <main className="admin-content">{children}</main>
+      <main className="admin-content"><StaffContext.Provider value={staff}>{children}</StaffContext.Provider></main>
     </div>
   </div>;
 }

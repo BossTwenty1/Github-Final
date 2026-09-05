@@ -1,5 +1,6 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./database-schema";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
 const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -15,17 +16,17 @@ export const localSupabaseConfig = {
 
 export const publicAppOrigin = getPublicAppOrigin();
 
-let browserClient: SupabaseClient | null = null;
+let browserClient: SupabaseClient<Database> | null = null;
 
 export function getBrowserSupabase() {
   if (!localSupabaseConfig.configured) return null;
-  browserClient ??= createBrowserClient(supabaseUrl, supabasePublishableKey);
+  browserClient ??= createBrowserClient<Database>(supabaseUrl, supabasePublishableKey);
   return browserClient;
 }
 
 export function getPublicSupabase() {
   if (!localSupabaseConfig.configured) return null;
-  return createClient(supabaseUrl, supabasePublishableKey, {
+  return createClient<Database>(supabaseUrl, supabasePublishableKey, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
 }

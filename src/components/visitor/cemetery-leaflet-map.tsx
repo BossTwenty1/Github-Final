@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CircleMarker, GeoJSON, MapContainer, Marker, Polyline, Tooltip, ZoomControl, useMap } from "react-leaflet";
+import { useEffect, useRef, useState } from "react";
+import { CircleMarker, Polygon as LeafletPolygon, GeoJSON, MapContainer, Marker, Polyline, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import { CRS, divIcon, type LeafletMouseEvent } from "leaflet";
 import { Alert } from "@/components/ui/alert";
 import { schematicMapBounds } from "@/lib/map-layout";
@@ -12,6 +12,10 @@ import type { PhaseOneRoute } from "@/lib/phase1-routing";
 const areaLabelIcon = divIcon({ className: "phase-one-area-label-anchor", html: "", iconSize: [1, 1], iconAnchor: [0, 0] });
 
 type CemeteryLeafletMapProps = {
+  selectedRecordId?: string;
+  onSelectRecord?: (id: string) => void;
+  userLocation?: import("@/lib/navigation-geo").GpsPosition | null;
+  recenterRequest?: number;
   records: PublicBurialRecord[];
   selectedPlot: string;
   onSelectPlot: (plot: string) => void;
@@ -20,15 +24,16 @@ type CemeteryLeafletMapProps = {
   route?: PhaseOneRoute | null;
 };
 
-export function CemeteryLeafletMap({ records, selectedPlot, onSelectPlot, onSelectZone, mapData, route }: CemeteryLeafletMapProps) {
+export function CemeteryLeafletMap({ records, selectedPlot, onSelectPlot, onSelectZone, mapData, route, userLocation, recenterRequest = 0, selectedRecordId, onSelectRecord }: CemeteryLeafletMapProps) {
   return <MapContainer aria-label="Forest Lake Memorial Park plan map" bounds={schematicMapBounds} crs={CRS.Simple} maxZoom={2} minZoom={-2} scrollWheelZoom zoomControl={false} zoomSnap={0.25} zoomDelta={0.25}>
     <ZoomControl position="topright" />
     <MapResetControl />
-    <PhaseOneGeometryLayer initialMapData={mapData} onSelectPlot={onSelectPlot} onSelectZone={onSelectZone} records={records} route={route} selectedPlot={selectedPlot} />
+    {mapData && userLocation ? <UserLocationLayer mapData={mapData} location={userLocation} recenterRequest={recenterRequest} /> : null}
+    <PhaseOneGeometryLayer initialMapData={mapData} onSelectPlot={onSelectPlot} onSelectZone={onSelectZone} records={records} route={route} selectedPlot={selectedPlot} selectedRecordId={selectedRecordId} onSelectRecord={onSelectRecord} />
   </MapContainer>;
 }
 
-function PhaseOneGeometryLayer({ initialMapData, onSelectPlot, onSelectZone, records, route, selectedPlot }: { initialMapData?: PhaseOneMapData | null; onSelectPlot: (plot: string) => void; onSelectZone: (zone: string) => void; records: PublicBurialRecord[]; route?: PhaseOneRoute | null; selectedPlot: string }) {
+function PhaseOneGeometryLayer({ initialMapData, onSelectPlot, onSelectZone, records, route, selectedPlot, selectedRecordId, onSelectRecord }: { initialMapData?: PhaseOneMapData | null; onSelectPlot: (plot: string) => void; onSelectZone: (zone: string) => void; records: PublicBurialRecord[]; route?: PhaseOneRoute | null; selectedPlot: string; selectedRecordId?: string; onSelectRecord?: (id: string) => void }) {
   const [loadedMapData, setLoadedMapData] = useState<PhaseOneMapData | null>(null);
   const [showVectors, setShowVectors] = useState(true);
   const mapData = initialMapData || loadedMapData;
@@ -72,8 +77,8 @@ function PhaseOneGeometryLayer({ initialMapData, onSelectPlot, onSelectZone, rec
       {records.filter((record) => Boolean(record.location)).map((record) => {
         const position = record.location ? projectPhaseOneLocation(mapData, record.location) : null;
         if (!position) return null;
-        const selected = selectedPlot === record.plot;
-        return <CircleMarker center={position} eventHandlers={{ click: () => onSelectPlot(record.plot) }} key={record.id} pathOptions={{ color: selected ? "var(--map-selected)" : "var(--map-record)", fillColor: selected ? "var(--map-selected)" : "var(--map-record)", fillOpacity: 1, weight: 3 }} radius={selected ? 9 : 6} />;
+        const selected = selectedRecordId !== undefined ? selectedRecordId === record.id : selectedPlot === record.plot;
+        return <CircleMarker center={position} eventHandlers={{ click: () => onSelectRecord ? onSelectRecord(record.id) : onSelectPlot(record.plot) }} key={record.id} pathOptions={{ color: selected ? "var(--map-selected)" : "var(--map-record)", fillColor: selected ? "var(--map-selected)" : "var(--map-record)", fillOpacity: 1, weight: 3 }} radius={selected ? 9 : 6}><Tooltip>{record.name} · {record.section} · {record.plot}</Tooltip></CircleMarker>;
       })}
     </> : null}
   </>;
@@ -98,4 +103,36 @@ function getAreaLabelPosition(feature: PhaseOneAreaFeature): [number, number] | 
   if (!ring?.length) return null;
   const totals = ring.reduce((sum, [x, y]) => [sum[0] + x, sum[1] + y], [0, 0]);
   return [totals[1] / ring.length, totals[0] / ring.length];
+}
+
+function UserLocationLayer({ mapData, location, recenterRequest }: { mapData: PhaseOneMapData; location: import("@/lib/navigation-geo").GpsPosition; recenterRequest: number }) {
+  const map = useMap();
+  const lastRequest = useRef(-1);
+  const position = projectPhaseOneLocation(mapData, location);
+  const lat = position?.[0];
+  const lon = position?.[1];
+  useEffect(() => {
+    if (lat !== undefined && lon !== undefined && lastRequest.current !== recenterRequest) {
+      map.panTo([lat, lon]);
+      lastRequest.current = recenterRequest;
+    }
+  }, [map, lat, lon, recenterRequest]);
+  if (!position) return null;
+  // Convert a geographic accuracy circle to this map's schematic coordinate system.
+  const bounds = mapData.geographicBounds;
+  const latitudeRadius = location.accuracy / 111320;
+  const longitudeRadius = latitudeRadius / Math.max(0.01, Math.cos(location.latitude * Math.PI / 180));
+  const ring: Array<[number, number]> = Array.from({ length: 48 }, (_, index) => {
+    const angle = index * Math.PI * 2 / 48;
+    const latitude = location.latitude + latitudeRadius * Math.sin(angle);
+    const longitude = location.longitude + longitudeRadius * Math.cos(angle);
+    return [
+      (latitude - bounds.minLatitude) / (bounds.maxLatitude - bounds.minLatitude) * schematicMapBounds[1][0],
+      (longitude - bounds.minLongitude) / (bounds.maxLongitude - bounds.minLongitude) * schematicMapBounds[1][1],
+    ];
+  });
+  return <><LeafletPolygon positions={ring} pathOptions={{ color: "#1769aa", weight: 1, fillOpacity: 0.12 }} />
+    <CircleMarker center={position} radius={7} pathOptions={{ color: "#fff", weight: 2, fillColor: "#1769aa", fillOpacity: 1 }}>
+      <Tooltip permanent direction="top">You are here · accuracy about {Math.round(location.accuracy)} m</Tooltip>
+    </CircleMarker></>;
 }

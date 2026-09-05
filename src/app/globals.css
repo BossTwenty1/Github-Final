@@ -181,7 +181,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .results-heading { display: flex; flex-direction: column; gap: 14px; }
 .results-heading h1 { font-size: 1.65rem; line-height: 1.18; }
 .results-heading h1 span { display: block; }
-.results-controls { display: flex; gap: 8px; }
+.results-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.results-search > button { margin-top: 8px; }
+.audit-values { max-width: min(680px, 75vw); max-height: 360px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8rem; padding: 12px; background: var(--canvas); }
+.fallback-card.navigation-route-summary { display: block; }
+.navigation-route-summary ol { margin: 12px 0 0; padding-left: 22px; }
+.navigation-route-summary li + li { margin-top: 8px; }
 .results-list { display: flex; flex-direction: column; gap: 16px; }
 .result-card { overflow: hidden; }
 .result-media { position: relative; display: flex; align-items: center; justify-content: center; height: 185px; overflow: hidden; color: rgba(255,255,255,0.72); }
@@ -355,4 +360,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 @media (max-width: 639px) {
   .admin-header { gap: 8px; }.admin-search { min-width: 0; flex: 1; }.admin-search .input-control { min-width: 0; }.admin-header__actions { flex: 0 0 auto; }.admin-map-preview { min-height: 300px; }.admin-map-zone { padding: 8px; font-size: 0.7rem; }
+}
+.map-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.photo-review-preview {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.photo-review-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 65vh;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  background: #f2f4f3;
 }

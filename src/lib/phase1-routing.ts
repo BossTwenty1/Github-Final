@@ -6,6 +6,7 @@ export type PhaseOneRoute = {
   distanceM: number | null;
   startNodeName: string;
   targetNodeName: string;
+  instructions: string[];
 };
 
 type NetworkNode = { id: string; name: string; position: [number, number]; nodeType: string };
@@ -24,10 +25,6 @@ export function findShortestPhaseOneRoute(mapData: PhaseOneMapData, destination:
     nodeType: node.properties?.node_type || "",
   })).filter((node) => node.id);
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
-  const entranceNode = nodes.find((node) => node.nodeType === "entrance") || nodes.find((node) => /main entrance/i.test(node.name));
-  const startNode = originPosition ? nearestNode(nodes, originPosition) : entranceNode;
-  const targetNode = nodes.reduce<NetworkNode | null>((closest, node) => distanceSquared(node.position, targetPosition) < (closest ? distanceSquared(closest.position, targetPosition) : Number.POSITIVE_INFINITY) ? node : closest, null);
-  if (!startNode || !targetNode) return null;
 
   const adjacency = new Map<string, NetworkEdge[]>();
   const scale = getDistanceScale(mapData.edges.features);
@@ -43,21 +40,29 @@ export function findShortestPhaseOneRoute(mapData: PhaseOneMapData, destination:
     addEdge(adjacency, to, { to: from, cost, distanceM: measuredDistance, coordinates: [...coordinates].reverse() });
   }
 
+  // Landmarks can be useful on the map without being routing vertices. Never
+  // choose a disconnected landmark as the start or destination node.
+  const routableNodes = nodes.filter((node) => (adjacency.get(node.id) || []).length > 0);
+  const entranceNode = routableNodes.find((node) => node.nodeType === "entrance") || routableNodes.find((node) => /main entrance/i.test(node.name));
+  const startNode = originPosition ? nearestNode(routableNodes, originPosition) : entranceNode;
+  const targetNode = routableNodes.reduce<NetworkNode | null>((closest, node) => distanceSquared(node.position, targetPosition) < (closest ? distanceSquared(closest.position, targetPosition) : Number.POSITIVE_INFINITY) ? node : closest, null);
+  if (!startNode || !targetNode) return null;
+
   const previous = new Map<string, { nodeId: string; edge: NetworkEdge }>();
-  const distances = new Map<string, number>(nodes.map((node) => [node.id, Number.POSITIVE_INFINITY]));
-  const distanceMeters = new Map<string, number | null>(nodes.map((node) => [node.id, 0]));
-  const queue = new Set(nodes.map((node) => node.id));
+  const distances = new Map<string, number>(routableNodes.map((node) => [node.id, Number.POSITIVE_INFINITY]));
+  const distanceMeters = new Map<string, number | null>(routableNodes.map((node) => [node.id, 0]));
+  const queue = new Set(routableNodes.map((node) => node.id));
   distances.set(startNode.id, 0);
 
   while (queue.size) {
-    const current = [...queue].reduce<string | null>((best, id) => best === null || (distances.get(id) || Number.POSITIVE_INFINITY) < (distances.get(best) || Number.POSITIVE_INFINITY) ? id : best, null);
+    const current = [...queue].reduce<string | null>((best, id) => best === null || (distances.get(id) ?? Number.POSITIVE_INFINITY) < (distances.get(best) ?? Number.POSITIVE_INFINITY) ? id : best, null);
     if (!current || !Number.isFinite(distances.get(current))) break;
     queue.delete(current);
     if (current === targetNode.id) break;
     for (const edge of adjacency.get(current) || []) {
       if (!queue.has(edge.to)) continue;
       const nextDistance = (distances.get(current) || 0) + edge.cost;
-      if (nextDistance >= (distances.get(edge.to) || Number.POSITIVE_INFINITY)) continue;
+      if (nextDistance >= (distances.get(edge.to) ?? Number.POSITIVE_INFINITY)) continue;
       distances.set(edge.to, nextDistance);
       previous.set(edge.to, { nodeId: current, edge });
       const currentMeters = distanceMeters.get(current) ?? null;
@@ -74,8 +79,8 @@ export function findShortestPhaseOneRoute(mapData: PhaseOneMapData, destination:
   }
 
   const routeCoordinates: Array<[number, number]> = [];
-  if (originPosition) routeCoordinates.push(originPosition);
-  if (originPosition && startNode && distanceSquared(originPosition, startNode.position) > 0) routeCoordinates.push(startNode.position);
+
+
   for (let index = 0; index < nodeIds.length - 1; index += 1) {
     const from = nodeIds[index];
     const to = nodeIds[index + 1];
@@ -84,13 +89,14 @@ export function findShortestPhaseOneRoute(mapData: PhaseOneMapData, destination:
     routeCoordinates.push(...(index === 0 ? traversal.edge.coordinates : traversal.edge.coordinates.slice(1)));
   }
   if (!routeCoordinates.length) routeCoordinates.push(...nodeIds.map((id) => nodeById.get(id)?.position).filter((position): position is [number, number] => Boolean(position)));
-  routeCoordinates.push(targetPosition);
+  // End at the recorded path. The final approach to the grave has not been surveyed.
 
   return {
     coordinates: routeCoordinates,
     distanceM: distanceMeters.get(targetNode.id) ?? null,
     startNodeName: originPosition ? "Your location" : startNode.name,
     targetNodeName: targetNode.name,
+    instructions: nodeIds.map((id) => nodeById.get(id)).filter((node) => node && (node.nodeType === "landmark" || node.nodeType === "entrance") && !/^(N[0-9]+|network point)$/i.test(node.name)).map((node) => "Continue via " + node!.name + "."),
   };
 }
 
