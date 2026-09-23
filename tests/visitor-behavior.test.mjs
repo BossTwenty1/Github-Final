@@ -83,6 +83,16 @@ test("public burial dates use interment dates, never death dates", async () => {
   assert.equal(missing.burialDate, "Not recorded");
 });
 
+test("public navigation eligibility preserves the real coordinate review state", async () => {
+  const point = { type: "Point", coordinates: [123.7, 13.1] };
+  const verified = await publicModule({ data: { burial_id: 1, display_name: "Test", lot_code: "A", location_geom: point, location_verified: true, coordinate_status: "verified" }, error: null }).getPublicBurialRecord("1");
+  const rejected = await publicModule({ data: { burial_id: 1, display_name: "Test", lot_code: "A", location_geom: point, location_verified: false, coordinate_status: "rejected" }, error: null }).getPublicBurialRecord("1");
+  const missing = await publicModule({ data: { burial_id: 1, display_name: "Test", lot_code: "A", location_geom: null, location_verified: true, coordinate_status: "verified" }, error: null }).getPublicBurialRecord("1");
+  assert.equal(verified.coordinateStatus, "verified"); assert.equal(verified.locationVerified, true);
+  assert.equal(rejected.coordinateStatus, "rejected"); assert.equal(rejected.locationVerified, false);
+  assert.equal(missing.coordinateStatus, "missing"); assert.equal(missing.locationVerified, false);
+});
+
 test("development demo profiles retain slug IDs while hosted lookups require numeric IDs", async () => {
   const demo = { id: "demo-person", name: "Demo Person" };
   const local = load("src/lib/supabase/public-data.ts", {

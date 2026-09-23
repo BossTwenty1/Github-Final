@@ -1,0 +1,366 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>GraveNav - Memorial Park Navigation</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bgDark: '#0A0A0C',
+            cardDark: '#14161A',
+            inputDark: '#0F1013',
+            borderDark: '#252830',
+            forest: {
+              950: '#07120c',
+              900: '#0a1a12',
+              800: '#143123',
+              700: '#166534',
+              600: '#15803d',
+              500: '#22c55e',
+              400: '#4ade80',
+              300: '#86efac',
+              200: '#bbf7d0',
+              mint: '#34d399',
+            },
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #0A0A0C;
+      color: #f1f5f2;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#0A0A0C] min-h-screen">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-[420px] mx-auto min-h-screen bg-[#0A0A0C] text-slate-100 flex flex-col relative pb-28 border-x border-[#1a1c22]">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-6 flex justify-between items-center z-50 select-none" data-purpose="ios-status-bar">
+<span class="text-[14px] font-semibold tracking-tight text-white">9:41</span>
+<!-- Dynamic Island Indicator -->
+<div class="w-24 h-4 bg-black rounded-full border border-white/10"></div>
+<!-- Network, WiFi & Battery Icons -->
+<div class="flex items-center space-x-1.5 text-white">
+<!-- Cellular -->
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+<path d="M2 19h2v2H2v-2zm4-4h2v6H6v-6zm4-4h2v10h-2V11zm4-5h2v15h-2V6zm4-4h2v19h-2V2z"></path>
+</svg>
+<!-- WiFi -->
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.55 0 6.78 1.41 9.17 3.71L12 18.44 2.83 11.21C5.22 8.91 8.45 7.5 12 7.5z"></path>
+</svg>
+<!-- Battery -->
+<div class="w-5 h-2.5 border border-white rounded-[3px] p-0.5 flex items-center">
+<div class="h-full w-3.5 bg-white rounded-[1.5px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: AppTopNavigation -->
+<nav class="w-full px-5 pt-3 pb-2 flex items-center justify-between z-40" data-purpose="app-header-bar">
+<div class="flex items-center space-x-3">
+<div class="w-10 h-10 rounded-2xl bg-[#14161A] border border-[#252830] flex items-center justify-center p-1.5 shadow-sm">
+<img alt="GraveNav Logo" class="w-full h-full object-contain rounded-lg" src="https://lh3.googleusercontent.com/aida/AEtjO1UXKXvWQ5L8SqfSfVZlcs0GzqopYfyKbxq-r1wgtnKb-zY7iQWrGupIBkDjN3zx2ViUUxcJFTxrkROvULD21_bJZIUD_ggr6EHumpaWSg1vArZ34t676J3rat7Q9SzevEJrl4N_cVhTZ9VWeL6LPWtQqiGyBXgXK5TKF-rpkNzPGbO3PS9Zvcnea3gIPdVOHTra5vgLhhd1P78e6tCcV-LamHaAEjbD8nRQUfu7Pk-PWgRXpLx_dbsw4sk">
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h1 class="text-[17px] font-bold tracking-tight text-white leading-none">GraveNav</h1>
+<span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]"></span>
+</div>
+<p class="text-[10px] text-emerald-400 font-bold tracking-wider uppercase leading-none mt-1">FOREST LAKE PARK</p>
+</div>
+</div>
+<!-- Right Controls -->
+<div class="flex items-center space-x-2">
+<button aria-label="Dark Mode Active" class="w-9 h-9 rounded-full bg-[#14161A] border border-[#252830] flex items-center justify-center text-emerald-300 hover:text-white transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+</svg>
+</button>
+<button aria-label="Park Info" class="w-9 h-9 rounded-full bg-[#14161A] border border-[#252830] flex items-center justify-center text-emerald-300 hover:text-white transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M12 16v-4"></path>
+<path d="M12 8h.01"></path>
+</svg>
+</button>
+</div>
+</nav>
+<!-- END: AppTopNavigation -->
+<!-- BEGIN: Hero Section -->
+<section class="px-5 pt-3 pb-2" data-purpose="hero-banner">
+<!-- Active Status Badge -->
+
+<h2 class="text-[28px] font-extrabold tracking-tight text-white leading-[1.18]">
+        Find Resting Places <br>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-emerald-400 to-[#2dd4bf]">with Dignity &amp; Grace</span>
+</h2>
+<p class="text-[13px] text-slate-300/80 leading-relaxed font-normal mt-2">
+        Forest Lake Memorial Park Albay — precision turn-by-turn gravesite locator and commemorative memorial guidance.
+      </p>
+<!-- Hero Visual Container (Radar Map Card) -->
+<div class="mt-4 relative w-full h-44 rounded-2xl overflow-hidden border border-[#252830] bg-[#14161A] shadow-md" data-purpose="hero-visual-card">
+<!-- Background radial grid -->
+<div class="absolute inset-0 bg-gradient-to-tr from-[#080a0d] via-[#101217] to-[#161a22]"></div>
+<div class="absolute inset-0 bg-[radial-gradient(#1e4d37_1px,transparent_1px)] [background-size:16px_16px] opacity-30"></div>
+<!-- Radar rings -->
+<div class="absolute -right-6 -bottom-8 w-60 h-60 rounded-full border border-emerald-500/20 flex items-center justify-center pointer-events-none">
+<div class="w-44 h-44 rounded-full border border-emerald-400/25 flex items-center justify-center">
+<div class="w-28 h-28 rounded-full border border-emerald-300/30 bg-emerald-950/20"></div>
+</div>
+</div>
+<!-- Topo Pathway Path -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40" fill="none" viewBox="0 0 350 176">
+<path d="M 10 140 C 90 120, 160 160, 240 100 C 290 60, 330 80, 350 70" stroke="#34d399" stroke-dasharray="5 4" stroke-width="1.5"></path>
+<path d="M 50 160 C 130 140, 180 80, 280 60" stroke="#2dd4bf" stroke-opacity="0.4" stroke-width="1.2"></path>
+</svg>
+<!-- Direction Compass Arrow (Orange Arrowhead) -->
+<div class="absolute top-4 left-4">
+<div class="w-10 h-10 bg-gradient-to-br from-[#f97316] to-[#ea580c] text-white flex items-center justify-center rounded-xl shadow-[0_4px_16px_rgba(249,115,22,0.4)] border border-white/20">
+<svg class="w-5 h-5 -rotate-45" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"></path>
+</svg>
+</div>
+</div>
+<!-- GPS Coordinates Badge -->
+<div class="absolute top-4 right-4 bg-[#0A0A0C]/90 border border-[#252830] rounded-full px-2.5 py-1 flex items-center gap-1.5 backdrop-blur-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="text-[10px] font-mono text-emerald-200 font-semibold">13.1391° N, 123.7438° E</span>
+</div>
+<!-- Waypoint Pin: SECTION 4A -->
+<div class="absolute bottom-3 right-12 flex flex-col items-center">
+<div class="relative">
+<div class="w-8 h-10 bg-gradient-to-b from-[#fbbf24] to-[#d97706] rounded-full flex items-center justify-center shadow-lg border-2 border-[#0A0A0C]">
+<div class="w-2.5 h-2.5 bg-[#0A0A0C] rounded-full"></div>
+</div>
+<div class="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-[#d97706] mx-auto -mt-0.5"></div>
+</div>
+<span class="text-[9px] font-bold uppercase tracking-wider text-white bg-black/90 px-2 py-0.5 rounded-md border border-emerald-500/30 mt-1">
+            SECTION 4A
+          </span>
+</div>
+<!-- Watermark Label -->
+<div class="absolute bottom-3 left-4">
+<p class="text-[9px] uppercase font-bold tracking-wider text-emerald-400/80">Forest Lake Memorial</p>
+<p class="text-[12px] font-medium text-slate-100">Legazpi City Sanctuary</p>
+</div>
+</div>
+</section>
+<!-- END: Hero Section -->
+<!-- BEGIN: GravesiteSearchCard -->
+<section class="px-5 py-2.5" data-purpose="search-card">
+<div class="bg-[#14161A] border border-[#252830] rounded-2xl p-4 shadow-lg">
+<label class="block text-[11px] font-bold text-emerald-400 mb-2 tracking-wider uppercase" for="deceased-search-input">
+          LOCATE LOVED ONE'S RESTING PLOT
+        </label>
+<!-- Input Field -->
+<div class="relative flex items-center">
+<div class="absolute left-3.5 pointer-events-none text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<input class="w-full bg-[#0F1013] text-sm text-white placeholder-slate-400 pl-10 pr-4 py-3 rounded-xl border border-[#252830] focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition" id="deceased-search-input" placeholder="Enter deceased's first or last name..." type="text">
+</div>
+<!-- Primary Emerald Navigation Button -->
+<button class="w-full mt-3 bg-[#166534] hover:bg-[#15803d] text-white font-bold text-sm py-3 px-4 rounded-xl transition duration-150 flex items-center justify-center space-x-2 shadow-md active:scale-[0.98]" type="button">
+<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+<polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+</svg>
+<span class="">Find Gravesite &amp; Navigate</span>
+</button>
+<!-- Quick Filter Chips -->
+<div class="mt-3 flex items-center space-x-2 overflow-x-auto no-scrollbar pt-0.5">
+<span class="text-[11px] text-slate-400 whitespace-nowrap">Quick:</span>
+<button class="text-[11px] bg-[#0F1013] hover:bg-[#1d2026] text-emerald-200 px-3 py-1 rounded-full border border-[#252830] whitespace-nowrap transition">
+            Garden of Peace
+          </button>
+<button class="text-[11px] bg-[#0F1013] hover:bg-[#1d2026] text-emerald-200 px-3 py-1 rounded-full border border-[#252830] whitespace-nowrap transition">
+            St. Peter Lawn
+          </button>
+<button class="text-[11px] bg-[#0F1013] hover:bg-[#1d2026] text-emerald-200 px-3 py-1 rounded-full border border-[#252830] whitespace-nowrap transition">
+            Whispering Pines
+          </button>
+</div>
+</div>
+</section>
+<!-- END: GravesiteSearchCard -->
+<!-- BEGIN: ExploreMemorialCards -->
+<section class="py-2.5" data-purpose="explore-section">
+<div class="px-5 flex items-center justify-between mb-2.5">
+<h3 class="text-base font-bold text-white tracking-tight">Explore Memorial Park</h3>
+<a class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition" href="#map">View map</a>
+</div>
+<div class="flex space-x-3 overflow-x-auto px-5 pb-1 no-scrollbar snap-x">
+<!-- Card 1: Grounds Map -->
+<article class="flex-none w-[240px] bg-[#14161A] rounded-2xl p-3 border border-[#252830] shadow snap-start flex flex-col justify-between">
+<div>
+<div class="relative h-24 w-full rounded-xl overflow-hidden bg-[#0F1013] border border-[#252830]">
+<div class="absolute inset-0 bg-gradient-to-tr from-[#05110c] via-[#0f2e20] to-[#143f2c]"></div>
+<div class="absolute inset-0 bg-[radial-gradient(#22c55e_1px,transparent_1px)] [background-size:10px_10px] opacity-30"></div>
+<div class="absolute top-2 left-2">
+<span class="bg-[#0A0A0C]/90 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-500/30">
+                  12 Hectares Mapped
+                </span>
+</div>
+<div class="absolute top-2 right-2">
+<span class="bg-black/75 text-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-white/10 flex items-center gap-1">
+                  ★ 4.9
+                </span>
+</div>
+</div>
+<div class="mt-2">
+<h4 class="text-sm font-bold text-white">Memorial Park Grounds Map</h4>
+<p class="text-[11px] text-slate-300 mt-1 leading-snug line-clamp-2">
+                Explore aerial pathway layouts, access roads, chapel facilities, and water stations.
+              </p>
+</div>
+</div>
+<div class="mt-3 pt-2 border-t border-[#252830] flex items-center justify-between text-[11px]">
+<span class="text-emerald-400 font-semibold">Live Navigation</span>
+<span class="text-slate-400">Open View →</span>
+</div>
+</article>
+<!-- Card 2: RTK Technology Card (Orange/Warm Accent) -->
+<article class="flex-none w-[220px] rounded-2xl p-3.5 bg-gradient-to-br from-[#ea580c] via-[#f97316] to-[#f59e0b] text-white shadow snap-start flex flex-col justify-between border border-amber-300/30">
+<div>
+<div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center mb-2 border border-white/20">
+<svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<line x1="12" x2="12" y1="3" y2="7"></line>
+<line x1="12" x2="12" y1="17" y2="21"></line>
+<line x1="3" x2="7" y1="12" y2="12"></line>
+<line x1="17" x2="21" y1="12" y2="12"></line>
+</svg>
+</div>
+<span class="text-[10px] font-extrabold uppercase tracking-wider text-white/90">RTK Technology</span>
+<h4 class="text-base font-extrabold leading-tight mt-0.5 text-white">Centimeter-Accuracy</h4>
+<p class="text-[11px] text-white/90 mt-1.5 leading-snug">
+              Turn-by-turn walking directs you right to the exact footstone or memorial slab.
+            </p>
+</div>
+<div class="mt-3">
+<button class="w-full py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs font-bold transition border border-white/25" type="button">
+              Calibrate Compass
+            </button>
+</div>
+</article>
+</div>
+</section>
+<!-- END: ExploreMemorialCards -->
+<!-- BEGIN: HowItWorksSteps -->
+<section class="px-5 py-2.5" data-purpose="how-it-works">
+<div class="bg-[#14161A] rounded-2xl p-4 border border-[#252830]">
+<h3 class="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-3">
+          HOW GRAVENAV WORKS
+        </h3>
+<div class="space-y-3">
+<!-- Step 1 -->
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded-full bg-[#166534] border border-emerald-400/40 flex items-center justify-center flex-shrink-0 text-xs font-bold text-white">
+              1
+            </div>
+<div>
+<h4 class="text-xs font-bold text-white leading-tight">Search by Name or Plot Number</h4>
+<p class="text-[11px] text-slate-300 mt-0.5 leading-snug">Type the family name to query the official Forest Lake Albay registry.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded-full bg-[#166534] border border-emerald-400/40 flex items-center justify-center flex-shrink-0 text-xs font-bold text-white">
+              2
+            </div>
+<div>
+<h4 class="text-xs font-bold text-white leading-tight">Confirm Plot &amp; Section Records</h4>
+<p class="text-[11px] text-slate-300 mt-0.5 leading-snug">Verify the birth/burial dates and memorial photo records.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded-full bg-[#166534] border border-emerald-400/40 flex items-center justify-center flex-shrink-0 text-xs font-bold text-white">
+              3
+            </div>
+<div>
+<h4 class="text-xs font-bold text-white leading-tight">Start Walk-to-Grave Compass</h4>
+<p class="text-[11px] text-slate-300 mt-0.5 leading-snug">Follow real-time on-screen steps directly to the resting site.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HowItWorksSteps -->
+<!-- BEGIN: Footer -->
+<footer class="px-5 pt-3 pb-8 text-center text-slate-400 space-y-1.5" data-purpose="app-footer">
+
+<p class="text-[11px]">
+        Forest Lake Memorial Park, Bogtong, Legazpi City, Albay
+      </p>
+<p class="text-[10px] text-slate-500">
+        In partnership with City Memorial Services &amp; Forest Lake Management.
+      </p>
+</footer>
+<!-- END: Footer -->
+<!-- BEGIN: FixedBottomNavBar -->
+<aside class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-[#0D0E11]/95 backdrop-blur-md border-t border-[#22242A] px-6 pt-2.5 pb-6 z-50 flex justify-around items-center" data-purpose="bottom-navigation-bar">
+<!-- Home (Active) -->
+<a aria-label="Home" class="flex flex-col items-center cursor-pointer" href="#home">
+<div class="w-8 h-8 rounded-full bg-[#166534] border border-emerald-400/40 flex items-center justify-center text-white shadow-sm">
+<svg class="w-4 h-4 text-emerald-200" fill="currentColor" viewBox="0 0 24 24">
+<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+</svg>
+</div>
+<span class="text-[10px] font-bold text-emerald-400 mt-1">Home</span>
+</a>
+<!-- Search -->
+<a aria-label="Search" class="flex flex-col items-center text-slate-400 hover:text-white cursor-pointer transition" href="#search">
+<div class="w-8 h-8 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<span class="text-[10px] font-medium mt-1">Search</span>
+</a>
+<!-- Map -->
+<a aria-label="Map Navigation" class="flex flex-col items-center text-slate-400 hover:text-white cursor-pointer transition" href="#map">
+<div class="w-8 h-8 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+<line x1="8" x2="8" y1="2" y2="18"></line>
+<line x1="16" x2="16" y1="6" y2="22"></line>
+</svg>
+</div>
+<span class="text-[10px] font-medium mt-1">Map</span>
+</a>
+<!-- Honored -->
+
+</aside>
+<!-- END: FixedBottomNavBar -->
+</div>
+<!-- END: MobileDeviceFrame -->
+
+
+</body></html>

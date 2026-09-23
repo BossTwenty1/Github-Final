@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:#0b0d13;}::-webkit-scrollbar-thumb{background:#1f2434;border-radius:9999px;}::-webkit-scrollbar-thumb:hover{background:#2e354b;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            50: '#ecfdf5',
+            100: '#d1fae5',
+            400: '#34d399',
+            500: '#10b981',
+            600: '#059669',
+            700: '#047857',
+            800: '#065f46',
+            900: '#064e3b',
+          }
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        }
+      }
+    }
+  }</script></head><body class="bg-[#0b0f17] font-sans text-sm text-slate-200 antialiased selection:bg-emerald-500 selection:text-white"><aside class="fixed left-0 top-0 h-full w-72 bg-[#0d111a] border-r border-[#1e2638] z-50 flex flex-col justify-between select-none"><div class="flex flex-col"><div class="h-16 flex items-center px-6 gap-3 border-b border-[#1e2638]/60"><div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 flex items-center justify-center shrink-0"><div class="w-full h-full bg-[#0d1018] rounded-[10px] flex items-center justify-center"><svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 2L4 12h5v8h6v-8h5L12 2z"></path></svg></div></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-bold text-sm tracking-tight text-white">GraveNav</span><span class="text-[10px] bg-emerald-950/80 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-semibold tracking-normal">ADMIN</span></div><span class="text-[10px] font-medium text-slate-400 tracking-wider uppercase">Cemetery Management</span></div></div><div class="px-4 py-4"><div class="px-3 pb-2"><span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Main Menu</span></div><nav class="space-y-1"><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="dashboard" href="#"><span class="material-symbols-outlined text-lg text-slate-400">dashboard</span><span>Dashboard</span></a><a class="flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-[#132d24] text-emerald-400 border border-emerald-500/30 font-semibold text-xs shadow-sm transition-all" data-path="burial-records" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-lg text-emerald-400">inventory_2</span><span>Burial Records</span></div><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="cemetery-map" href="#"><span class="material-symbols-outlined text-lg text-slate-400">map</span><span>Cemetery Map</span></a><a class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="coordinate-verification" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-lg text-slate-400">my_location</span><span>Coordinate Verification</span></div><span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full">45</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="plot-management" href="#"><span class="material-symbols-outlined text-lg text-slate-400">grid_on</span><span>Plot Management</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="photos" href="#"><span class="material-symbols-outlined text-lg text-slate-400">photo_library</span><span>Photos</span></a></nav></div><div class="px-4 py-2"><div class="px-3 pb-2"><span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Management &amp; System</span></div><nav class="space-y-1"><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="reports" href="#"><span class="material-symbols-outlined text-lg text-slate-400">bar_chart</span><span>Reports</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="audit-log" href="#"><span class="material-symbols-outlined text-lg text-slate-400">history</span><span>Audit Log</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="settings" href="#"><span class="material-symbols-outlined text-lg text-slate-400">settings</span><span>Settings</span></a></nav></div></div><div class="p-4 border-t border-[#1e2638]/60 space-y-2"><nav class="space-y-1"><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="support" href="#"><span class="material-symbols-outlined text-lg">help_center</span><span>Support</span></a><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-red-950/40 hover:text-red-300 transition-colors text-xs font-semibold" data-path="login" href="#"><span class="material-symbols-outlined text-lg">logout</span><span>Log Out</span></a></nav><div class="pt-2"><div class="p-2.5 rounded-xl bg-[#141824] border border-[#1e2638] flex items-center gap-3"><img alt="Sarah Jenkins" class="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida/AEtjO1UV0Q2Zg18UAIUDZY0b_dfgoovDvgcCWBVU4K1ecHVBdSTtCX81LgDFNrlKFkqdDA5XqSDomW8iw5mJEswysuhikC29poBmpqmfL6GDyk9jp4gv-BBpOdHYY23qFNZDOA7YjRi0InPvQh8XvRtS3gqVtcqDZRKE2cppYMmeQv3zZ82r3Jx4r1pQYdzePIWl5-HlCcVxDDsoSzAyhj4PBTCxMK4exK3ARNfCbBIki6f2PZs56pFs4Pq26P6x9jzAq5_uGnAjQ1P4BD4"/><div class="flex-1 min-w-0"><p class="text-xs font-semibold text-white truncate leading-tight">Sarah Jenkins</p><p class="text-[11px] text-slate-400 truncate leading-tight mt-0.5">Super Admin</p></div><button class="text-slate-500 hover:text-slate-300 transition-colors" title="Account details" type="button"><span class="material-symbols-outlined text-base">more_vert</span></button></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-[#0d111a]/95 backdrop-blur-xl z-40 border-b border-[#1e2638] flex items-center justify-between px-8"><div class="flex items-center w-96"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg pointer-events-none">search</span><input class="w-full pl-10 pr-4 py-2 bg-[#151c2c] text-slate-100 placeholder-slate-500 border border-[#242f47] rounded-lg focus:outline-none focus:border-emerald-500/60 focus:bg-[#182032] text-xs font-normal transition-all" placeholder="Search records, plots, or names..." type="text"/></div></div><div class="flex items-center gap-3"><a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#242f47] bg-[#151c2c] text-slate-200 hover:bg-[#1e2840] hover:text-white transition-all text-xs font-medium" data-path="cemetery-public-view" href="#"><span class="material-symbols-outlined text-sm text-emerald-400">open_in_new</span><span>Open Public Site</span></a><div class="flex items-center bg-[#131722] p-0.5 rounded-lg border border-[#242f47]"><button aria-label="Light mode" class="p-1 rounded-md text-slate-400 hover:text-white transition-colors" title="Light mode" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button><button aria-label="Dark mode active" class="p-1 rounded-md bg-emerald-600 text-white shadow-sm" title="Dark mode active" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button></div><button aria-label="Notifications" class="relative w-8 h-8 rounded-lg bg-[#151c2c] hover:bg-[#1e2840] border border-[#242f47] flex items-center justify-center text-slate-300 transition-colors" type="button"><span class="material-symbols-outlined text-base">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400"></span></button><button aria-label="Help Documentation" class="w-8 h-8 rounded-lg bg-[#151c2c] hover:bg-[#1e2840] border border-[#242f47] flex items-center justify-center text-slate-300 transition-colors" type="button"><span class="material-symbols-outlined text-base">help_outline</span></button><div class="flex items-center gap-3 pl-3 border-l border-[#1e2638]"><img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover ring-2 ring-emerald-500/40" src="https://lh3.googleusercontent.com/aida/AEtjO1UV0Q2Zg18UAIUDZY0b_dfgoovDvgcCWBVU4K1ecHVBdSTtCX81LgDFNrlKFkqdDA5XqSDomW8iw5mJEswysuhikC29poBmpqmfL6GDyk9jp4gv-BBpOdHYY23qFNZDOA7YjRi0InPvQh8XvRtS3gqVtcqDZRKE2cppYMmeQv3zZ82r3Jx4r1pQYdzePIWl5-HlCcVxDDsoSzAyhj4PBTCxMK4exK3ARNfCbBIki6f2PZs56pFs4Pq26P6x9jzAq5_uGnAjQ1P4BD4"/><div class="flex flex-col text-left"><span class="text-xs font-semibold leading-none text-white">Sarah Jenkins</span><span class="text-[11px] text-slate-400 leading-tight mt-0.5">Super Admin</span></div></div></div></header><main class="relative pt-16 min-h-screen bg-[#0b0f17]"><div class="flex flex-col w-full">
+<!-- Top Navigation & Header Bar -->
+<div class="w-full px-6 lg:px-8 py-6 flex flex-col gap-3">
+<!-- Breadcrumb & Back action -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-xs font-medium text-slate-400">
+<a class="inline-flex items-center gap-1.5 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-sm leading-none">arrow_back</span>
+<span>Burial Records</span>
+</a>
+<span class="text-slate-600">/</span>
+<span class="text-slate-200 font-semibold">New Entry</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#131826] border border-[#1e2638] text-slate-300 text-xs font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Autosave Enabled
+        </span>
+</div>
+</div>
+<!-- Page Header & Main Actions -->
+<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pt-1">
+<div>
+<h1 class="text-2xl lg:text-3xl text-white font-bold tracking-tight">Add Burial Record</h1>
+<p class="text-xs sm:text-sm text-slate-400 mt-1">Create and catalog a new deceased profile, plot assignment, GPS coordinates, and headstone documentation.</p>
+</div>
+<!-- Header CTAs -->
+<div class="flex items-center gap-2.5 flex-wrap">
+<button class="px-3.5 py-2 rounded-xl bg-[#131826] border border-[#1e2638] hover:bg-[#182032] hover:text-white text-slate-300 text-xs font-medium transition-colors" type="button">
+          Cancel
+        </button>
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#131826] border border-[#1e2638] hover:bg-[#182032] hover:text-white text-slate-300 text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-base">draft</span>
+<span>Save as Draft</span>
+</button>
+<button class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:brightness-110 text-white text-xs font-semibold shadow-lg shadow-emerald-900/30 transition-all active:scale-95" type="button">
+<span class="material-symbols-outlined text-base">check_circle</span>
+<span>Save &amp; Publish Record</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Main 2-Column Responsive Layout -->
+<div class="w-full px-6 lg:px-8 pb-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN (65% on Desktop - 8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Card 1: Deceased Information -->
+<div class="bg-[#131826] rounded-2xl border border-[#1e2638] shadow-sm overflow-hidden">
+<!-- Card Header -->
+<div class="px-5 py-4 bg-[#0e121d] border-b border-[#1e2638] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+<span class="material-symbols-outlined text-lg">person</span>
+</div>
+<div>
+<h2 class="text-sm font-semibold text-white leading-tight">Deceased Information</h2>
+<p class="text-xs text-slate-400 mt-0.5">Biographical identity, genealogical records, and milestone dates.</p>
+</div>
+</div>
+<span class="text-[10px] px-2.5 py-1 rounded-full bg-[#182032] text-slate-300 border border-[#242f47] font-semibold uppercase tracking-wider">Step 1 of 3</span>
+</div>
+<div class="p-5 flex flex-col gap-4">
+<!-- Name Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium flex items-center justify-between">
+<span>First Name</span>
+<span class="text-red-400 text-[11px] font-semibold">*Required</span>
+</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" placeholder="e.g. Eleanor" type="text" value="Eleanor"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium flex items-center justify-between">
+<span>Middle Name</span>
+<span class="text-slate-500 text-[11px]">Optional</span>
+</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" placeholder="e.g. Rose" type="text" value="Rose"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium flex items-center justify-between">
+<span>Last Name</span>
+<span class="text-red-400 text-[11px] font-semibold">*Required</span>
+</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" placeholder="e.g. Vance" type="text" value="Vance"/>
+</div>
+</div>
+<!-- Dates & Age Calc Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Date of Birth</label>
+<div class="relative">
+<input class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors [color-scheme:dark]" type="date" value="1932-04-14"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-base">calendar_month</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Date of Passing</label>
+<div class="relative">
+<input class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors [color-scheme:dark]" type="date" value="2023-10-18"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-base">calendar_month</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<span class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Age Calculation</span>
+<div class="h-10 px-3.5 rounded-xl bg-[#132d24] border border-emerald-500/30 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-emerald-400 font-medium text-xs">
+<span class="material-symbols-outlined text-base">hourglass_top</span>
+<span>Calculated Age:</span>
+</div>
+<span class="text-base text-emerald-400 font-bold">91 yrs</span>
+</div>
+</div>
+</div>
+<!-- Next of Kin / Contact Person -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Next of Kin / Primary Contact</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base">contacts</span>
+<input class="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" placeholder="e.g. Thomas Vance (Son) - (555) 234-8901" type="text" value="Thomas Vance (Son) — +1 (555) 892-4412"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Burial / Memorial Service Date</label>
+<div class="relative">
+<input class="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors [color-scheme:dark]" type="date" value="2023-10-24"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-base">event_available</span>
+</div>
+</div>
+</div>
+<!-- Biography & Historical Notes -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="text-xs text-slate-300 font-medium">Biography &amp; Historical Notes</label>
+<span class="text-[11px] text-emerald-400 font-medium">Public Memorial Viewable</span>
+</div>
+<textarea class="w-full p-3.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] leading-relaxed resize-y transition-colors" placeholder="Notable achievements, family ties, military/veteran service, or internal administrative notes..." rows="4">Beloved educator of 38 years at Oakridge Public Schools. Dedicated volunteer at St. Luke's Archive and naturalist guide. US Navy Nurse Corps Reserve (1954–1958). Survived by three children, eight grandchildren, and four great-grandchildren.</textarea>
+</div>
+</div>
+</div>
+<!-- Card 2: Plot Assignment & Location Details -->
+<div class="bg-[#131826] rounded-2xl border border-[#1e2638] shadow-sm overflow-hidden">
+<!-- Card Header -->
+<div class="px-5 py-4 bg-[#0e121d] border-b border-[#1e2638] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-[#182032] border border-[#242f47] flex items-center justify-center text-emerald-400">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+</div>
+<div>
+<h2 class="text-sm font-semibold text-white leading-tight">Plot Assignment &amp; Location</h2>
+<p class="text-xs text-slate-400 mt-0.5">Map partition, section sector, block assignment, and deed reservation code.</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#132d24] border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Plot Available
+            </span>
+</div>
+</div>
+<div class="p-5 flex flex-col gap-4">
+<!-- 4-Field Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Section</label>
+<div class="relative">
+<select class="w-full appearance-none px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors cursor-pointer">
+<option selected="">Section A - The Meadows</option>
+<option>Section B - Whispering Pines</option>
+<option>Section C - Cedar Grove</option>
+<option>Section D - New Memorial Lawn</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-base">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Block</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" type="text" value="Block 4"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Row</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-normal text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" type="text" value="Row 12"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-xs text-slate-300 font-medium">Plot Number</label>
+<input class="w-full px-3.5 py-2.5 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-semibold text-white focus:outline-none focus:border-emerald-500/60 focus:bg-[#111624] transition-colors" type="text" value="Plot 08"/>
+</div>
+</div>
+<!-- Metadata Ribbon / Deed Info -->
+<div class="p-3.5 rounded-xl bg-[#0d111a] border border-[#1e2638] flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-[#182032] border border-[#242f47] flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-base">receipt_long</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Deed &amp; Reservation Reference</span>
+<span class="text-xs text-slate-200 font-semibold mt-0.5">#RES-2023-8891 • Perpetual Care Endowed</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#161c2c] hover:bg-[#1e2840] border border-[#242f47] text-slate-200 hover:text-white text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-sm text-emerald-400">open_in_new</span>
+<span>View Plot Registry</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Headstone & Memorial Media -->
+<div class="bg-[#131826] rounded-2xl border border-[#1e2638] shadow-sm overflow-hidden">
+<!-- Card Header -->
+<div class="px-5 py-4 bg-[#0e121d] border-b border-[#1e2638] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-[#182032] border border-[#242f47] flex items-center justify-center text-emerald-400">
+<span class="material-symbols-outlined text-lg">photo_camera</span>
+</div>
+<div>
+<h2 class="text-sm font-semibold text-white leading-tight">Headstone &amp; Memorial Media</h2>
+<p class="text-xs text-slate-400 mt-0.5">High-resolution monument photography, inscription transcription, and field imagery.</p>
+</div>
+</div>
+<span class="text-[11px] text-slate-400 font-medium">Max file size: 10MB</span>
+</div>
+<div class="p-5 flex flex-col gap-4">
+<!-- Drag & Drop Upload Target -->
+<div class="p-6 rounded-xl bg-[#0d111a] border border-dashed border-[#2e3a52] hover:border-emerald-500/50 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-[#101524] transition-all">
+<div class="w-12 h-12 rounded-xl bg-[#182032] border border-[#242f47] flex items-center justify-center text-emerald-400 mb-3 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-2xl">add_photo_alternate</span>
+</div>
+<p class="text-sm text-white font-medium mb-1">Drag and drop memorial photograph or headstone scan here</p>
+<p class="text-xs text-slate-400 mb-3">Or click to browse your workstation filesystem (supports JPG, PNG, or WebP)</p>
+<button class="px-3.5 py-1.5 rounded-lg bg-[#182032] hover:bg-[#202940] border border-[#242f47] text-slate-200 hover:text-white text-xs font-medium transition-colors" type="button">
+              Browse Files
+            </button>
+</div>
+<!-- Staged Media Preview Item -->
+<div class="p-3.5 rounded-xl bg-[#0d111a] border border-[#1e2638] flex flex-col sm:flex-row items-center gap-4">
+<div class="w-24 h-24 rounded-lg overflow-hidden shrink-0 relative bg-[#182032] border border-[#242f47]">
+<img class="w-full h-full object-cover" data-alt="High-resolution upright granite cemetery headstone with crisp chiseled Roman inscriptions, surrounded by manicured emerald lawn and gentle warm morning light in a historic dignified memorial garden." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGAxEy1pDBEKBmoq9-hDNlAxrkrwkdixiWG3bG8izQf5lp4xXE1QkC2pM3Q-TWBiy06tB9bKFN-FFfUrE5_n4vu5QzMdMmgEA9PXb84-BGyFZzo8_GpbWYMKSXvFPwPBPuARqfCBzI-3WzhxN57yb4YzR8brY3AjCIXJUNy8IWuywJHWZtHQeO5KZioNiJw1kZzUApv5gN8dMyGFS5NTfVw78hy5CfI6mqWrnlXVrQNBKXO71r4eJ7Lw"/>
+<span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-[#0b0f17]/90 border border-white/10 text-[10px] text-slate-300 font-mono font-bold">JPG</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 w-full min-w-0">
+<div class="flex items-center justify-between">
+<span class="text-xs text-white font-semibold truncate">headstone_vance_eleanor_2023_hi_res.jpg</span>
+<button class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Remove attachment" type="button">
+<span class="material-symbols-outlined text-base">delete</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-slate-400 text-xs flex-wrap">
+<span class="font-mono">3.4 MB</span>
+<span>•</span>
+<span>Captured: Oct 20, 2023 (11:24 AM)</span>
+<span>•</span>
+<span class="text-slate-300">Staff: M. Reynolds (Field Surveyor)</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1.5">
+<input class="px-2.5 py-1.5 rounded-lg bg-[#151c2c] border border-[#242f47] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60" placeholder="Inscription Notes" type="text" value="In loving memory of Eleanor Rose"/>
+<input class="px-2.5 py-1.5 rounded-lg bg-[#151c2c] border border-[#242f47] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60" placeholder="Orientation" type="text" value="Facing East / Head-in"/>
+<input class="px-2.5 py-1.5 rounded-lg bg-[#151c2c] border border-[#242f47] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/60" placeholder="Stone Material" type="text" value="Barre Gray Granite"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (35% on Desktop - 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Card 1: Publication & Record Status -->
+<div class="bg-[#131826] rounded-2xl border border-[#1e2638] shadow-sm overflow-hidden">
+<div class="px-5 py-4 bg-[#0e121d] border-b border-[#1e2638] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-400 text-lg">visibility</span>
+<h2 class="text-sm font-semibold text-white leading-tight">Publication Status</h2>
+</div>
+<span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Audience</span>
+</div>
+<div class="p-5 flex flex-col gap-2.5">
+<!-- Option 1: Selected / Public -->
+<label class="flex items-start gap-3 p-3.5 rounded-xl bg-[#132d24]/60 border border-emerald-500/40 cursor-pointer transition-colors">
+<input checked="" class="mt-1 text-emerald-500 focus:ring-emerald-500 bg-[#0d111a] border-[#242f47] accent-emerald-500" name="visibility" type="radio"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xs text-white font-semibold">Publicly Published</span>
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+</div>
+<p class="text-xs text-slate-300 mt-0.5 leading-relaxed">Visible in GraveNav public search, interactive map visitor directory, and QR kiosks.</p>
+</div>
+</label>
+<!-- Option 2: Private / Staff Only -->
+<label class="flex items-start gap-3 p-3.5 rounded-xl bg-[#0d111a] border border-[#1e2638] hover:bg-[#161c2c] cursor-pointer transition-colors">
+<input class="mt-1 text-emerald-500 focus:ring-emerald-500 bg-[#0d111a] border-[#242f47] accent-emerald-500" name="visibility" type="radio"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-200 font-semibold">Private / Staff Only</span>
+<span class="material-symbols-outlined text-sm text-slate-400">lock</span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5 leading-relaxed">Restricted to cemetery administration, grounds maintenance crews, and family.</p>
+</div>
+</label>
+<!-- Option 3: Draft / Review -->
+<label class="flex items-start gap-3 p-3.5 rounded-xl bg-[#0d111a] border border-[#1e2638] hover:bg-[#161c2c] cursor-pointer transition-colors">
+<input class="mt-1 text-emerald-500 focus:ring-emerald-500 bg-[#0d111a] border-[#242f47] accent-emerald-500" name="visibility" type="radio"/>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-200 font-semibold">Under Review / Draft</span>
+<span class="material-symbols-outlined text-sm text-slate-400">rate_review</span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5 leading-relaxed">Held in staging until certified surveyor coordinates and deed registry are validated.</p>
+</div>
+</label>
+</div>
+</div>
+<!-- Card 2: High-Precision GPS Spatial Coordinates -->
+<div class="bg-[#131826] rounded-2xl border border-[#1e2638] shadow-sm overflow-hidden">
+<div class="px-5 py-4 bg-[#0e121d] border-b border-[#1e2638] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-400 text-lg">my_location</span>
+<h2 class="text-sm font-semibold text-white leading-tight">Spatial Coordinates</h2>
+</div>
+<span class="inline-flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full bg-[#132d24] text-emerald-400 border border-emerald-500/30 font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            RTK ±0.3m
+          </span>
+</div>
+<div class="p-5 flex flex-col gap-4">
+<!-- Interactive Map Preview -->
+<div class="relative w-full h-44 rounded-xl overflow-hidden border border-[#242f47] group">
+<div class="w-full h-full bg-cover bg-center brightness-90 contrast-105" data-location="Oakridge Memorial Gardens Section A" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBunvIp8SOUZAq9-xY0ogKPcVIbbOpHvJE8joXZKEMasrfF14oYcLNcXhpsdwoLXkZx_IiOZur8Tl2Vq-pEqKbgWSEfBs_Q7Qyz4vBLkE5OxUPaHbnp1latihmVUM9wHg5LL5mvC5koqov5HTBOKN8t880P7RJi4TLVrJcoiCWVPS6dXDEwnregNJcjZ8PvcMgBlceORcr3cZR2iOZakTmY8rt1KFvIiBLMhR7hQfZGTd0z9i72_SHD7g')"></div>
+<!-- Map Overlay Gradient and Pin -->
+<div class="absolute inset-0 bg-gradient-to-t from-[#0b0f17]/70 via-transparent to-transparent pointer-events-none"></div>
+<!-- Center Crosshair Marker -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none">
+<span class="material-symbols-outlined text-emerald-400 text-3xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="px-2 py-0.5 rounded bg-[#0d111a]/95 border border-emerald-500/40 text-[10px] text-emerald-400 font-mono font-bold shadow-md">Plot 08</span>
+</div>
+<!-- Floating Map Actions -->
+<div class="absolute bottom-2.5 right-2.5 flex items-center gap-1.5">
+<button class="p-1.5 rounded-lg bg-[#0d111a]/90 hover:bg-[#182032] text-slate-300 hover:text-white border border-[#242f47] shadow-sm transition-colors" title="Zoom in" type="button">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+<button class="p-1.5 rounded-lg bg-[#0d111a]/90 hover:bg-[#182032] text-slate-300 hover:text-white border border-[#242f47] shadow-sm transition-colors" title="Zoom out" type="button">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<button class="p-1.5 rounded-lg bg-[#0d111a]/90 hover:bg-[#182032] text-slate-300 hover:text-white border border-[#242f47] shadow-sm transition-colors" title="Layer Switcher" type="button">
+<span class="material-symbols-outlined text-sm">layers</span>
+</button>
+</div>
+</div>
+<!-- Coordinate Inputs -->
+<div class="grid grid-cols-2 gap-3">
+<div class="flex flex-col gap-1">
+<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Latitude</label>
+<input class="px-3 py-2 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-mono font-medium text-white focus:outline-none focus:border-emerald-500/60" type="text" value="40.712800° N"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Longitude</label>
+<input class="px-3 py-2 rounded-xl bg-[#0d111a] border border-[#242f47] text-xs font-mono font-medium text-white focus:outline-none focus:border-emerald-500/60" type="text" value="-74.006000° W"/>
+</div>
+</div>
+<div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#0d111a] border border-[#1e2638]">
+<span class="text-xs text-slate-400 font-medium">Elevation / Altitude</span>
+<span class="text-xs text-white font-mono font-bold">42.5 meters MSL</span>
+</div>
+<!-- GPS Capture Action Buttons -->
+<div class="grid grid-cols-2 gap-2.5">
+<button class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#182032] hover:bg-[#202a42] border border-[#242f47] text-slate-200 hover:text-white text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-sm text-emerald-400">touch_app</span>
+<span>Pick on Map</span>
+</button>
+<button class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#182032] hover:bg-[#202a42] border border-[#242f47] text-slate-200 hover:text-white text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-sm text-emerald-400">gps_fixed</span>
+<span>Capture GPS</span>
+</button>
+</div>
+<!-- Verification Notice Banner -->
+<div class="p-3 rounded-xl bg-[#0d111a] border border-[#1e2638] flex items-start gap-2.5">
+<span class="material-symbols-outlined text-slate-400 text-base shrink-0 mt-0.5">info</span>
+<p class="text-xs text-slate-400 leading-normal">
+              Coordinates auto-derived from section grid layout. Ground surveyor verification will be scheduled post-saving.
+            </p>
+</div>
+</div>
+</div>
+<!-- Card 3: System & Audit Metadata -->
+<div class="bg-[#131826] rounded-2xl border border-[#1e2638] shadow-sm overflow-hidden">
+<div class="px-5 py-4 bg-[#0e121d] border-b border-[#1e2638] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-400 text-lg">history</span>
+<h2 class="text-sm font-semibold text-white leading-tight">System &amp; Audit Log</h2>
+</div>
+<span class="material-symbols-outlined text-slate-500 text-base">lock_clock</span>
+</div>
+<div class="p-5 flex flex-col gap-2.5">
+<div class="flex items-center justify-between py-1 border-b border-[#1e2638]/40">
+<span class="text-xs text-slate-400">Record ID:</span>
+<span class="text-xs text-white font-mono font-semibold">REC-2023-094 (Auto)</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b border-[#1e2638]/40">
+<span class="text-xs text-slate-400">Operator / Creator:</span>
+<span class="text-xs text-slate-200 font-semibold">Sarah Jenkins (Super Admin)</span>
+</div>
+<div class="flex items-center justify-between py-1">
+<span class="text-xs text-slate-400">Database Status:</span>
+<span class="inline-flex items-center gap-1 text-xs text-emerald-400 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Live Synced
+            </span>
+</div>
+<!-- Bottom Alert Banner -->
+<div class="mt-2 p-3.5 rounded-xl bg-[#33181b]/50 border border-red-500/30 flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-red-400 text-base">notification_important</span>
+<span class="text-[11px] font-bold text-red-400 uppercase tracking-wider">Coordinate Notice</span>
+</div>
+<p class="text-xs text-slate-300 leading-normal">
+              45 records currently have unverified coordinates. Verification queue is updated upon submission.
+            </p>
+<a class="text-xs text-emerald-400 font-semibold hover:text-emerald-300 inline-flex items-center gap-1 pt-1 group" href="#">
+<span>Open Coordinate Verification Queue</span>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

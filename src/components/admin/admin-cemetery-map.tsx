@@ -100,6 +100,7 @@ function toPublicRecord(record: AdminRecord): PublicBurialRecord {
     status: "Active",
     location: record.location,
     pixelLocation: record.pixelLocation,
+    coordinateStatus: record.location ? record.coordinateStatus : "missing",
     locationVerified: record.coordinateVerified,
     tone: "",
   };

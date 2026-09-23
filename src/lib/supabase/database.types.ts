@@ -794,6 +794,7 @@ export type Database = {
           birth_date: string | null
           block_number: number | null
           burial_id: number | null
+          coordinate_status: string | null
           death_date: string | null
           display_name: string | null
           interment_date: string | null

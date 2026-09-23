@@ -2,6 +2,7 @@ import type { SVGProps } from "react";
 
 const paths = {
   alert: <><path d="m12 3 9 17H3L12 3Z" /><path d="M12 9v4M12 17h.01" /></>,
+  arrowLeft: <><path d="m15 18-6-6 6-6" /><path d="M9 12h11" /></>,
   arrowUpRight: <><path d="M7 17 17 7M8 7h9v9" /></>,
   audit: <><path d="M4 7h16M4 12h10M4 17h7" /><path d="m17 15 2 2 4-4" /></>,
   bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></>,
@@ -27,6 +28,8 @@ const paths = {
   map: <><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z" /><path d="M9 3v15M15 6v15" /></>,
   menu: <><path d="M4 6h16M4 12h16M4 18h16" /></>,
   minus: <path d="M5 12h14" />,
+  moon: <path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z" />,
+  navigation: <path d="m3 11 18-8-8 18-2-8-8-2Z" />,
   more: <><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></>,
   photos: <><rect x="4" y="5" width="16" height="14" rx="2" /><circle cx="9" cy="10" r="1.5" /><path d="m5 17 4-4 3 3 3-3 4 4" /></>,
   plus: <><path d="M12 5v14M5 12h14" /></>,
@@ -39,6 +42,7 @@ const paths = {
   sliders: <><path d="M4 6h6M14 6h6M4 12h3M11 12h9M4 18h8M16 18h4" /><circle cx="12" cy="6" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="14" cy="18" r="2" /></>,
   sort: <><path d="M7 5v14M4 8l3-3 3 3M17 19V5M14 16l3 3 3-3" /></>,
   support: <><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14h3v4H5a1 1 0 0 1-1-1v-3ZM20 14h-3v4h2a1 1 0 0 0 1-1v-3Z" /><path d="M17 18c-1 1-2 1-3 1" /></>,
+  sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41" /></>,
   target: <><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></>,
   tree: <><path d="M12 3 6 11h3l-4 5h5v5h4v-5h5l-4-5h3l-6-8Z" /></>,
   upload: <><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></>,

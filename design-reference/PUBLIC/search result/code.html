@@ -1,0 +1,351 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>GraveNav - Roosevelt Search Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          surface: {
+            base: '#0B0B0C',
+            card: '#141416',
+            hover: '#18191C',
+            elevated: '#1E2024',
+            border: '#2A2D35'
+          },
+          emerald: {
+            400: '#34d399',
+            500: '#10b981',
+            600: '#059669',
+            700: '#047857',
+            800: '#065f46',
+            900: '#064e3b'
+          }
+        },
+        fontFamily: {
+          sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        }
+      }
+    }
+  };
+</script>
+<style>
+  body {
+    background-color: #000000;
+    color: #f1f5f2;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .app-viewport {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    background-color: #080808;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+</head>
+<body>
+<div class="app-viewport pb-28">
+<!-- iOS Status Bar -->
+<header class="w-full pt-3 px-6 flex justify-between items-center z-50 select-none bg-[#080808]" data-purpose="ios-status-bar">
+<span class="text-[14px] font-semibold tracking-tight text-white">9:41</span>
+<div class="w-24 h-4 bg-black rounded-full border border-white/10 shadow-inner"></div>
+<div class="flex items-center space-x-1.5 text-white">
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+<path d="M2 19h2v2H2v-2zm4-4h2v6H6v-6zm4-4h2v10h-2V11zm4-5h2v15h-2V6zm4-4h2v19h-2V2z"></path>
+</svg>
+<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.55 0 6.78 1.41 9.17 3.71L12 18.44 2.83 11.21C5.22 8.91 8.45 7.5 12 7.5z"></path>
+</svg>
+<div class="w-5 h-2.5 border border-white rounded-[3px] p-0.5 flex items-center">
+<div class="h-full w-3.5 bg-white rounded-[1.5px]"></div>
+</div>
+</div>
+</header>
+<!-- App Top Navigation Bar -->
+<nav class="w-full px-4 pt-3 pb-3 flex items-center justify-between z-40 bg-[#0B0B0C]/95 backdrop-blur-md sticky top-0 border-b border-[#2A2D35]">
+<div class="flex items-center space-x-2.5">
+<button aria-label="Back to Search" class="w-9 h-9 rounded-full bg-[#18191C] border border-[#2A2D35] flex items-center justify-center text-white/90 hover:text-white hover:bg-[#1E2024] transition active:scale-95">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="w-9 h-9 rounded-xl bg-[#141416] border border-emerald-500/30 flex items-center justify-center overflow-hidden p-0.5 shadow-inner">
+<img alt="GraveNav Logo" class="w-full h-full object-contain rounded-lg" src="https://lh3.googleusercontent.com/aida/AEtjO1UXKXvWQ5L8SqfSfVZlcs0GzqopYfyKbxq-r1wgtnKb-zY7iQWrGupIBkDjN3zx2ViUUxcJFTxrkROvULD21_bJZIUD_ggr6EHumpaWSg1vArZ34t676J3rat7Q9SzevEJrl4N_cVhTZ9VWeL6LPWtQqiGyBXgXK5TKF-rpkNzPGbO3PS9Zvcnea3gIPdVOHTra5vgLhhd1P78e6tCcV-LamHaAEjbD8nRQUfu7Pk-PWgRXpLx_dbsw4sk">
+</div>
+<div>
+<h1 class="text-[17px] font-bold tracking-tight text-white flex items-center gap-1.5 leading-tight">
+          GraveNav
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]"></span>
+</h1>
+<p class="text-[10px] text-emerald-400 font-semibold tracking-wider uppercase leading-none mt-0.5">Forest Lake Park</p>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button aria-label="Toggle Night/Day Mode" class="w-9 h-9 rounded-full bg-[#18191C] border border-[#2A2D35] flex items-center justify-center text-zinc-300 hover:text-white hover:bg-[#1E2024] transition active:scale-95">
+<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+</button>
+<button aria-label="Park Information" class="w-9 h-9 rounded-full bg-[#18191C] border border-[#2A2D35] flex items-center justify-center text-zinc-300 hover:text-white hover:bg-[#1E2024] transition active:scale-95">
+<span class="material-symbols-outlined text-[18px]">info</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex flex-col px-4 pt-3.5 gap-4">
+<!-- Active Status Beacon Pill -->
+
+<!-- Active Search Bar Container -->
+<section class="flex flex-col gap-2.5">
+<div class="relative flex items-center bg-[#141416] border border-[#2A2D35] focus-within:border-emerald-500/60 rounded-2xl px-3.5 py-2.5 shadow-sm transition">
+<span class="material-symbols-outlined text-emerald-400 mr-2.5 text-[20px]">search</span>
+<input aria-label="Search resting places" class="bg-transparent border-0 text-white font-semibold text-[16px] w-full focus:outline-none focus:ring-0 p-0 tracking-tight placeholder-zinc-500" type="text" value="Roosevelt">
+<button aria-label="Clear search" class="p-1 rounded-full text-zinc-400 hover:text-white hover:bg-[#1E2024] transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Result Count & RTK GPS Badge -->
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="text-[13px] text-zinc-400">Found</span>
+<span class="text-[13px] text-white font-bold">3 records</span>
+<span class="text-[13px] text-zinc-400">in Forest Lake</span>
+</div>
+
+</div>
+<!-- Filter & Sort Quick Chips -->
+<div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5">
+<button class="inline-flex items-center gap-1 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[11px] font-semibold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm">
+<span class="">All Sections</span>
+<span class="material-symbols-outlined text-[15px]">expand_more</span>
+</button>
+<button class="inline-flex items-center gap-1 bg-[#141416] border border-[#2A2D35] text-zinc-200 text-[11px] font-semibold px-3 py-1.5 rounded-full whitespace-nowrap hover:bg-[#1E2024] transition-colors">
+<span class="material-symbols-outlined text-emerald-400 text-[13px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="">Verified Only</span>
+</button>
+<button class="inline-flex items-center gap-1 bg-[#141416] border border-[#2A2D35] text-zinc-300 text-[11px] font-medium px-3 py-1.5 rounded-full whitespace-nowrap hover:bg-[#1E2024] transition-colors">
+<span class="">Garden of Peace</span>
+</button>
+<button class="inline-flex items-center gap-1 bg-[#141416] border border-[#2A2D35] text-zinc-400 text-[11px] font-medium px-3 py-1.5 rounded-full whitespace-nowrap hover:bg-[#1E2024] transition-colors">
+<span class="material-symbols-outlined text-[13px]">sort</span>
+<span class="">Relevance</span>
+</button>
+</div>
+</section>
+<!-- Memorial Result Cards List -->
+<section aria-label="Search Results" class="flex flex-col gap-3.5">
+<!-- Result Card 1: Eleanor Roosevelt -->
+<article class="bg-[#141416] border border-[#2A2D35] rounded-2xl p-3.5 flex flex-col gap-3 shadow-md hover:border-[#383C47] transition">
+<div class="flex gap-3">
+<!-- Memorial Thumbnail -->
+<div class="relative w-[88px] h-[88px] rounded-xl overflow-hidden shrink-0 bg-[#0E0F11] border border-[#2A2D35]">
+<img class="w-full h-full object-cover" data-alt="Dignified bronze memorial plaque of Eleanor Roosevelt surrounded by soft morning dew and lush manicured emerald grass in a quiet serene cemetery garden with warm golden sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfcd0FbuXftXlyG_grRi9Aq7iJ9mv8lOOVdsu5GFN05Stdpo-mxZBHJs6YOdtMz9xGz2mbezmEQVFNAdo8llU3dchDSj4TouyjKupi5RiWiwEA0KABx8-e5M9i-ZQ9STPL48kkb2ESN2i9Ggy8Qxux1jevEk4M3ZJ8AWVIQ2yCwkMAGHY5zYkIeJqXg1YDLoI61rdD9GQMuzAqRSrloOb01wSN4txpPN2fp1yIhdVwmm2-4lDtkdp2og">
+<div class="absolute bottom-1 right-1 bg-black/80 text-emerald-400 border border-emerald-500/40 p-1 rounded-full shadow flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">pin_drop</span>
+</div>
+</div>
+<!-- Identity & Metadata -->
+<div class="flex flex-col min-w-0 flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between gap-1">
+<span class="inline-flex items-center gap-1 text-emerald-300 text-[10px] font-bold tracking-wide uppercase bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[11px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                  Verified Marker
+                </span>
+<button aria-label="Save bookmark" class="text-zinc-500 hover:text-white transition-colors p-1">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+</div>
+<h2 class="text-base font-bold text-white truncate mt-1">Eleanor Roosevelt</h2>
+<p class="text-[12px] text-zinc-400">1884 – 1962</p>
+</div>
+<div class="flex items-center gap-1.5 mt-1 text-[11px]">
+<span class="font-bold text-zinc-200 bg-[#1E2024] border border-[#2A2D35] px-2 py-0.5 rounded">Sec 4A</span>
+<span class="font-bold text-zinc-200 bg-[#1E2024] border border-[#2A2D35] px-2 py-0.5 rounded">Plot A-42</span>
+<span class="text-emerald-400 font-medium flex items-center gap-0.5 ml-auto">
+<span class="material-symbols-outlined text-[13px]">explore</span>
+                48m away
+              </span>
+</div>
+</div>
+</div>
+<!-- Natural Landmark Callout -->
+<div class="flex items-center gap-2 bg-[#18191C] border border-[#2A2D35] px-3 py-2 rounded-xl text-zinc-300 text-[12px]">
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">park</span>
+<span class="truncate">Located near the weeping willow in North-East Garden</span>
+</div>
+<!-- Primary Action -->
+<button class="w-full inline-flex items-center justify-center gap-2 bg-[#166534] hover:bg-[#15803d] active:scale-[0.99] text-white font-bold text-sm py-2.5 px-4 rounded-xl transition shadow-[0_0_15px_rgba(22,101,52,0.4)] border border-emerald-400/25">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">near_me</span>
+<span class="">Navigate to Gravesite</span>
+</button>
+</article>
+<!-- Result Card 2: Franklin D. Roosevelt -->
+<article class="bg-[#141416] border border-[#2A2D35] rounded-2xl p-3.5 flex flex-col gap-3 shadow-md hover:border-[#383C47] transition">
+<div class="flex gap-3">
+<!-- Memorial Thumbnail -->
+<div class="relative w-[88px] h-[88px] rounded-xl overflow-hidden shrink-0 bg-[#0E0F11] border border-[#2A2D35]">
+<img class="w-full h-full object-cover" data-alt="Historic marble monument honoring Franklin D Roosevelt flanked by carved stone emblems, situated amidst peaceful evergreen trees and formal rose bushes with crisp afternoon lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBERJM_l8v2p18FpG7aTNGAdLFx00StV4jIKvTcHBtbaJhr3G7cUP7VRJFfjXN2ZBW2W4URyh5k31DQepyvcFPuqq2iilpItL0e93MgHwZcwYY6b_3GodN3g0lDuHzjANaTy5VawIlGv8OeEpNnQNA96LATqrS3LbvCuKs89f6PNP5eUKhZ6dY53p_9k73ZHyWqbecp379nqe8JPLcgeYAlaLycba6YF0gG2Fpst_DwIUk30i8OMoFSvQ">
+<div class="absolute bottom-1 right-1 bg-black/80 text-emerald-400 border border-emerald-500/40 p-1 rounded-full shadow flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">pin_drop</span>
+</div>
+</div>
+<!-- Identity & Metadata -->
+<div class="flex flex-col min-w-0 flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between gap-1">
+<span class="inline-flex items-center gap-1 text-emerald-300 text-[10px] font-bold tracking-wide uppercase bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[11px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                  Verified Marker
+                </span>
+<button aria-label="Save bookmark" class="text-zinc-500 hover:text-white transition-colors p-1">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+</div>
+<h2 class="text-base font-bold text-white truncate mt-1">Franklin D. Roosevelt</h2>
+<p class="text-[12px] text-zinc-400">1882 – 1945</p>
+</div>
+<div class="flex items-center gap-1.5 mt-1 text-[11px]">
+<span class="font-bold text-zinc-200 bg-[#1E2024] border border-[#2A2D35] px-2 py-0.5 rounded">Sec 4A</span>
+<span class="font-bold text-zinc-200 bg-[#1E2024] border border-[#2A2D35] px-2 py-0.5 rounded">Plot A-41</span>
+<span class="text-emerald-400 font-medium flex items-center gap-0.5 ml-auto">
+<span class="material-symbols-outlined text-[13px]">explore</span>
+                51m away
+              </span>
+</div>
+</div>
+</div>
+<!-- Natural Landmark Callout -->
+<div class="flex items-center gap-2 bg-[#18191C] border border-[#2A2D35] px-3 py-2 rounded-xl text-zinc-300 text-[12px]">
+<span class="material-symbols-outlined text-emerald-400 text-[16px]">accessible_forward</span>
+<span class="truncate">Adjacent to Eleanor Roosevelt plot • Paved promenade</span>
+</div>
+<!-- Primary Action -->
+<button class="w-full inline-flex items-center justify-center gap-2 bg-[#166534] hover:bg-[#15803d] active:scale-[0.99] text-white font-bold text-sm py-2.5 px-4 rounded-xl transition shadow-[0_0_15px_rgba(22,101,52,0.4)] border border-emerald-400/25">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">near_me</span>
+<span class="">Navigate to Gravesite</span>
+</button>
+</article>
+<!-- Result Card 3: Theodore Roosevelt Jr. (Unverified / Field Verification Needed) -->
+<article class="bg-[#141416] border border-[#2A2D35] rounded-2xl p-3.5 flex flex-col gap-3 shadow-md hover:border-[#383C47] transition">
+<div class="flex gap-3">
+<!-- Memorial Placeholder -->
+<div class="w-[88px] h-[88px] rounded-xl shrink-0 bg-[#0E0F11] border border-[#2A2D35] flex flex-col items-center justify-center text-zinc-400">
+<span class="material-symbols-outlined text-[24px] mb-1 text-zinc-500">photo_camera</span>
+<span class="text-[9px] font-bold uppercase tracking-wider text-center px-1 text-zinc-400 leading-tight">Photo Pending</span>
+</div>
+<!-- Identity & Metadata -->
+<div class="flex flex-col min-w-0 flex-1 justify-between">
+<div>
+<div class="flex items-center justify-between gap-1">
+<span class="inline-flex items-center gap-1 text-amber-300 text-[10px] font-bold tracking-wide uppercase bg-amber-950/40 border border-amber-500/30 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[11px]">schedule</span>
+                  GPS Survey Pending
+                </span>
+<button aria-label="Save bookmark" class="text-zinc-500 hover:text-white transition-colors p-1">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+</div>
+<h2 class="text-base font-bold text-white truncate mt-1">Theodore Roosevelt Jr.</h2>
+<p class="text-[12px] text-zinc-400">1887 – 1944 • Medal of Honor</p>
+</div>
+<div class="flex items-center gap-1.5 mt-1 text-[11px]">
+<span class="font-bold text-zinc-200 bg-[#1E2024] border border-[#2A2D35] px-2 py-0.5 rounded">Sec B</span>
+<span class="font-bold text-zinc-200 bg-[#1E2024] border border-[#2A2D35] px-2 py-0.5 rounded">Plot B-12</span>
+<span class="text-zinc-400 font-medium ml-auto">• Military Quad</span>
+</div>
+</div>
+</div>
+<!-- Action Split -->
+<div class="grid grid-cols-2 gap-2">
+<button class="inline-flex items-center justify-center gap-1.5 bg-[#18191C] hover:bg-[#1E2024] text-zinc-200 text-xs font-semibold py-2.5 px-3 rounded-xl border border-[#2A2D35] transition-colors">
+<span class="material-symbols-outlined text-[16px] text-zinc-400">description</span>
+<span class="">Plot Record</span>
+</button>
+<button class="inline-flex items-center justify-center gap-1.5 bg-[#18191C] hover:bg-[#1E2024] text-emerald-400 text-xs font-semibold py-2.5 px-3 rounded-xl border border-emerald-500/30 transition-colors">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+<span class="">Request GPS</span>
+</button>
+</div>
+</article>
+</section>
+<!-- Support / Administration Card -->
+<section class="bg-[#141416] border border-[#2A2D35] rounded-2xl p-4 flex items-start gap-3.5 shadow-md">
+<div class="w-10 h-10 rounded-xl bg-[#1E2024] border border-[#2A2D35] flex items-center justify-center shrink-0 text-emerald-400">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<h3 class="font-bold text-sm text-white">Need help locating a plot?</h3>
+<p class="text-xs text-zinc-400 leading-relaxed">
+          If your family member's records are missing or need physical records verification, our sanctuary staff can assist at the Albay gate office.
+        </p>
+<div class="flex items-center mt-1.5">
+<a class="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-bold text-xs tracking-wide transition-colors" href="#">
+<span class="">Contact Administration Desk</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Sanctuary Footer -->
+
+</main>
+<!-- Docked Bottom Navigation Bar -->
+<aside class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-[#0B0B0C]/95 backdrop-blur-md border-t border-[#2A2D35] px-6 pt-2.5 pb-6 z-50 flex justify-around items-center" data-purpose="bottom-navigation-bar">
+<!-- Nav Item 1: Home -->
+<a aria-label="Home" class="flex flex-col items-center group text-zinc-400 hover:text-white cursor-pointer transition" href="#">
+<div class="w-8 h-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 0;">home</span>
+</div>
+<span class="text-[10px] font-medium mt-0.5">Home</span>
+</a>
+<!-- Nav Item 2: Search (Active) -->
+<a aria-label="Search" class="flex flex-col items-center group cursor-pointer" href="#">
+<div class="w-8 h-8 rounded-full bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-white shadow-[0_0_10px_rgba(52,211,153,0.35)] transition group-hover:scale-105">
+<span class="material-symbols-outlined text-[20px] text-emerald-400" style="font-variation-settings: 'FILL' 1;">search</span>
+</div>
+<span class="text-[10px] font-bold text-white mt-0.5">Search</span>
+</a>
+<!-- Nav Item 3: GPS Map -->
+<a aria-label="Map Navigation" class="flex flex-col items-center group text-zinc-400 hover:text-white cursor-pointer transition" href="#">
+<div class="w-8 h-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 0;">map</span>
+</div>
+<span class="text-[10px] font-medium mt-0.5">Map</span>
+</a>
+<!-- Nav Item 4: Memorial Tribute / Honored -->
+<a aria-label="Memorials" class="flex flex-col items-center group text-zinc-400 hover:text-white cursor-pointer transition" href="#">
+<div class="w-8 h-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</div>
+<span class="text-[10px] font-medium mt-0.5">Honored</span>
+</a>
+<!-- iOS Home Indicator bar -->
+<div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full"></div>
+</aside>
+</div>
+
+
+</body></html>

@@ -1,0 +1,866 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>GraveNav Admin Dashboard</title>
+<!-- Tailwind CSS v3 with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            surface: {
+              base: '#0b0d13',
+              card: '#131620',
+              hover: '#1b1f2e',
+              border: 'rgba(255, 255, 255, 0.07)',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styling for Glows & Visual Nuances -->
+<style data-purpose="custom-enhancements">
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0d13;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2434;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2e354b;
+    }
+
+    /* Radial gradient glows mimicking the dark sleek template */
+    .bg-radial-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 65%);
+    }
+
+    .card-glass {
+      background: #131621;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-glass:hover {
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+  </style>
+<!-- END: Custom Styling for Glows & Visual Nuances -->
+<meta content="web_dashboard" name="shell-type">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"></head>
+<body class="bg-[#0b0d13] text-[#94a3b8] font-sans antialiased min-h-screen flex flex-col p-2 sm:p-4 lg:p-6 bg-radial-glow selection:bg-brand-500 selection:text-white">
+<!-- BEGIN: WindowFrameContainer -->
+<!-- Outer window shell replicating the sleek browser / desktop frame in the template -->
+<div class="max-w-[1720px] w-full mx-auto bg-[#0d1017] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col min-h-[920px]">
+<!-- BEGIN: TopBarWindowHeader -->
+<header class="bg-[#090b10] border-b border-white/10 px-5 flex items-center justify-between select-none relative z-30 h-16">
+<!-- Window Controls (macOS style dots) -->
+<!-- Center URL / Search Badge -->
+<div class="flex-1 max-w-xl mx-4 hidden md:block">
+<div class="relative flex items-center bg-[#131622] rounded-full border border-white/10 px-3 py-1.5 focus-within:border-brand-500/60 transition-all">
+<svg class="w-4 h-4 text-slate-400 mr-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input class="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full border-0 p-0 focus:ring-0" placeholder="Search records, plots, or names..." type="text">
+<button class="bg-[#1b2030] hover:bg-brand-600 hover:text-white text-slate-300 text-[11px] font-medium px-3 py-0.5 rounded-full border border-white/10 transition-colors ml-2 flex-shrink-0">
+            Search
+          </button>
+</div>
+</div>
+<!-- Right Header Actions -->
+<div class="flex items-center gap-3 w-auto justify-end">
+<!-- Open Public Site Badge Link -->
+<a class="hidden xl:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 px-3 py-1 rounded-full transition-colors font-medium" href="#public-site">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Open Public Site
+        </a>
+<!-- Notifications button with badge -->
+<button class="w-8 h-8 rounded-full bg-[#131722] hover:bg-[#1c2233] border border-white/10 flex items-center justify-center text-slate-300 relative transition-colors" title="Notifications">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="w-2 h-2 rounded-full bg-brand-500 absolute top-1.5 right-1.5 ring-2 ring-[#090b10]"></span>
+</button>
+<!-- Help Icon -->
+<button class="w-8 h-8 rounded-full bg-[#131722] hover:bg-[#1c2233] border border-white/10 flex items-center justify-center text-slate-300 transition-colors" title="Help &amp; Documentation">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Theme Mode Toggle -->
+<div class="flex items-center bg-[#131722] p-0.5 rounded-full border border-white/10">
+<button class="p-1 rounded-full text-slate-400 hover:text-white transition-colors" title="Light mode">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<button class="p-1 rounded-full bg-brand-600 text-white shadow-sm" title="Dark mode active">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Top Right Admin Avatar -->
+<div class="flex items-center pl-2 border-l border-white/10">
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDje3Ab3wwv-JASINigIbS7wZsyGfMknfoBbwHKEjYIcNoQyjILXw8ovzPMNBhUd7IK1mmJTquvUYujExV8rKdIfgvxnq669guuLeAUmpRGvBw21dz3a-74zlFmmhdaeTwrbNRKd2Mwyflk4DkEhd5DZ9IGo5Ko7EgEkPOBfBfUwhslBt0_DIciRlYVsrvCS_sofDiCO5LBFtZTX9H5t6-oGwovoktDGADa-cyJ2gDVHb8arP7wxu8BoWSzn3jtE6gnWEQ">
+</div>
+</div>
+</header>
+<!-- END: TopBarWindowHeader -->
+<!-- BEGIN: DashboardLayoutBody -->
+<div class="flex flex-1 overflow-hidden">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-64 bg-[#0d1018] border-r border-white/10 flex flex-col justify-between flex-shrink-0 select-none">
+<div>
+<!-- Logo & Brand Header -->
+<div class="px-6 flex items-center justify-between border-b border-white/5 h-16">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 flex items-center justify-center">
+<div class="w-full h-full bg-[#0d1018] rounded-[10px] flex items-center justify-center">
+<!-- GraveNav Evergreen Icon / Tech Symbol -->
+<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 2L4 12h5v8h6v-8h5L12 2z"></path>
+</svg>
+</div>
+</div>
+<div>
+<h1 class="text-white font-semibold tracking-wide text-sm leading-tight flex items-center gap-1.5">
+                  GraveNav
+                  <span class="text-[10px] bg-brand-900/60 text-brand-400 px-1.5 py-0.2 rounded border border-brand-500/30 font-medium tracking-normal">ADMIN</span>
+</h1>
+<p class="text-[11px] text-slate-400">Cemetery Management</p>
+</div>
+</div>
+<!-- Collapse Menu Icon -->
+<button class="text-slate-500 hover:text-slate-300 transition-colors">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Main Menu Group -->
+<div class="px-4 pt-5">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Main Menu</p>
+<nav class="space-y-1">
+<!-- Active Link: Dashboard -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span class="">Dashboard</span></a>
+<!-- Nav Item: Burial Records -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#burial-records">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Burial Records</span>
+</a>
+<!-- Nav Item: Cemetery Map -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#cemetery-map">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Cemetery Map</span>
+</a>
+<!-- Nav Item: Coordinate Verification -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#coordinate-verification">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Coordinate Verification</span>
+<span class="ml-auto text-[10px] bg-red-950/70 text-red-400 border border-red-500/40 px-1.5 py-0.2 rounded font-semibold">45</span>
+</a>
+<!-- Nav Item: Plot Management -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600/20 to-teal-500/10 text-emerald-400 font-medium text-xs border border-brand-500/30 shadow-sm transition-all group" href="#plot-management"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span class="">Plot Management</span><span class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span></a>
+<!-- Nav Item: Photos -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#photos">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Photos</span>
+</a>
+</nav>
+</div>
+<!-- Management & System Group -->
+<div class="px-4 pt-6">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Management &amp; System</p>
+<nav class="space-y-1">
+<!-- Reports -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span class="">Dashboard</span></a>
+<!-- Audit Log -->
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#audit-log">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Audit Log</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#settings">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Settings</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Sidebar Bottom: Support, Log Out and User Profile Card -->
+<div class="p-4 border-t border-white/5 space-y-2">
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors" href="#support">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-rose-400 transition-colors" href="#logout">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Log Out</span>
+</a>
+<!-- Administrator Mini Profile Card (matching template design) -->
+<div class="pt-2">
+<div class="p-2.5 rounded-xl bg-[#141723] border border-white/10 flex items-center gap-3">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6w9roSjTFXobM0Qe8btntanJswR7hd1PaoldUUMl0n_pPCFbuaJzHFNC-W50rXxQSiXh5r5csU3W474b1JKcEkc1h2yXy90LtmTj2jhM9BumxuyNKbYxkL-Y9DjQuzKdGuyVnVzTpAT8OFMGpyOIPr4wFLJdIs-viVWQFFOYIfX98DbFsQTgX1QvkGMcnRoEctwo7eVVsoKfT7ZbCD6RQ3-5k9et_ScI1EkIee8Kb_422JerWiI2FFZZPbAmfeUMHkmc">
+<div class="flex-1 min-w-0">
+<p class="text-xs font-medium text-white truncate">Sarah Jenkins</p>
+<p class="text-[11px] text-slate-400 truncate">admin@gravenav.com</p>
+</div>
+<button class="text-slate-500 hover:text-white transition-colors" title="User Actions">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainContentArea -->
+<main class="flex-1 overflow-y-auto p-6 space-y-6 bg-[#0c0e15]"><div class="max-w-[1600px] mx-auto space-y-6 p-2 sm:p-4">
+<!-- 1. Top Bar / Breadcrumb & Action Row -->
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-2 border-b border-white/5">
+  <div class="space-y-1">
+    <div class="flex items-center gap-2">
+      <span class="px-2.5 py-0.5 rounded-full bg-brand-900/60 text-brand-400 text-[11px] font-semibold tracking-wider uppercase border border-brand-500/30">
+        Cadastral Inventory &amp; GIS
+      </span>
+      <span class="text-slate-400 text-xs">/ Section A Registry</span>
+    </div>
+    <h1 class="text-2xl lg:text-3xl font-bold text-white tracking-tight">
+      Plot Management
+    </h1>
+    <p class="text-xs text-slate-400">
+      Manage cemetery sections, survey blocks, occupancy statuses, and georeferenced spatial allocations.
+    </p>
+  </div>
+
+  <!-- Right Action Toolbars -->
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="relative">
+      <select class="appearance-none bg-[#131622] text-slate-200 text-xs rounded-xl pl-3.5 pr-9 py-2 border border-white/10 outline-none focus:border-brand-500/60 shadow-sm cursor-pointer" id="sectionSelector">
+        <option selected="" value="A">Section A - The Meadows</option>
+        <option value="B">Section B - Whispering Pines</option>
+        <option value="C">Section C - West Lawn</option>
+        <option value="D">Section D - Memorial Terrace</option>
+      </select>
+      <span class="material-symbols-outlined pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+        expand_more
+      </span>
+    </div>
+
+    <button class="flex items-center gap-2 bg-[#131622] hover:bg-[#1c2233] text-slate-200 text-xs px-3.5 py-2 rounded-xl border border-white/10 transition-colors shadow-sm" type="button">
+      <span class="material-symbols-outlined text-sm text-brand-400">my_location</span>
+      <span class="">Sync GIS</span>
+    </button>
+
+    <button class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium px-4 py-2 rounded-xl shadow-md shadow-emerald-950/40 transition-all active:scale-95" type="button">
+      <span class="material-symbols-outlined text-base">add_circle</span>
+      <span class="">Add Plot</span>
+    </button>
+  </div>
+</div>
+
+<!-- 2. Top 4 KPI Metric Cards Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- Card 1: Total Plots -->
+  <div class="bg-[#131622] rounded-2xl p-5 border border-white/5 shadow-sm relative overflow-hidden group hover:border-brand-500/30 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Total Surveyed Plots</span>
+      <div class="w-9 h-9 rounded-xl bg-[#1b2030] text-emerald-400 flex items-center justify-center border border-white/5">
+        <span class="material-symbols-outlined text-lg">grid_view</span>
+      </div>
+    </div>
+    <div class="flex items-baseline gap-2.5">
+      <span class="text-2xl font-bold text-white">12,450</span>
+      <span class="inline-flex items-center gap-0.5 text-emerald-400 text-xs font-medium bg-emerald-950/50 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+        <span class="material-symbols-outlined text-[10px]">trending_up</span> +24 this mo
+      </span>
+    </div>
+    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      Full cadastre boundary locked
+    </p>
+    <div class="absolute bottom-0 left-0 h-0.5 bg-emerald-500 w-full opacity-60"></div>
+  </div>
+
+  <!-- Card 2: Occupied Plots -->
+  <div class="bg-[#131622] rounded-2xl p-5 border border-white/5 shadow-sm relative overflow-hidden group hover:border-brand-500/30 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Occupied Plots</span>
+      <div class="w-9 h-9 rounded-xl bg-[#1b2030] text-slate-300 flex items-center justify-center border border-white/5">
+        <span class="material-symbols-outlined text-lg">person_pin_circle</span>
+      </div>
+    </div>
+    <div class="flex items-baseline gap-2.5">
+      <span class="text-2xl font-bold text-white">10,120</span>
+      <span class="text-xs text-slate-400 font-medium bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">81.2% capacity</span>
+    </div>
+    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+      12,458 total records indexed
+    </p>
+    <div class="absolute bottom-0 left-0 h-0.5 bg-slate-500 w-full opacity-60"></div>
+  </div>
+
+  <!-- Card 3: Available Inventory -->
+  <div class="bg-[#131622] rounded-2xl p-5 border border-white/5 shadow-sm relative overflow-hidden group hover:border-brand-500/30 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Available Inventory</span>
+      <div class="w-9 h-9 rounded-xl bg-[#1b2030] text-teal-400 flex items-center justify-center border border-white/5">
+        <span class="material-symbols-outlined text-lg">check_circle</span>
+      </div>
+    </div>
+    <div class="flex items-baseline gap-2.5">
+      <span class="text-2xl font-bold text-emerald-400">2,338</span>
+      <span class="text-xs text-emerald-400 font-medium bg-emerald-950/50 border border-emerald-500/30 px-2 py-0.5 rounded-full">Vacant Ready</span>
+    </div>
+    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      Across 4 active sections
+    </p>
+    <div class="absolute bottom-0 left-0 h-0.5 bg-teal-500 w-full opacity-60"></div>
+  </div>
+
+  <!-- Card 4: Discrepancies -->
+  <div class="bg-[#131622] rounded-2xl p-5 border border-white/5 shadow-sm relative overflow-hidden group hover:border-red-500/30 transition-all">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold uppercase text-red-400 tracking-wider">Discrepancies</span>
+      <div class="w-9 h-9 rounded-xl bg-red-950/50 text-red-400 flex items-center justify-center border border-red-500/20">
+        <span class="material-symbols-outlined text-lg">crisis_alert</span>
+      </div>
+    </div>
+    <div class="flex items-baseline gap-2.5">
+      <span class="text-2xl font-bold text-red-400">45</span>
+      <span class="text-[11px] font-semibold text-red-400 uppercase bg-red-950/70 border border-red-500/30 px-2 py-0.5 rounded-full">Action Req.</span>
+    </div>
+    <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+      Boundary overlaps &amp; GPS flags
+    </p>
+    <div class="absolute bottom-0 left-0 h-0.5 bg-red-500 w-full opacity-60"></div>
+  </div>
+</div>
+
+<!-- 3. Two-Column Middle Section (Visual Matrix + Donut Analytics) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <!-- Left Card: Spatial Matrix (7 cols) -->
+  <div class="lg:col-span-7 bg-[#131622] rounded-2xl p-6 border border-white/5 shadow-sm flex flex-col gap-5">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/5">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-emerald-400 text-lg">domain</span>
+          <h2 class="text-base font-semibold text-white">Section A — Spatial Cadastre Matrix</h2>
+        </div>
+        <p class="text-xs text-slate-400">Block 100 to 500 • High-accuracy Trimble RTK surveyed</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Live Geofence (±0.03m)
+        </span>
+      </div>
+    </div>
+
+    <!-- Legend Strip -->
+    <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded bg-emerald-600"></span>
+          <span class="text-slate-300">Available (75)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded bg-[#1f2434]"></span>
+          <span class="text-slate-400">Occupied (390)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded bg-[#2b354d]"></span>
+          <span class="text-slate-300">Reserved (28)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded bg-red-600"></span>
+          <span class="text-red-400 font-medium">Flagged (7)</span>
+        </div>
+      </div>
+      <span class="text-[11px] text-slate-500">Click cell to inspect GIS log</span>
+    </div>
+
+    <!-- Interactive Plot Cells Grid -->
+    <div class="bg-[#0c0e15] p-4 rounded-xl border border-white/5 space-y-3">
+      <div class="flex items-center justify-between text-[11px] font-mono uppercase text-slate-500 px-1">
+        <span class="">Row 01 (North Boundary)</span>
+        <span class="">East Lane Transect</span>
+      </div>
+      <div class="grid grid-cols-6 sm:grid-cols-12 gap-1.5 overflow-x-auto pb-1" id="plotVisualGrid">
+        <!-- Row 1 Cells -->
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-101: Occupied - Johnathan Doe">101</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-102: Occupied - Marcus Vance">102</button>
+        <button class="h-8 rounded bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-103: Available - Open for assignment">103</button>
+        <button class="h-8 rounded bg-red-600 hover:ring-2 hover:ring-red-400 animate-pulse flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-104: Boundary Discrepancy Flagged">104</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-105: Occupied - Sarah Campbell">105</button>
+        <button class="h-8 rounded bg-[#2b354d] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-200 transition-all" title="Plot A-106: Reserved - Deed #45920">106</button>
+        <button class="h-8 rounded bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-107: Available">107</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-108: Occupied">108</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-109: Occupied">109</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-110: Occupied">110</button>
+        <button class="h-8 rounded bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-111: Available">111</button>
+        <button class="h-8 rounded bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-112: Available">112</button>
+        <!-- Row 2 Cells -->
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-113: Occupied">113</button>
+        <button class="h-8 rounded bg-[#2b354d] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-200 transition-all" title="Plot A-114: Reserved">114</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-115: Occupied">115</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-116: Occupied">116</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-117: Occupied">117</button>
+        <button class="h-8 rounded bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-118: Available">118</button>
+        <button class="h-8 rounded bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-119: Available">119</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-120: Occupied">120</button>
+        <button class="h-8 rounded bg-red-600 hover:ring-2 hover:ring-red-400 flex items-center justify-center text-[10px] font-mono text-white font-bold transition-all" title="Plot A-121: GPS Offset Discrepancy">121</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-122: Occupied">122</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-123: Occupied">123</button>
+        <button class="h-8 rounded bg-[#1b2030] hover:ring-1 hover:ring-brand-500 flex items-center justify-center text-[10px] font-mono text-slate-400 transition-all" title="Plot A-124: Occupied">124</button>
+      </div>
+    </div>
+
+    <!-- Matrix Card Bottom Stats Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/5 text-xs text-slate-400">
+      <div class="flex items-center gap-6">
+        <div>
+          <span class="text-slate-500 text-[11px] block">Block Occupancy</span>
+          <span class="text-white font-semibold text-sm">85% Full</span>
+        </div>
+        <div class="h-7 w-px bg-white/10"></div>
+        <div>
+          <span class="text-slate-500 text-[11px] block">Available Plots</span>
+          <span class="text-emerald-400 font-semibold text-sm">75 <span class="text-xs text-slate-500 font-normal">/ 500</span></span>
+        </div>
+      </div>
+      <button class="text-brand-400 hover:text-brand-300 flex items-center gap-1 font-medium transition-colors" type="button">
+        <span class="">Inspect Full Orthomosaic Map</span>
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Right Card: Capacity & Operations (5 cols) -->
+  <div class="lg:col-span-5 flex flex-col gap-6">
+    <!-- Donut Chart Card -->
+    <div class="bg-[#131622] rounded-2xl p-6 border border-white/5 shadow-sm flex flex-col gap-4">
+      <div class="flex items-center justify-between pb-3 border-b border-white/5">
+        <div class="space-y-0.5">
+          <h3 class="text-base font-semibold text-white">Section Capacity Breakdown</h3>
+          <p class="text-xs text-slate-400">Total cemetery spatial allocation</p>
+        </div>
+        <span class="px-2 py-0.5 rounded-full bg-white/5 text-slate-400 text-[11px] font-medium border border-white/10">
+          Realtime
+        </span>
+      </div>
+
+      <!-- SVG Donut Chart with Centered KPI -->
+      <div class="flex flex-col items-center justify-center relative py-1">
+        <svg class="w-44 h-44 -rotate-90" viewBox="0 0 120 120">
+          <circle class="opacity-20" cx="60" cy="60" fill="none" r="50" stroke="#334155" stroke-width="12"></circle>
+          <circle cx="60" cy="60" fill="none" r="50" stroke="#10b981" stroke-dasharray="255 314.16" stroke-linecap="round" stroke-width="12"></circle>
+          <circle cx="60" cy="60" fill="none" r="50" stroke="#34d399" stroke-dasharray="45 314.16" stroke-dashoffset="-257" stroke-linecap="round" stroke-width="12"></circle>
+          <circle cx="60" cy="60" fill="none" r="50" stroke="#64748b" stroke-dasharray="10 314.16" stroke-dashoffset="-303" stroke-linecap="round" stroke-width="12"></circle>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+          <span class="text-3xl font-bold text-white leading-tight">81.2%</span>
+          <span class="text-[11px] uppercase text-slate-400 tracking-wider font-semibold">Occupied</span>
+        </div>
+      </div>
+
+      <!-- Donut Legend Rows -->
+      <div class="space-y-2 bg-[#0c0e15] p-3 rounded-xl border border-white/5">
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span class="text-slate-300">Occupied Plots</span>
+          </div>
+          <span class="font-semibold text-white font-mono">10,120</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span>
+            <span class="text-slate-300">Available Inventory</span>
+          </div>
+          <span class="font-semibold text-emerald-400 font-mono">2,338</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+            <span class="text-slate-300">Pre-Need Reserved</span>
+          </div>
+          <span class="font-semibold text-slate-400 font-mono">339</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+            <span class="text-red-400">Discrepancy / In Review</span>
+          </div>
+          <span class="font-semibold text-red-400 font-mono">45</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Operations Pills -->
+    <div class="bg-[#131622] rounded-2xl p-5 border border-white/5 shadow-sm flex flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Cadastral Operations</span>
+        <span class="text-[11px] text-slate-500">Pipelines</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <button class="flex items-center gap-2 p-2.5 rounded-xl bg-[#0c0e15] hover:bg-[#1c2233] text-slate-200 text-xs border border-white/5 transition-colors group text-left" type="button">
+          <span class="material-symbols-outlined text-sm text-emerald-400">upload_file</span>
+          <span class="truncate">Import GeoJSON</span>
+        </button>
+        <button class="flex items-center gap-2 p-2.5 rounded-xl bg-[#0c0e15] hover:bg-[#1c2233] text-slate-200 text-xs border border-white/5 transition-colors group text-left" type="button">
+          <span class="material-symbols-outlined text-sm text-brand-400">ios_share</span>
+          <span class="truncate">Export Archival</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Bottom Full-Width Data Table Card -->
+<div class="bg-[#131622] rounded-2xl border border-white/5 shadow-sm overflow-hidden flex flex-col">
+  <!-- Card Header with Search & Filters -->
+  <div class="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="space-y-1">
+      <div class="flex items-center gap-2">
+        <h2 class="text-base font-semibold text-white">Cadastral Plot Register</h2>
+        <span class="px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 text-[11px] font-medium border border-emerald-500/30">Section A</span>
+      </div>
+      <p class="text-xs text-slate-400">Comprehensive survey logs and occupant details for Section A</p>
+    </div>
+
+    <!-- Table Action Controls -->
+    <div class="flex flex-wrap items-center gap-2.5">
+      <div class="relative w-full sm:w-64">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">
+          search
+        </span>
+        <input class="w-full bg-[#0c0e15] text-white placeholder-slate-500 text-xs pl-9 pr-3 py-2 rounded-xl border border-white/10 outline-none focus:border-brand-500/60" placeholder="Search plot number or occupant..." type="text">
+      </div>
+
+      <div class="relative">
+        <select class="appearance-none bg-[#0c0e15] text-slate-300 text-xs rounded-xl pl-3 pr-8 py-2 border border-white/10 outline-none focus:border-brand-500/60 cursor-pointer">
+          <option value="">Status: All</option>
+          <option value="available">Available</option>
+          <option value="occupied">Occupied</option>
+          <option value="reserved">Reserved</option>
+          <option value="flagged">Discrepancy</option>
+        </select>
+        <span class="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+          expand_more
+        </span>
+      </div>
+
+      <button class="flex items-center gap-1.5 bg-[#0c0e15] hover:bg-[#1b2030] text-slate-300 text-xs px-3 py-2 rounded-xl border border-white/10 transition-colors" title="Export Table to CSV" type="button">
+        <span class="material-symbols-outlined text-sm">download</span>
+        <span class="">CSV</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Element -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-[#0c0e15] text-slate-400 text-[11px] font-semibold uppercase tracking-wider border-b border-white/5">
+          <th class="py-3 px-5">Plot ID</th>
+          <th class="py-3 px-5">Status</th>
+          <th class="py-3 px-5">Occupant / Legal Deed</th>
+          <th class="py-3 px-5">Plot Type</th>
+          <th class="py-3 px-5">Cadastre GPS</th>
+          <th class="py-3 px-5 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-xs text-slate-300">
+        <!-- Row 1: Occupied -->
+        <tr class="hover:bg-white/5 transition-colors">
+          <td class="py-3.5 px-5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-semibold text-white">A-101</span>
+              <span class="material-symbols-outlined text-xs text-emerald-400" title="GPS Centroid Verified">verified</span>
+            </div>
+            <span class="text-[11px] text-slate-500 block">Block 100 • Tier 1</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1c2233] text-slate-300 text-[11px] font-medium border border-white/5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Occupied
+            </span>
+          </td>
+          <td class="py-3.5 px-5">
+            <div class="font-medium text-white">Johnathan Doe</div>
+            <span class="text-[11px] text-slate-500 block">Interred: May 12, 2021 • Certificate #2890</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="text-white font-medium">Standard Single</span>
+            <span class="text-[11px] text-slate-500 block">Granite Ground Marker</span>
+          </td>
+          <td class="py-3.5 px-5 font-mono text-[11px] text-slate-400">
+            51.5287° N, -0.1492° W
+          </td>
+          <td class="py-3.5 px-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors" title="Edit Plot Details">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-400 hover:bg-white/10 transition-colors" title="View GIS Map">
+                <span class="material-symbols-outlined text-base">map</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Row 2: Occupied Companion -->
+        <tr class="hover:bg-white/5 transition-colors">
+          <td class="py-3.5 px-5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-semibold text-white">A-102</span>
+              <span class="material-symbols-outlined text-xs text-emerald-400" title="GPS Centroid Verified">verified</span>
+            </div>
+            <span class="text-[11px] text-slate-500 block">Block 100 • Tier 1</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1c2233] text-slate-300 text-[11px] font-medium border border-white/5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Occupied
+            </span>
+          </td>
+          <td class="py-3.5 px-5">
+            <div class="font-medium text-white">Marcus Vance</div>
+            <span class="text-[11px] text-slate-500 block">Interred: Aug 19, 2018 • Companion Tier</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="text-white font-medium">Companion Lawn</span>
+            <span class="text-[11px] text-slate-500 block">Dual Headstone Base</span>
+          </td>
+          <td class="py-3.5 px-5 font-mono text-[11px] text-slate-400">
+            51.5288° N, -0.1491° W
+          </td>
+          <td class="py-3.5 px-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors" title="Edit Plot Details">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-400 hover:bg-white/10 transition-colors" title="View GIS Map">
+                <span class="material-symbols-outlined text-base">map</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Row 3: Available -->
+        <tr class="bg-emerald-950/20 hover:bg-emerald-950/30 transition-colors">
+          <td class="py-3.5 px-5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-semibold text-emerald-400">A-103</span>
+            </div>
+            <span class="text-[11px] text-slate-500 block">Block 100 • Tier 1</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 text-emerald-400 text-[11px] font-medium border border-emerald-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Available
+            </span>
+          </td>
+          <td class="py-3.5 px-5">
+            <div class="font-medium text-emerald-400">Unassigned / Vacant</div>
+            <span class="text-[11px] text-slate-400 block">Ready for deed reservation</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="text-white font-medium">Standard Single</span>
+            <span class="text-[11px] text-slate-500 block">Dimensions: 3.5ft x 8.0ft</span>
+          </td>
+          <td class="py-3.5 px-5 font-mono text-[11px] text-slate-400">
+            51.5289° N, -0.1490° W
+          </td>
+          <td class="py-3.5 px-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button class="px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium shadow-sm transition-all" title="Reserve Plot Now">
+                Allocate
+              </button>
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-400 hover:bg-white/10 transition-colors" title="View GIS Map">
+                <span class="material-symbols-outlined text-base">map</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Row 4: Flagged / Discrepancy -->
+        <tr class="bg-red-950/20 hover:bg-red-950/30 transition-colors">
+          <td class="py-3.5 px-5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-bold text-red-400">A-104</span>
+              <span class="material-symbols-outlined text-xs text-red-400 animate-bounce">warning</span>
+            </div>
+            <span class="text-[11px] text-red-400/80 block">Block 100 • Tier 1</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/60 text-red-400 text-[11px] font-bold border border-red-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+              Discrepancy
+            </span>
+          </td>
+          <td class="py-3.5 px-5">
+            <div class="font-medium text-red-400">Boundary Overlap Conflict</div>
+            <span class="text-[11px] text-red-400/80 block">Overlap detected with Plot A-105 (+0.42m)</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="text-white font-medium">Standard Single</span>
+            <span class="text-[11px] text-slate-500 block">Ground Verification Needed</span>
+          </td>
+          <td class="py-3.5 px-5 font-mono text-[11px] text-red-400 font-medium">
+            51.5290° N, -0.1489° W
+          </td>
+          <td class="py-3.5 px-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button class="px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-medium shadow-sm transition-all" title="Review Boundary Conflict">
+                Resolve
+              </button>
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-white/10 transition-colors" title="Inspect GPS trace">
+                <span class="material-symbols-outlined text-base">near_me</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Row 5: Reserved -->
+        <tr class="hover:bg-white/5 transition-colors">
+          <td class="py-3.5 px-5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-semibold text-white">A-106</span>
+            </div>
+            <span class="text-[11px] text-slate-500 block">Block 100 • Tier 1</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1c2233] text-slate-300 text-[11px] font-medium border border-white/5">
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+              Reserved
+            </span>
+          </td>
+          <td class="py-3.5 px-5">
+            <div class="font-medium text-white">Jane Smith-Sterling</div>
+            <span class="text-[11px] text-slate-500 block">Deed: #45920 • Exp: Oct 2045</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="text-white font-medium">Family Estate Lot</span>
+            <span class="text-[11px] text-slate-500 block">4-Plot Continuous Enclave</span>
+          </td>
+          <td class="py-3.5 px-5 font-mono text-[11px] text-slate-400">
+            51.5292° N, -0.1487° W
+          </td>
+          <td class="py-3.5 px-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors" title="Edit Deed Info">
+                <span class="material-symbols-outlined text-base">edit</span>
+              </button>
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-400 hover:bg-white/10 transition-colors" title="View GIS Map">
+                <span class="material-symbols-outlined text-base">map</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Row 6: Available Companion -->
+        <tr class="bg-emerald-950/20 hover:bg-emerald-950/30 transition-colors">
+          <td class="py-3.5 px-5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono font-semibold text-emerald-400">A-107</span>
+            </div>
+            <span class="text-[11px] text-slate-500 block">Block 100 • Tier 2</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 text-emerald-400 text-[11px] font-medium border border-emerald-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Available
+            </span>
+          </td>
+          <td class="py-3.5 px-5">
+            <div class="font-medium text-emerald-400">Unassigned / Vacant</div>
+            <span class="text-[11px] text-slate-400 block">Open for pre-need purchase</span>
+          </td>
+          <td class="py-3.5 px-5">
+            <span class="text-white font-medium">Companion Lawn</span>
+            <span class="text-[11px] text-slate-500 block">Dual Interlocking Vault Spec</span>
+          </td>
+          <td class="py-3.5 px-5 font-mono text-[11px] text-slate-400">
+            51.5293° N, -0.1486° W
+          </td>
+          <td class="py-3.5 px-5 text-right">
+            <div class="inline-flex items-center gap-1">
+              <button class="px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium shadow-sm transition-all" title="Reserve Plot Now">
+                Allocate
+              </button>
+              <button class="p-1.5 rounded-lg text-slate-400 hover:text-brand-400 hover:bg-white/10 transition-colors" title="View GIS Map">
+                <span class="material-symbols-outlined text-base">map</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- High Density Pagination Strip -->
+  <div class="p-4 bg-[#0c0e15] border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+    <span class="">
+      Showing <strong class="text-white font-semibold">1 to 6</strong> of <strong class="text-white font-semibold">500</strong> plots in Section A
+    </span>
+    <div class="flex items-center gap-1.5">
+      <button class="px-3 py-1.5 rounded-lg bg-[#131622] hover:bg-[#1c2233] text-slate-400 hover:text-white border border-white/5 transition-colors" disabled="">
+        Previous
+      </button>
+      <button class="w-8 h-8 rounded-lg bg-brand-600 text-white font-semibold shadow-sm">1</button>
+      <button class="w-8 h-8 rounded-lg bg-[#131622] hover:bg-[#1c2233] text-slate-300 border border-white/5 transition-colors">2</button>
+      <button class="w-8 h-8 rounded-lg bg-[#131622] hover:bg-[#1c2233] text-slate-300 border border-white/5 transition-colors">3</button>
+      <span class="px-1 text-slate-600">...</span>
+      <button class="w-8 h-8 rounded-lg bg-[#131622] hover:bg-[#1c2233] text-slate-300 border border-white/5 transition-colors">50</button>
+      <button class="px-3 py-1.5 rounded-lg bg-[#131622] hover:bg-[#1c2233] text-slate-300 hover:text-white border border-white/5 transition-colors">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+</div></main>
+<!-- END: MainContentArea -->
+</div>
+<!-- END: DashboardLayoutBody -->
+</div>
+<!-- END: WindowFrameContainer -->
+
+
+</body></html>

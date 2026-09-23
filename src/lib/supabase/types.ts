@@ -24,6 +24,7 @@ export type PublicBurialRecord = {
   status: "Active";
   location: { latitude: number; longitude: number } | null;
   pixelLocation: { x: number; y: number } | null;
+  coordinateStatus: "missing" | "pending" | "verified" | "rejected";
   locationVerified: boolean;
   tone: string;
 };

@@ -1,0 +1,814 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>GraveNav - Cemetery Map Management</title>
+<!-- Tailwind CSS v3 with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            surface: {
+              base: '#0b0d13',
+              card: '#131620',
+              hover: '#1b1f2e',
+              border: 'rgba(255, 255, 255, 0.07)',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+</script>
+<style data-purpose="custom-enhancements">
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0d13;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2434;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2e354b;
+    }
+
+    /* Radial gradient glows mimicking the dark sleek template */
+    .bg-radial-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 65%);
+    }
+
+    .card-glass {
+      background: #131621;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-glass:hover {
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    /* Precise dark map grid */
+    .dark-map-grid {
+      background-color: #0d111a;
+      background-image:
+        radial-gradient(circle at center, rgba(16, 185, 129, 0.03) 0, transparent 75%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    /* Individual plot styling */
+    .plot-cell {
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+    }
+    .plot-cell:hover {
+      transform: translateY(-2px) scale(1.06);
+      z-index: 25;
+      box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.6), 0 0 10px rgba(16, 185, 129, 0.35);
+    }
+    .plot-occupied {
+      background-color: #273142;
+      border: 1px solid #3c4b63;
+    }
+    .plot-available {
+      background-color: rgba(16, 185, 129, 0.28);
+      border: 1px solid #10b981;
+    }
+    .plot-unverified {
+      background-color: rgba(245, 158, 11, 0.25);
+      border: 1px solid #f59e0b;
+    }
+    .plot-reserved {
+      background-color: rgba(99, 102, 241, 0.25);
+      border: 1px solid #6366f1;
+    }
+    .plot-selected-ring {
+      outline: 2px solid #10b981;
+      outline-offset: 2px;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+      z-index: 30;
+    }
+</style>
+</head>
+<body class="bg-[#0b0d13] text-[#94a3b8] font-sans antialiased min-h-screen flex flex-col p-2 sm:p-4 lg:p-6 bg-radial-glow selection:bg-brand-500 selection:text-white">
+<!-- BEGIN: WindowFrameContainer -->
+<div class="max-w-[1780px] w-full mx-auto bg-[#0d1017] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col min-h-[960px]">
+<!-- BEGIN: TopBarWindowHeader -->
+<header class="bg-[#090b10] border-b border-white/10 px-5 flex items-center justify-between select-none relative z-30 flex-shrink-0 h-16">
+<!-- Window Controls (macOS style dots) & Nav arrows -->
+
+<!-- Center URL / Search Badge -->
+<div class="flex-1 max-w-xl mx-4 hidden md:block">
+<div class="relative flex items-center bg-[#131622] rounded-full border border-white/10 px-3 py-1.5 focus-within:border-brand-500/60 transition-all">
+<svg class="w-4 h-4 text-slate-400 mr-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input class="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full border-0 p-0 focus:ring-0" placeholder="Search records, plots, or names..." type="text">
+<button class="bg-[#1b2030] hover:bg-brand-600 hover:text-white text-slate-300 text-[11px] font-medium px-3 py-0.5 rounded-full border border-white/10 transition-colors ml-2 flex-shrink-0">
+          Search
+        </button>
+</div>
+</div>
+<!-- Right Header Actions -->
+<div class="flex items-center gap-3 w-auto justify-end">
+<!-- Open Public Site Badge Link -->
+<a class="hidden xl:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 px-3 py-1 rounded-full transition-colors font-medium" href="#">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+        Open Public Site
+      </a>
+<!-- Notifications button with badge -->
+<button class="w-8 h-8 rounded-full bg-[#131722] hover:bg-[#1c2233] border border-white/10 flex items-center justify-center text-slate-300 relative transition-colors" title="Notifications">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="w-2 h-2 rounded-full bg-brand-500 absolute top-1.5 right-1.5 ring-2 ring-[#090b10]"></span>
+</button>
+<!-- Help Icon -->
+<button class="w-8 h-8 rounded-full bg-[#131722] hover:bg-[#1c2233] border border-white/10 flex items-center justify-center text-slate-300 transition-colors" title="Help &amp; Documentation">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Theme Mode Toggle -->
+<div class="flex items-center bg-[#131722] p-0.5 rounded-full border border-white/10">
+<button class="p-1 rounded-full text-slate-400 hover:text-white transition-colors" title="Light mode">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<button class="p-1 rounded-full bg-brand-600 text-white shadow-sm" title="Dark mode active">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Top Right Admin Avatar -->
+<div class="flex items-center pl-2 border-l border-white/10">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC44lwtnFBLuApSCaYIMVu-lHAHwqj51nYNxzHzQHQscvi9bkntnKOjeszu0eB0xvOf5h3-fpRgYACk6eWXw-yl9YxM8Q0nvGeWHk17rUPYwgaBN6_DXzmLxcbiD-mM2RQ5fzyVrwnL1ZFqLVq1EPb8dtnh7KhNsuJeup2OFNiqxEyq9yeBmsxvOJPSLrK6c5PPL2e4_eo56k0TpXkioLr0HeexUti_3838_FhdzEnrxqEgC47IuuC5cvLabr2d09BgVJQ">
+</div>
+</div>
+</header>
+<!-- END: TopBarWindowHeader -->
+<!-- BEGIN: Layout Body -->
+<div class="flex flex-1 overflow-hidden">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-64 bg-[#0d1018] border-r border-white/10 flex flex-col justify-between flex-shrink-0 select-none">
+<div>
+<!-- Logo & Brand Header -->
+<div class="px-6 flex items-center justify-between border-b border-white/5 h-16">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 flex items-center justify-center">
+<div class="w-full h-full bg-[#0d1018] rounded-[10px] flex items-center justify-center">
+<!-- GraveNav Evergreen Icon -->
+<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M12 2L4 12h5v8h6v-8h5L12 2z"></path>
+</svg>
+</div>
+</div>
+<div>
+<h1 class="text-white font-semibold tracking-wide text-sm leading-tight flex items-center gap-1.5">
+                GraveNav
+                <span class="text-[10px] bg-brand-900/60 text-brand-400 px-1.5 py-0.2 rounded border border-brand-500/30 font-medium tracking-normal">ADMIN</span>
+</h1>
+<p class="text-[11px] text-slate-400">Cemetery Management</p>
+</div>
+</div>
+<button class="text-slate-500 hover:text-slate-300 transition-colors" title="Collapse Menu">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 19l-7-7 7-7m8 14l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Main Menu Group -->
+<div class="px-4 pt-5">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Main Menu</p>
+<nav class="space-y-1">
+<!-- Nav Item: Dashboard -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Dashboard</span>
+</a>
+<!-- Nav Item: Burial Records -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Burial Records</span>
+</a>
+<!-- Active Link: Cemetery Map -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600/20 to-teal-500/10 text-emerald-400 font-medium text-xs border border-brand-500/30 shadow-sm transition-all group" href="#">
+<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Cemetery Map</span>
+<span class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+</a>
+<!-- Nav Item: Coordinate Verification -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Coordinate Verification</span>
+<span class="ml-auto text-[10px] bg-red-950/70 text-red-400 border border-red-500/40 px-1.5 py-0.2 rounded font-semibold">45</span>
+</a>
+<!-- Nav Item: Plot Management -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Plot Management</span>
+</a>
+<!-- Nav Item: Photos -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Photos</span>
+</a>
+</nav>
+</div>
+<!-- Management & System Group -->
+<div class="px-4 pt-6">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Management &amp; System</p>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Audit Log</span>
+</a>
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Settings</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Sidebar Bottom: Support, Log Out and User Profile Card -->
+<div class="p-4 border-t border-white/5 space-y-2">
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-rose-400 transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Log Out</span>
+</a>
+<!-- Sarah Jenkins profile card -->
+<div class="pt-2">
+<div class="p-2.5 rounded-xl bg-[#141723] border border-white/10 flex items-center gap-3">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_CJhiv7EdkMCxpGHQ1NHVCPywijN_B7pppNa92bPaRv5sLG0aU135TBX35O-odsbRVakKRqaloBBWfRFSkWOalJkxfAwDfcHyTnf326livDs2ib9IJxBt7HDDrD96XLwGl8FwwjwFDxpfxprxZy8OLFyvsgtV8lc_ageGz7WbohwAHnY6ORvhgm2GhCrdoJJwQ4N7O6BaI-dSQAT_d0c_uzliDIHaSF-CsJ5myT-ZarPzIrBb1_PNtKAj5OULORSSJqs">
+<div class="flex-1 min-w-0">
+<p class="text-xs font-medium text-white truncate">Sarah Jenkins</p>
+<p class="text-[11px] text-slate-400 truncate">admin@gravenav.com</p>
+</div>
+<button class="text-slate-500 hover:text-white transition-colors" title="User Actions">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainContentArea -->
+<main class="flex-1 overflow-y-auto p-5 space-y-5 bg-[#0c0e15] flex flex-col">
+<!-- Top Title & Action Bar -->
+<section class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 flex-shrink-0">
+<div>
+<div class="flex items-center gap-2.5">
+<h2 class="text-2xl font-bold text-white tracking-tight">Cemetery Map &amp; Spatial Layout</h2>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-[11px] font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              RTK GPS Connected • ±0.02m
+            </span>
+</div>
+<p class="text-xs text-slate-400 mt-0.5">Interactive plot grid, section boundary mapping, and geodetic coordinate calibration.</p>
+</div>
+<!-- Controls: Section Filter, View Mode, Actions -->
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Section Selector -->
+<div class="flex items-center bg-[#141723] border border-white/10 rounded-xl px-3 py-1.5 text-xs text-slate-300">
+<span class="material-symbols-outlined text-[16px] text-emerald-400 mr-2">park</span>
+<span class="text-slate-400 text-[11px] mr-1.5">Section:</span>
+<span class="text-white font-medium">North Gardens (Sec A)</span>
+<svg class="w-3 h-3 text-slate-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<!-- View Mode Toggle -->
+<div class="flex items-center bg-[#141723] p-0.5 rounded-xl border border-white/10 text-xs">
+<button class="px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium shadow-sm transition-all flex items-center gap-1.5 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">grid_4x4</span>
+              Grid View
+            </button>
+<button class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">satellite_alt</span>
+              Aerial Drone
+            </button>
+<button class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1.5 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">heat_pump</span>
+              Heatmap
+            </button>
+</div>
+<!-- Calibrate Coordinates Button -->
+<button class="flex items-center gap-1.5 bg-[#141723] hover:bg-[#1b1f2e] border border-white/10 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-200 transition-all">
+<svg class="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v1m6 11h2m-6 0a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m-6-4H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Calibrate Geodetic
+          </button>
+<!-- Primary: Add Plot -->
+<button class="flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:brightness-110 text-white font-medium text-xs px-3.5 py-2 rounded-xl shadow-lg shadow-emerald-900/40 transition-all active:scale-95">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Add Plot</span>
+</button>
+</div>
+</section>
+<!-- BEGIN: 2-Column Work Area (Map Canvas & Detail Drawer) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 min-h-[580px]">
+<!-- Center / Left Pane: Interactive Cemetery Map Canvas -->
+<div class="lg:col-span-8 card-glass rounded-2xl relative overflow-hidden flex flex-col border border-white/10">
+<!-- Top Floating Controls on Map: Search & Layer Filter Pills -->
+<div class="absolute top-4 left-4 right-4 z-20 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pointer-events-none">
+<!-- Search within map -->
+<div class="pointer-events-auto flex items-center bg-[#0e121b]/90 backdrop-blur-md border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white max-w-sm shadow-xl focus-within:border-brand-500/60">
+<span class="material-symbols-outlined text-[16px] text-slate-400 mr-2">search</span>
+<input class="bg-transparent border-0 p-0 text-xs text-white placeholder-slate-500 focus:ring-0 focus:outline-none w-full" placeholder="Search by name, plot ID (e.g. A-13)..." type="text" value="A-13">
+<button class="text-slate-500 hover:text-slate-300 ml-1">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+</div>
+<!-- Plot Status Legend Pills -->
+<div class="pointer-events-auto flex items-center gap-1.5 bg-[#0e121b]/90 backdrop-blur-md border border-white/10 rounded-xl px-2.5 py-1 text-[11px] shadow-xl overflow-x-auto">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-800/50 border border-slate-700/60 text-slate-300">
+<span class="w-2 h-2 rounded bg-[#3c4b63]"></span>
+<span class="">Occupied</span>
+<span class="text-[10px] text-slate-400 font-mono">425</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300">
+<span class="w-2 h-2 rounded bg-emerald-500"></span>
+<span class="">Available</span>
+<span class="text-[10px] text-emerald-400 font-mono">65</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-amber-950/40 border border-amber-500/30 text-amber-300">
+<span class="w-2 h-2 rounded bg-amber-400"></span>
+<span class="">Unverified</span>
+<span class="text-[10px] text-amber-400 font-mono">10</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-indigo-300">
+<span class="w-2 h-2 rounded bg-indigo-500"></span>
+<span class="">Reserved</span>
+<span class="text-[10px] text-indigo-400 font-mono">8</span>
+</div>
+</div>
+</div>
+<!-- Floating GPS Warning Banner -->
+<div class="absolute top-16 left-1/2 -translate-x-1/2 z-20 bg-amber-950/80 backdrop-blur-md text-amber-300 text-xs px-3.5 py-1.5 rounded-full border border-amber-500/40 flex items-center gap-2 shadow-xl">
+<span class="material-symbols-outlined text-[16px] text-amber-400">satellite_alt</span>
+<span class="">Survey mesh synced with high RTK precision: <strong>Grid Sector A &amp; B verified</strong></span>
+</div>
+<!-- Floating Map Zoom & Tool Controls (Right side) -->
+<div class="absolute right-4 top-20 z-20 flex flex-col gap-1.5 pointer-events-auto">
+<button class="w-8 h-8 rounded-lg bg-[#141723]/90 backdrop-blur-md border border-white/10 hover:bg-[#1f2438] text-slate-300 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Zoom In">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-[#141723]/90 backdrop-blur-md border border-white/10 hover:bg-[#1f2438] text-slate-300 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Zoom Out">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-[#141723]/90 backdrop-blur-md border border-white/10 hover:bg-brand-900/60 hover:border-brand-500/40 text-emerald-400 flex items-center justify-center transition-colors shadow-lg mt-1" title="Recenter to A-13">
+<span class="material-symbols-outlined text-[18px]">my_location</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-[#141723]/90 backdrop-blur-md border border-white/10 hover:bg-[#1f2438] text-slate-300 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Map Layers">
+<span class="material-symbols-outlined text-[18px]">layers</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-[#141723]/90 backdrop-blur-md border border-white/10 hover:bg-[#1f2438] text-slate-300 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Fullscreen">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+<!-- MAP CANVAS INTERACTIVE SURFACE -->
+<div class="flex-1 dark-map-grid relative p-8 overflow-hidden select-none cursor-grab active:cursor-grabbing min-h-[500px]">
+<!-- Pathway Graphic representation -->
+<div class="absolute bg-white/[0.04] border-x border-white/5 rounded-full" style="top: 10%; left: 45%; width: 44px; height: 80%;">
+<div class="w-full h-full flex flex-col items-center justify-center text-[9px] font-mono tracking-widest text-slate-600 rotate-90 uppercase select-none">Central Walkway</div>
+</div>
+<div class="absolute bg-white/[0.04] border-y border-white/5 rounded-full" style="top: 52%; left: 8%; width: 84%; height: 38px;">
+<div class="w-full h-full flex items-center justify-center text-[9px] font-mono tracking-widest text-slate-600 uppercase select-none">Pioneer Boulevard (Paved)</div>
+</div>
+<!-- SECTOR A: NORTH GARDENS -->
+<div class="absolute border border-emerald-500/25 bg-[#0f141f]/75 backdrop-blur-sm rounded-xl p-3.5 shadow-2xl transition-all hover:border-emerald-500/40" style="top: 15%; left: 8%; width: 330px;">
+<!-- Sector Header -->
+<div class="flex items-center justify-between mb-2.5 pb-1.5 border-b border-white/5">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="font-mono text-[11px] font-semibold tracking-wider text-emerald-400 uppercase">SEC A: NORTH GARDENS</span>
+</div>
+<span class="text-[10px] font-mono text-slate-500">Zone 1A • 14 Plots</span>
+</div>
+<!-- Plot Cells Grid -->
+<div class="grid grid-cols-5 gap-2">
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-01 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-01</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-02 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-02</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-available h-12 rounded-lg flex flex-col items-center justify-center" title="A-03 (Available)">
+<span class="text-[10px] font-mono font-medium text-emerald-300">A-03</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-unverified h-12 rounded-lg flex flex-col items-center justify-center" title="A-04 (Unverified Mismatch)">
+<span class="text-[10px] font-mono font-medium text-amber-300">A-04</span>
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1 animate-ping"></span>
+</div>
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-05 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-05</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+<!-- Row 2 -->
+<div class="plot-cell plot-available h-12 rounded-lg flex flex-col items-center justify-center" title="A-06 (Available)">
+<span class="text-[10px] font-mono font-medium text-emerald-300">A-06</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-07 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-07</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-08 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-08</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-available h-12 rounded-lg flex flex-col items-center justify-center" title="A-09 (Available)">
+<span class="text-[10px] font-mono font-medium text-emerald-300">A-09</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-reserved h-12 rounded-lg flex flex-col items-center justify-center" title="A-10 (Reserved)">
+<span class="text-[10px] font-mono font-medium text-indigo-300">A-10</span>
+<span class="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1"></span>
+</div>
+<!-- Row 3 with SELECTED PLOT A-13 -->
+<div class="plot-cell plot-unverified h-12 rounded-lg flex flex-col items-center justify-center" title="A-11 (Unverified)">
+<span class="text-[10px] font-mono font-medium text-amber-300">A-11</span>
+<span class="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-12 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-12</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+<!-- SELECTED PLOT A-13 -->
+<div class="plot-cell plot-occupied plot-selected-ring h-12 rounded-lg flex flex-col items-center justify-center bg-[#233146] border border-emerald-400 relative" title="A-13 (Occupied - Selected: Eleanor Vance)">
+<span class="text-[10px] font-mono font-bold text-emerald-300">A-13</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="text-[8px] font-mono text-emerald-400 uppercase font-semibold">SEL</span>
+</div>
+<!-- Tooltip pin -->
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-[#090b10] font-bold text-[9px] px-1.5 py-0.2 rounded shadow-md pointer-events-none whitespace-nowrap">
+                    Active
+                  </div>
+</div>
+<div class="plot-cell plot-available h-12 rounded-lg flex flex-col items-center justify-center" title="A-14 (Available)">
+<span class="text-[10px] font-mono font-medium text-emerald-300">A-14</span>
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></span>
+</div>
+<div class="plot-cell plot-occupied h-12 rounded-lg flex flex-col items-center justify-center" title="A-15 (Occupied)">
+<span class="text-[10px] font-mono font-medium text-slate-200">A-15</span>
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1"></span>
+</div>
+</div>
+</div>
+<!-- SECTOR B: WHISPERING PINES -->
+<div class="absolute border border-slate-700/60 bg-[#0f141f]/75 backdrop-blur-sm rounded-xl p-3.5 shadow-2xl transition-all hover:border-slate-500/50" style="top: 58%; left: 52%; width: 360px;">
+<div class="flex items-center justify-between mb-2.5 pb-1.5 border-b border-white/5">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-teal-400"></span>
+<span class="font-mono text-[11px] font-semibold tracking-wider text-teal-400 uppercase">SEC B: WHISPERING PINES</span>
+</div>
+<span class="text-[10px] font-mono text-slate-500">Zone 2 • 12 Plots</span>
+</div>
+<!-- Horizontal plot arrangement -->
+<div class="grid grid-cols-6 gap-2">
+<div class="plot-cell plot-occupied h-11 rounded-lg flex flex-col items-center justify-center" title="B-01 (Occupied)">
+<span class="text-[10px] font-mono text-slate-300">B-01</span>
+</div>
+<div class="plot-cell plot-occupied h-11 rounded-lg flex flex-col items-center justify-center" title="B-02 (Occupied)">
+<span class="text-[10px] font-mono text-slate-300">B-02</span>
+</div>
+<div class="plot-cell plot-occupied h-11 rounded-lg flex flex-col items-center justify-center" title="B-03 (Occupied)">
+<span class="text-[10px] font-mono text-slate-300">B-03</span>
+</div>
+<div class="plot-cell plot-available h-11 rounded-lg flex flex-col items-center justify-center" title="B-04 (Available)">
+<span class="text-[10px] font-mono text-emerald-300">B-04</span>
+</div>
+<div class="plot-cell plot-unverified h-11 rounded-lg flex flex-col items-center justify-center" title="B-05 (Unverified)">
+<span class="text-[10px] font-mono text-amber-300">B-05</span>
+</div>
+<div class="plot-cell plot-available h-11 rounded-lg flex flex-col items-center justify-center" title="B-06 (Available)">
+<span class="text-[10px] font-mono text-emerald-300">B-06</span>
+</div>
+<!-- Row 2 -->
+<div class="plot-cell plot-occupied h-11 rounded-lg flex flex-col items-center justify-center" title="B-07 (Occupied)">
+<span class="text-[10px] font-mono text-slate-300">B-07</span>
+</div>
+<div class="plot-cell plot-available h-11 rounded-lg flex flex-col items-center justify-center" title="B-08 (Available)">
+<span class="text-[10px] font-mono text-emerald-300">B-08</span>
+</div>
+<div class="plot-cell plot-occupied h-11 rounded-lg flex flex-col items-center justify-center" title="B-09 (Occupied)">
+<span class="text-[10px] font-mono text-slate-300">B-09</span>
+</div>
+<div class="plot-cell plot-reserved h-11 rounded-lg flex flex-col items-center justify-center" title="B-10 (Reserved)">
+<span class="text-[10px] font-mono text-indigo-300">B-10</span>
+</div>
+<div class="plot-cell plot-unverified h-11 rounded-lg flex flex-col items-center justify-center" title="B-11 (Unverified)">
+<span class="text-[10px] font-mono text-amber-300">B-11</span>
+</div>
+<div class="plot-cell plot-occupied h-11 rounded-lg flex flex-col items-center justify-center" title="B-12 (Occupied)">
+<span class="text-[10px] font-mono text-slate-300">B-12</span>
+</div>
+</div>
+</div>
+<!-- SECTOR C PREVIEW (West Lawn - Boundary outline) -->
+<div class="absolute border border-dashed border-sky-500/30 bg-sky-950/10 rounded-xl p-3" style="top: 18%; left: 68%; width: 220px; height: 130px;">
+<div class="flex items-center justify-between text-[10px] font-mono text-sky-400 mb-1">
+<span class="">SEC C: WEST LAWN</span>
+<span class="px-1.5 py-0.2 rounded bg-sky-950/80 border border-sky-500/30 text-[9px]">Drone Mesh</span>
+</div>
+<div class="h-20 flex items-center justify-center text-slate-500 text-xs border border-white/5 rounded-lg bg-black/20">
+<span class="text-[11px] text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-sky-400">flight_takeoff</span>
+                  Survey Flight Queued
+                </span>
+</div>
+</div>
+</div>
+<!-- Bottom Floating Map Action Toolbar -->
+<div class="p-3 bg-[#0d1017]/95 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs z-20">
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-slate-400 flex items-center gap-1 mr-2">
+<span class="material-symbols-outlined text-[14px] text-emerald-400">gps_fixed</span>
+                Grid Center: <span class="text-white font-mono font-medium">40.7128°N, 74.0060°W</span>
+</span>
+<span class="text-slate-600 hidden sm:inline">|</span>
+<span class="text-[11px] text-slate-400 hidden sm:inline">Zoom Level: <span class="text-white font-mono font-medium">1:250 (High-Res)</span></span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="px-2.5 py-1 rounded-lg bg-[#171b29] hover:bg-[#22283d] text-slate-300 border border-white/10 flex items-center gap-1 text-[11px] transition-colors">
+<span class="material-symbols-outlined text-[14px]">straighten</span>
+                Measure Distance
+              </button>
+<button class="px-2.5 py-1 rounded-lg bg-[#171b29] hover:bg-[#22283d] text-slate-300 border border-white/10 flex items-center gap-1 text-[11px] transition-colors">
+<span class="material-symbols-outlined text-[14px]">add_location_alt</span>
+                Add Marker
+              </button>
+<button class="px-2.5 py-1 rounded-lg bg-[#171b29] hover:bg-[#22283d] text-slate-300 border border-white/10 flex items-center gap-1 text-[11px] transition-colors">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+                Sync Drone Survey
+              </button>
+</div>
+</div>
+</div>
+<!-- Right Column: "Plot Details & Spatial Telemetry" inspection drawer/card -->
+<div class="lg:col-span-4 card-glass rounded-2xl p-5 flex flex-col justify-between border border-white/10 space-y-5">
+<div class="space-y-4">
+<!-- Header with Close/Options -->
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2">
+<div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[18px]">place</span>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white">Plot Details &amp; Spatial Telemetry</h3>
+<p class="text-[11px] text-slate-400">Active selection inspector</p>
+</div>
+</div>
+<button class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors" title="Options">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Plot ID & Status Header Banner -->
+<div class="p-3.5 rounded-xl bg-[#171b29] border border-white/10 flex items-center justify-between">
+<div>
+<span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Plot Identifier</span>
+<span class="text-2xl font-bold font-mono text-emerald-400">A-13</span>
+<span class="block text-[11px] text-slate-400">North Gardens Section • Row 3</span>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200 border border-slate-600 flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                  Occupied
+                </span>
+<span class="text-[10px] text-emerald-400 font-mono">Verified GPS</span>
+</div>
+</div>
+<!-- Occupant Summary Card -->
+<div class="p-3.5 rounded-xl bg-[#151926] border border-white/5 space-y-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600/30 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<div class="min-w-0 flex-1">
+<h4 class="text-sm font-bold text-white truncate">Eleanor Vance</h4>
+<p class="text-xs text-slate-400">1924 — 2011 (87 years)</p>
+</div>
+<span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950/70 border border-emerald-500/30 text-emerald-400 font-mono">DECEASED</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 text-xs">
+<div>
+<span class="text-[10px] text-slate-500 uppercase block font-medium">Burial Date</span>
+<span class="font-medium text-slate-200">Oct 12, 2011</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-500 uppercase block font-medium">Record ID</span>
+<a class="font-mono text-emerald-400 hover:underline flex items-center gap-1" href="#burial-records">
+                    REC-8902
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</a>
+</div>
+</div>
+</div>
+<!-- Spatial Data & Geodetic Telemetry -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-teal-400">explore</span>
+                  Spatial Data &amp; Geodetic Telemetry
+                </span>
+<span class="text-[10px] text-emerald-400 font-mono">WGS84 Datum</span>
+</div>
+<div class="p-3 rounded-xl bg-[#151926] border border-white/5 space-y-2">
+<div class="grid grid-cols-2 gap-2 text-xs">
+<div class="p-2 rounded-lg bg-[#0d1017] border border-white/5">
+<span class="text-[10px] text-slate-500 block">Latitude</span>
+<span class="font-mono font-semibold text-white text-xs">40.712800° N</span>
+</div>
+<div class="p-2 rounded-lg bg-[#0d1017] border border-white/5">
+<span class="text-[10px] text-slate-500 block">Longitude</span>
+<span class="font-mono font-semibold text-white text-xs">-74.006000° W</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 text-[11px] pt-1 border-t border-white/5">
+<div>
+<span class="text-[10px] text-slate-500 block">Elevation</span>
+<span class="font-mono text-slate-300">42.5m MSL</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-500 block">RTK Fix</span>
+<span class="text-emerald-400 font-medium">High (±0.02m)</span>
+</div>
+<div>
+<span class="text-[10px] text-slate-500 block">Surveyor</span>
+<span class="text-slate-300">J. Smith</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Headstone Media / Photogrammetry -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-emerald-400">photo_library</span>
+                  Headstone Media
+                </span>
+<span class="text-[10px] text-slate-500">OCR Inscription Verified</span>
+</div>
+<div class="flex items-center gap-3">
+<!-- Gravestone Preview Image -->
+<div class="w-24 h-24 rounded-xl bg-[#141723] border border-white/10 relative overflow-hidden flex-shrink-0 group">
+<img alt="Eleanor Vance Headstone" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUqYmmlfEwlVrBbKgcph9VQYqLZjZMbdvcqGEXlfC7cfwjwymUnSBHwNI3wAJtXiNKVWWbbOJGqtdCPRCXWe5pmSUBxuJM57-suGH_nFUPO-UBAfsYqSEYZ4TkrPOwGvUJVVj_i4Rg4S30b8UVAAxPzoaAZtaGThGFrIhg562HHqi2q2qAFYKYX2U6JcmDaDdBMqvcZQjbhqJsWZQQetnua0dpXUcBwukq2I7BVwkXFzL8tVC5VLBGd5z-h2xXQ90gOhOAyVX7nXN8">
+<span class="absolute bottom-1 right-1 bg-black/80 text-emerald-400 text-[9px] font-mono px-1 rounded">2.4MB</span>
+</div>
+<!-- Add Photo Action Tile -->
+<button class="w-24 h-24 rounded-xl border border-dashed border-white/15 hover:border-emerald-500/50 bg-[#121520] hover:bg-[#1a1f2e] text-slate-400 hover:text-emerald-400 transition-all flex flex-col items-center justify-center gap-1.5 flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">add_a_photo</span>
+<span class="text-[11px] font-medium">Add Photo</span>
+</button>
+<!-- Mini Info Callout -->
+<div class="flex-1 text-[11px] text-slate-400 space-y-1">
+<p class="text-slate-300 font-medium">Field Survey Photo #1</p>
+<p class="text-[10px] text-slate-500">Captured with RTK tag on Oct 2023</p>
+<div class="inline-flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-500/30">
+<span class="material-symbols-outlined text-[11px]">verified</span>
+                    Matched Registry
+                  </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Action Buttons -->
+<div class="pt-3 border-t border-white/10 space-y-2">
+<div class="grid grid-cols-2 gap-2">
+<button class="w-full py-2 bg-[#171b28] hover:bg-[#202538] border border-white/10 rounded-xl text-xs font-medium text-slate-200 transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+                Edit Plot Data
+              </button>
+<button class="w-full py-2 bg-[#171b28] hover:bg-[#202538] border border-white/10 rounded-xl text-xs font-medium text-teal-300 transition-colors flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">pin_drop</span>
+                Recalibrate Pin
+              </button>
+</div>
+<button class="w-full py-2.5 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:brightness-110 text-white font-medium text-xs rounded-xl shadow-lg shadow-emerald-900/40 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+              Verify &amp; Publish Plot
+            </button>
+</div>
+</div>
+</div>
+<!-- BEGIN: Bottom Section Mini Metrics Strip -->
+<section class="card-glass rounded-2xl p-4 border border-white/10 flex-shrink-0" data-purpose="map-metrics-strip">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-white/5">
+<!-- Metric 1 -->
+<div class="px-2 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 font-medium">Total Plots in Section</span>
+<p class="text-xl font-bold text-white font-mono mt-0.5">500</p>
+</div>
+<div class="p-2 rounded-xl bg-slate-800/40 text-slate-400 border border-white/5">
+<span class="material-symbols-outlined text-[20px]">grid_on</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="px-2 pt-2 md:pt-0 md:pl-4 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 font-medium">Occupied Capacity</span>
+<div class="flex items-baseline gap-2 mt-0.5">
+<p class="text-xl font-bold text-white font-mono">425</p>
+<span class="text-xs text-slate-400 font-mono font-medium">(85.0%)</span>
+</div>
+</div>
+<div class="p-2 rounded-xl bg-slate-800/50 text-slate-300 border border-slate-700/60">
+<span class="material-symbols-outlined text-[20px]">bed</span>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="px-2 pt-2 md:pt-0 md:pl-4 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 font-medium">Available Plots</span>
+<div class="flex items-baseline gap-2 mt-0.5">
+<p class="text-xl font-bold text-emerald-400 font-mono">65</p>
+<span class="text-xs text-emerald-400/80 font-mono">(13.0%)</span>
+</div>
+</div>
+<div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[20px]">check_box</span>
+</div>
+</div>
+<!-- Metric 4 -->
+<div class="px-2 pt-2 md:pt-0 md:pl-4 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-slate-400 font-medium">Pending Verification</span>
+<div class="flex items-baseline gap-2 mt-0.5">
+<p class="text-xl font-bold text-amber-400 font-mono">10</p>
+<span class="text-[11px] text-rose-400 font-medium flex items-center gap-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                  Needs review
+                </span>
+</div>
+</div>
+<div class="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- END: MainContentArea -->
+</div>
+<!-- END: Layout Body -->
+</div>
+<!-- END: WindowFrameContainer -->
+
+
+</body></html>

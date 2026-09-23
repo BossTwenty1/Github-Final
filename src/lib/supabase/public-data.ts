@@ -19,9 +19,10 @@ type PublicRow = {
   px_loc_x: number | null;
   px_loc_y: number | null;
   location_verified: boolean;
+  coordinate_status?: "pending" | "verified" | "rejected" | null;
 };
 
-const PUBLIC_COLUMNS = "interment_date,burial_id,display_name,birth_date,death_date,record_status,lot_code,area_name,sector_name,block_number,location_geom,px_loc_x,px_loc_y,location_verified";
+const PUBLIC_COLUMNS = "interment_date,burial_id,display_name,birth_date,death_date,record_status,lot_code,area_name,sector_name,block_number,location_geom,px_loc_x,px_loc_y,location_verified,coordinate_status";
 
 export class PublicDataUnavailableError extends Error {
   constructor() { super("Search is temporarily unavailable—try again."); }
@@ -96,6 +97,8 @@ function toPublicRecord(row: PublicRow): PublicBurialRecord {
   const dates = [row.birth_date?.slice(0, 4), row.death_date?.slice(0, 4)].filter(Boolean).join(" – ") || "Dates not recorded";
   const section = row.area_name || row.sector_name || "Section not recorded";
   const rowLabel = row.block_number ? `Block ${row.block_number}` : "Location details not recorded";
+  const location = parsePoint(row.location_geom);
+  const coordinateStatus = getCoordinateStatus(row.coordinate_status, location, row.location_verified);
   return {
     id: String(row.burial_id),
     name: row.display_name,
@@ -109,9 +112,10 @@ function toPublicRecord(row: PublicRow): PublicBurialRecord {
     matchType: row.match_type,
     burialDate: row.interment_date ? formatDate(row.interment_date) : "Not recorded",
     status: "Active",
-    location: parsePoint(row.location_geom),
+    location,
     pixelLocation: row.px_loc_x !== null && row.px_loc_y !== null ? { x: row.px_loc_x, y: row.px_loc_y } : null,
-    locationVerified: row.location_verified,
+    coordinateStatus,
+    locationVerified: coordinateStatus === "verified" && Boolean(location),
     tone: "result-media--lawn",
   };
 }
@@ -146,6 +150,13 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
 }
 
+function getCoordinateStatus(status: PublicRow["coordinate_status"], location: PublicBurialRecord["location"], verified: boolean) {
+  if (!location) return "missing" as const;
+  if (status === "verified" && verified) return "verified" as const;
+  if (status === "rejected") return "rejected" as const;
+  return "pending" as const;
+}
+
 export function getMockFallbackRecords() {
   return gravesites;
 }
@@ -155,5 +166,5 @@ function shouldUseMockData() {
 }
 
 function toFallbackRecord(record: (typeof gravesites)[number]): PublicBurialRecord {
-  return { ...record, birthDate: null, deathDate: null, status: "Active", location: null, pixelLocation: null, locationVerified: true };
+  return { ...record, birthDate: null, deathDate: null, status: "Active", location: null, pixelLocation: null, coordinateStatus: "missing", locationVerified: false };
 }

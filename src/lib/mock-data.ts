@@ -66,7 +66,7 @@ export function filterGravesites({ query = "", section = "all", year = "any" } =
   const normalizedQuery = normalizeSearchValue(query);
 
   return gravesites.filter((record) => {
-    const matchesQuery = !normalizedQuery || normalizeSearchValue(record.name).includes(normalizedQuery);
+    const matchesQuery = !normalizedQuery || [record.name, record.plot, record.plotLabel].some((value) => normalizeSearchValue(value).includes(normalizedQuery));
     const matchesSection = section === "all" || !section || record.section === section;
     const matchesYear = year === "any" || !year || (year === "1800-1899" && record.deathYear < 1900) || (year === "1900-1999" && record.deathYear >= 1900 && record.deathYear < 2000);
     return matchesQuery && matchesSection && matchesYear;

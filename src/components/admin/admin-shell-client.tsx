@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ChangeEvent, ReactNode } from "react";
 import { signOut } from "@/lib/auth-client";
@@ -18,6 +18,8 @@ export function AdminShellClient({ children, active, staff }: { children: ReactN
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [loggingOut, setLoggingOut] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
   const initials = staff.username.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "GN";
 
   async function logout() {
@@ -26,12 +28,30 @@ export function AdminShellClient({ children, active, staff }: { children: ReactN
     router.push("/admin/login");
   }
 
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    drawerRef.current?.querySelector<HTMLElement>("a, button")?.focus();
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setSidebarOpen(false);
+      menuButtonRef.current?.focus();
+    }
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [sidebarOpen]);
+
   return <div className="admin-shell">
-    <div className={`admin-dimmer ${sidebarOpen ? "admin-dimmer--open" : ""}`} onClick={() => setSidebarOpen(false)} />
-    <div className={`admin-drawer ${sidebarOpen ? "admin-drawer--open" : ""}`}><AdminSidebar active={active} role={staff.role} onLogout={logout} onNavigate={() => setSidebarOpen(false)} /></div>
+    <a className="skip-link" href="#admin-main-content">Skip to main content</a>
+    <button aria-label="Close administrator navigation" className={`admin-dimmer ${sidebarOpen ? "admin-dimmer--open" : ""}`} onClick={() => setSidebarOpen(false)} tabIndex={sidebarOpen ? 0 : -1} type="button" />
+    <div className={`admin-drawer ${sidebarOpen ? "admin-drawer--open" : ""}`} id="admin-navigation-drawer" ref={drawerRef}><AdminSidebar active={active} role={staff.role} onClose={() => { setSidebarOpen(false); menuButtonRef.current?.focus(); }} onLogout={logout} onNavigate={() => setSidebarOpen(false)} /></div>
     <div className="admin-main">
       <header className="admin-header">
-        <Button aria-label="Open administrator navigation" className="admin-menu-button" onClick={() => setSidebarOpen(true)} size="sm" variant="quiet" icon="menu"><span className="sr-only">Open menu</span></Button>
+        <Button aria-controls="admin-navigation-drawer" aria-expanded={sidebarOpen} aria-label="Open administrator navigation" className="admin-menu-button" onClick={() => setSidebarOpen(true)} ref={menuButtonRef} size="sm" variant="quiet" icon="menu"><span className="sr-only">Open menu</span></Button>
         <div className="admin-search"><Input aria-label="Search administrator records" icon="search" onChange={(event: ChangeEvent<HTMLInputElement>) => setSearch(event.target.value)} placeholder="Search records, plots, or names..." value={search} />{search ? <div className="admin-search-results" role="status"><p>Use Burial Records to search the protected operational dataset.</p><Link href={`/admin/burial-records?query=${encodeURIComponent(search)}`} onClick={() => setSearch("")}>Search for “{search}”</Link></div> : null}</div>
         <div className="admin-header__actions">
           <span className="admin-role-badge">{localSupabaseConfig.environmentLabel}</span>
@@ -43,7 +63,7 @@ export function AdminShellClient({ children, active, staff }: { children: ReactN
           <button className="admin-logout-button" disabled={loggingOut} onClick={logout} type="button">{loggingOut ? "Signing out..." : "Sign out"}</button>
         </div>
       </header>
-      <main className="admin-content"><StaffContext.Provider value={staff}>{children}</StaffContext.Provider></main>
+      <main className="admin-content" id="admin-main-content" tabIndex={-1}><StaffContext.Provider value={staff}>{children}</StaffContext.Provider></main>
     </div>
   </div>;
 }

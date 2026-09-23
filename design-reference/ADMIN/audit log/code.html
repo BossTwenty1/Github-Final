@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Audit Log - GraveNav Admin</title>
+<!-- Tailwind CSS v3 with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            surface: {
+              base: '#090d16',
+              card: '#111625',
+              hover: '#181f33',
+              border: '#1e2638',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+</script>
+<style data-purpose="custom-enhancements">
+    /* Custom dark scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e2638;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2b364e;
+    }
+
+    .bg-radial-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.07) 0%, transparent 60%);
+    }
+
+    .card-glass {
+      background: #111625;
+      border: 1px solid #1e2638;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-glass:hover {
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+</style>
+</head>
+<body class="bg-[#090d16] text-[#94a3b8] font-sans antialiased min-h-screen flex flex-col bg-radial-glow selection:bg-brand-500 selection:text-white">
+<!-- BEGIN: TopBar Header (Flush edge-to-edge, matching redesigned layout) -->
+<header class="bg-[#090d16] border-b border-[#1e2638] px-5 sm:px-6 flex items-center justify-between select-none sticky top-0 z-40 h-16 w-full">
+<!-- Brand on Top Left -->
+<div class="flex items-center gap-3 w-64 flex-shrink-0">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 flex items-center justify-center">
+<div class="w-full h-full bg-[#0d111b] rounded-[10px] flex items-center justify-center">
+<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 2L4 12h5v8h6v-8h5L12 2z"></path>
+</svg>
+</div>
+</div>
+<div>
+<h1 class="text-white font-semibold tracking-wide text-sm leading-tight flex items-center gap-1.5">
+        GraveNav
+        <span class="text-[10px] bg-brand-900/60 text-brand-400 px-1.5 py-0.2 rounded border border-brand-500/30 font-medium tracking-normal">ADMIN</span>
+</h1>
+<p class="text-[11px] text-slate-400">Cemetery Management</p>
+</div>
+</div>
+<!-- Center Search Bar -->
+<div class="flex-1 max-w-xl mx-4 hidden md:block">
+<div class="relative flex items-center bg-[#111625] rounded-full border border-[#1e2638] px-3.5 py-1.5 focus-within:border-brand-500/60 transition-all">
+<svg class="w-4 h-4 text-slate-400 mr-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input class="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full border-0 p-0 focus:ring-0" placeholder="Search records, plots, or names..." type="text"/>
+<button class="bg-[#1a2133] hover:bg-brand-600 hover:text-white text-slate-300 text-[11px] font-medium px-3 py-1 rounded-full border border-[#1e2638] transition-colors ml-2 flex-shrink-0">
+        Search
+      </button>
+</div>
+</div>
+<!-- Right Utility Header -->
+<div class="flex items-center gap-3 justify-end">
+<!-- Open Public Site Badge Link -->
+<a class="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 px-3 py-1.5 rounded-full transition-colors font-medium" href="#">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+      Open Public Site
+    </a>
+<!-- Notifications button with badge -->
+<button class="w-8 h-8 rounded-full bg-[#111625] hover:bg-[#181f33] border border-[#1e2638] flex items-center justify-center text-slate-300 relative transition-colors" title="Notifications">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="w-2 h-2 rounded-full bg-brand-500 absolute top-1.5 right-1.5 ring-2 ring-[#090d16]"></span>
+</button>
+<!-- Help Icon -->
+<button class="w-8 h-8 rounded-full bg-[#111625] hover:bg-[#181f33] border border-[#1e2638] flex items-center justify-center text-slate-300 transition-colors" title="Help &amp; Documentation">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Theme Mode Toggle -->
+<div class="flex items-center bg-[#111625] p-0.5 rounded-full border border-[#1e2638]">
+<button class="p-1 rounded-full text-slate-400 hover:text-white transition-colors" title="Light mode">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<button class="p-1 rounded-full bg-brand-600 text-white shadow-sm" title="Dark mode active">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Admin Top Right Avatar -->
+<div class="flex items-center pl-2 border-l border-[#1e2638]">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaTAYmjU1GgNrPZ0VCa5K3BAla2l5oyupqPKjq7vXpzKt-Tf00v-QOuJLA6GkcH9TIlOvtRa9w_t4vk-IMQm7QVVYkEKtgpO1vwKX5VXbhLNAgoOiInpq7QHxunwJblXcZC4rNCsXzizWSq96dasSIj53fjqg4UmNGCgdipTkzEAsEDmwVqcP7cMTWgiLf8T4wlUu-WsL4i2L82RdvU4sjeDjVM9US9fvwgywDv7GbmWrU5R3DM0VHXTwGYuWdk_Yj5a4"/>
+</div>
+</div>
+</header>
+<!-- END: TopBar Header -->
+<!-- BEGIN: Main Layout Frame -->
+<div class="flex flex-1 overflow-hidden">
+<!-- BEGIN: LeftSidebar -->
+<aside class="w-64 bg-[#0d111b] border-r border-[#1e2638] flex flex-col justify-between flex-shrink-0 select-none min-h-[calc(100vh-4rem)]">
+<div>
+<!-- Main Menu Section -->
+<div class="px-4 pt-5">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Main Menu</p>
+<nav class="space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Dashboard</span>
+</a>
+<!-- Burial Records -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Burial Records</span>
+</a>
+<!-- Cemetery Map -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Cemetery Map</span>
+</a>
+<!-- Coordinate Verification -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Coordinate Verification</span>
+<span class="ml-auto text-[10px] bg-red-950/70 text-red-400 border border-red-500/40 px-1.5 py-0.2 rounded font-semibold">45</span>
+</a>
+<!-- Plot Management -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Plot Management</span>
+</a>
+<!-- Photos -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Photos</span>
+</a>
+</nav>
+</div>
+<!-- Management & System Group -->
+<div class="px-4 pt-6">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Management &amp; System</p>
+<nav class="space-y-1">
+<!-- Reports -->
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Reports</span>
+</a>
+<!-- ACTIVE: Audit Log -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600/20 to-teal-500/10 text-emerald-400 font-medium text-xs border border-brand-500/30 shadow-sm transition-all group" href="#">
+<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Audit Log</span>
+<span class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Sidebar Bottom: Support, Log Out & Admin Profile Widget -->
+<div class="p-4 border-t border-[#1e2638] space-y-2">
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-rose-400 transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Log Out</span>
+</a>
+<!-- Administrator Profile Mini Widget -->
+<div class="pt-2">
+<div class="p-2.5 rounded-xl bg-[#131724] border border-[#1e2638] flex items-center gap-3">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxoCXIF8JREW2wXU_MzDTaesfsSJos63hkb8d89icmDSjP4a8yha8oXdIXWomaf99gIeVIvBQQNNI5pRHBzJtGqYjUyC-KuQj43Lu-bP0WpGfFMgh8EpAGSCuWIsBdOuzAulT0L7AieTm1vQ2LTnx1SXPxO_RHxENYw-kGyAi60AilSUyqCCYMXgPd-6yHMP22NaoeSyO8f9_3tpAFnFgZHSHK8UejUwmlsdBnGU9OiXcYlPetbIu2uK-IBbrbX5yydeI"/>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-medium text-white truncate">Sarah Jenkins</p>
+<p class="text-[11px] text-slate-400 truncate">admin@gravenav.com</p>
+</div>
+<button class="text-slate-500 hover:text-white transition-colors" title="User Actions">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- END: LeftSidebar -->
+<!-- BEGIN: MainContentArea -->
+<main class="flex-1 overflow-y-auto p-5 sm:p-6 lg:p-8 space-y-6 bg-[#090d16]">
+<!-- PAGE HEADER -->
+<section class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+<div>
+<h2 class="text-2xl font-bold text-white tracking-tight">Audit Log</h2>
+<p class="text-xs text-slate-400 mt-1">Review system changes, administrative actions, and data modifications across cemetery records.</p>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Filter by Date Button -->
+<div class="flex items-center bg-[#111625] border border-[#1e2638] rounded-xl px-3 py-1.5 text-xs text-slate-300">
+<svg class="w-3.5 h-3.5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Oct 18 - Oct 24</span>
+<span class="mx-2 text-slate-600">|</span>
+<span class="text-slate-400">Past 7 Days</span>
+<svg class="w-3 h-3 text-slate-500 ml-1.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<!-- Advanced Filters Button -->
+<button class="flex items-center gap-2 bg-[#111625] hover:bg-[#181f33] border border-[#1e2638] px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-200 transition-all">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Advanced Filters</span>
+</button>
+<!-- Export Log Button -->
+<button class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:brightness-110 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-lg shadow-emerald-900/40 transition-all active:scale-95">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Export Log (CSV/JSON)</span>
+</button>
+</div>
+</section>
+<!-- KPI / SUMMARY CARDS ROW -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Total Logs -->
+<div class="card-glass rounded-2xl p-4 relative transition-all duration-200 hover:-translate-y-0.5">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Total Logs</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-white tracking-tight">1,248</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>+84 this week</span>
+</div>
+</div>
+</div>
+<!-- Record Updates -->
+<div class="card-glass rounded-2xl p-4 relative transition-all duration-200 hover:-translate-y-0.5">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Record Updates</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-white tracking-tight">842</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-slate-400">
+<span class="text-teal-400 font-semibold">67.4%</span>
+<span class="text-slate-600">•</span>
+<span>All modifications</span>
+</div>
+</div>
+</div>
+<!-- Verifications -->
+<div class="card-glass rounded-2xl p-4 relative transition-all duration-200 hover:-translate-y-0.5">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Verifications</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-white tracking-tight">310</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-slate-400">
+<span class="text-sky-400 font-semibold">GPS Verified</span>
+<span class="text-slate-600">•</span>
+<span>Surveys approved</span>
+</div>
+</div>
+</div>
+<!-- System Batch Events -->
+<div class="card-glass rounded-2xl p-4 relative transition-all duration-200 hover:-translate-y-0.5">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Batch / API Events</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-teal-400 tracking-tight">96</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-teal-400 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+<span>All background jobs ok</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SLEEK FILTER CONTROLS BAR -->
+<section class="card-glass rounded-2xl p-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+<!-- Date Range Filter -->
+<div class="bg-[#151a29] border border-[#1e2638] rounded-xl px-3.5 py-2 flex flex-col justify-center">
+<div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-500 mb-1">
+<span>Date Range</span>
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<select class="bg-transparent border-0 p-0 text-xs text-white focus:ring-0 cursor-pointer font-medium">
+<option class="bg-[#111625] text-white">Last 7 Days</option>
+<option class="bg-[#111625] text-white">Last 30 Days</option>
+<option class="bg-[#111625] text-white">This Month</option>
+<option class="bg-[#111625] text-white">Custom Range...</option>
+</select>
+</div>
+<!-- Administrator Filter -->
+<div class="bg-[#151a29] border border-[#1e2638] rounded-xl px-3.5 py-2 flex flex-col justify-center">
+<div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-500 mb-1">
+<span>Administrator</span>
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<select class="bg-transparent border-0 p-0 text-xs text-white focus:ring-0 cursor-pointer font-medium">
+<option class="bg-[#111625] text-white">All Administrators</option>
+<option class="bg-[#111625] text-white">Sarah Jenkins (System Admin)</option>
+<option class="bg-[#111625] text-white">Mark Thompson (Editor)</option>
+<option class="bg-[#111625] text-white">API Service Account</option>
+</select>
+</div>
+<!-- Action Type Filter -->
+<div class="bg-[#151a29] border border-[#1e2638] rounded-xl px-3.5 py-2 flex flex-col justify-center">
+<div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-500 mb-1">
+<span>Action Type</span>
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<select class="bg-transparent border-0 p-0 text-xs text-white focus:ring-0 cursor-pointer font-medium">
+<option class="bg-[#111625] text-white">All Actions</option>
+<option class="bg-[#111625] text-white">Update Record</option>
+<option class="bg-[#111625] text-white">Create Record</option>
+<option class="bg-[#111625] text-white">Delete Record</option>
+<option class="bg-[#111625] text-white">Coordinate Verify</option>
+<option class="bg-[#111625] text-white">Batch Update</option>
+</select>
+</div>
+<!-- Search Logs Input -->
+<div class="bg-[#151a29] border border-[#1e2638] rounded-xl px-3.5 py-2 flex flex-col justify-center">
+<div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-500 mb-1">
+<span>Search Filter</span>
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<input class="bg-transparent border-0 p-0 text-xs text-white placeholder-slate-500 focus:ring-0 font-medium" placeholder="Search logs by user, plot, or change..." type="text"/>
+</div>
+</div>
+</section>
+<!-- AUDIT LOG DATA TABLE CARD -->
+<section class="card-glass rounded-2xl p-5 overflow-hidden">
+<!-- Card Title Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#1e2638]">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-sm font-semibold text-white">System Activity &amp; Audit Trail</h3>
+<span class="px-2 py-0.5 text-[10px] rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-500/40 font-semibold">
+                Live Feed
+              </span>
+</div>
+<p class="text-[11px] text-slate-400">Timestamped record of administrative actions and field synchronizations</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-400">Auto-refresh:</span>
+<span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Every 30s
+          </span>
+</div>
+</div>
+<!-- High-Density Responsive Table -->
+<div class="overflow-x-auto mt-2">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-[#1e2638] bg-[#0c101b]/60">
+<th class="py-3 px-4 whitespace-nowrap">Timestamp</th>
+<th class="py-3 px-4 whitespace-nowrap">Administrator</th>
+<th class="py-3 px-4 whitespace-nowrap">Action</th>
+<th class="py-3 px-4 whitespace-nowrap">Record / Target</th>
+<th class="py-3 px-4">Details (Previous → New)</th>
+<th class="py-3 px-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#1e2638] text-xs text-slate-300">
+<!-- Row 1: Update Record -->
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="py-3.5 px-4 align-top">
+<div class="text-white font-semibold whitespace-nowrap">Oct 24, 2023</div>
+<div class="text-slate-400 text-[11px] font-mono whitespace-nowrap">14:32:01 EST</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300 flex items-center justify-center text-[10px] font-bold">
+                    SJ
+                  </div>
+<span class="text-slate-200 font-medium">Sarah Jenkins</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 text-[11px] font-medium border border-emerald-500/30">
+                  Update Record
+                </span>
+</td>
+<td class="py-3.5 px-4 align-top font-mono">
+<span class="px-2 py-0.5 rounded-md bg-[#181f33] text-emerald-400 font-semibold border border-[#1e2638]">Plot A-42</span>
+<div class="text-slate-400 text-[11px] font-sans mt-0.5">Burial Entry #8921</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col gap-1.5">
+<!-- Coordinates Diff -->
+<div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+<span class="text-slate-400 font-mono">Coordinates:</span>
+<span class="line-through text-rose-400 bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-500/20 font-mono">34.0522° N, 118.2437° W</span>
+<span class="text-slate-400">→</span>
+<span class="text-emerald-300 font-medium bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">34.0525° N, 118.2440° W</span>
+</div>
+<!-- Status Diff -->
+<div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+<span class="text-slate-400 font-mono">Status:</span>
+<span class="line-through text-amber-400 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-500/20">Unverified</span>
+<span class="text-slate-400">→</span>
+<span class="text-emerald-400 font-semibold bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-500/30">Verified</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<button class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2: Create Record -->
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="py-3.5 px-4 align-top">
+<div class="text-white font-semibold whitespace-nowrap">Oct 24, 2023</div>
+<div class="text-slate-400 text-[11px] font-mono whitespace-nowrap">11:15:44 EST</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center text-[10px] font-bold">
+                    MT
+                  </div>
+<span class="text-slate-200 font-medium">Mark Thompson</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-sky-950/60 text-sky-400 text-[11px] font-medium border border-sky-500/30">
+                  Create Record
+                </span>
+</td>
+<td class="py-3.5 px-4 align-top font-mono">
+<span class="px-2 py-0.5 rounded-md bg-[#181f33] text-emerald-400 font-semibold border border-[#1e2638]">Plot C-11</span>
+<div class="text-slate-400 text-[11px] font-sans mt-0.5">New Entry</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="text-[12px] text-slate-300 leading-relaxed">
+                  Initial record creation. Assigned to <span class="text-white font-medium">Section C, Row 2</span>. Status set to
+                  <span class="inline-flex items-center gap-1 text-[11px] text-amber-400 bg-amber-950/40 border border-amber-500/30 px-1.5 py-0.2 rounded">
+<span class="w-1 h-1 rounded-full bg-amber-400"></span>Pending Verification
+                  </span>.
+                </div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<button class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3: Delete Record (Soft-Delete) -->
+<tr class="hover:bg-rose-950/10 transition-colors group bg-rose-950/[0.05]">
+<td class="py-3.5 px-4 align-top">
+<div class="text-white font-semibold whitespace-nowrap">Oct 23, 2023</div>
+<div class="text-slate-400 text-[11px] font-mono whitespace-nowrap">09:05:12 EST</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300 flex items-center justify-center text-[10px] font-bold">
+                    SJ
+                  </div>
+<span class="text-slate-200 font-medium">Sarah Jenkins</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-950/80 text-rose-400 text-[11px] font-medium border border-rose-500/40">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Delete Record
+                </span>
+</td>
+<td class="py-3.5 px-4 align-top font-mono">
+<span class="px-2 py-0.5 rounded-md bg-rose-950/30 text-rose-300 font-semibold border border-rose-500/30">Plot B-88</span>
+<span class="text-[10px] text-rose-400 block mt-0.5">(Duplicate)</span>
+<div class="text-slate-400 text-[11px] font-sans mt-0.5">Burial Entry #1002</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="text-[12px] text-slate-300 leading-relaxed">
+                  Record marked as soft-deleted. Reason provided: <span class="italic text-slate-200 bg-[#151926] px-1.5 py-0.5 rounded border border-[#1e2638]">"Duplicate entry for John Doe, merging with Plot B-89."</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<button class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4: Batch Update -->
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="py-3.5 px-4 align-top">
+<div class="text-white font-semibold whitespace-nowrap">Oct 23, 2023</div>
+<div class="text-slate-400 text-[11px] font-mono whitespace-nowrap">08:30:00 EST</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-teal-950 border border-teal-500/40 text-teal-300 flex items-center justify-center text-[10px]">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+</div>
+<span class="text-slate-200 font-medium">API Service</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-teal-950/60 text-teal-300 text-[11px] font-medium border border-teal-500/30">
+                  Batch Update
+                </span>
+</td>
+<td class="py-3.5 px-4 align-top font-mono">
+<span class="px-2 py-0.5 rounded-md bg-[#181f33] text-teal-300 font-semibold border border-[#1e2638]">Section D (All)</span>
+<div class="text-slate-400 text-[11px] font-sans mt-0.5">45 Records Affected</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+<span class="text-slate-400 font-mono">Zone Tag:</span>
+<span class="line-through text-rose-400 bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-500/20 font-mono">North_West</span>
+<span class="text-slate-400">→</span>
+<span class="text-teal-300 font-medium bg-teal-950/40 px-1.5 py-0.5 rounded border border-teal-500/30 font-mono">NorthWest_Sector</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<button class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5: Coordinate Verify -->
+<tr class="hover:bg-white/[0.02] transition-colors group">
+<td class="py-3.5 px-4 align-top">
+<div class="text-white font-semibold whitespace-nowrap">Oct 22, 2023</div>
+<div class="text-slate-400 text-[11px] font-mono whitespace-nowrap">16:40:19 EST</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300 flex items-center justify-center text-[10px] font-bold">
+                    SJ
+                  </div>
+<span class="text-slate-200 font-medium">Sarah Jenkins</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 text-[11px] font-medium border border-emerald-500/30">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Coordinate Verify
+                </span>
+</td>
+<td class="py-3.5 px-4 align-top font-mono">
+<span class="px-2 py-0.5 rounded-md bg-[#181f33] text-emerald-400 font-semibold border border-[#1e2638]">Plot A-15-02</span>
+<div class="text-slate-400 text-[11px] font-sans mt-0.5">High Discrepancy Resolved</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="text-[12px] text-slate-300 leading-relaxed">
+                  Field GPS verified by ground surveyor. Error margin successfully reduced to <span class="text-emerald-400 font-mono font-medium">±1.2m</span>. Grid calibration locked.
+                </div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<button class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- FOOTER PAGINATION -->
+<div class="mt-4 pt-4 border-t border-[#1e2638] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+<span class="text-slate-400">Showing <strong class="text-white font-medium">1 to 5</strong> of <strong class="text-white font-medium">1,248</strong> entries</span>
+<div class="flex items-center gap-1">
+<button class="px-3 py-1.5 rounded-xl bg-[#151926] border border-[#1e2638] text-slate-500 cursor-not-allowed text-xs font-medium" disabled="">
+            Prev
+          </button>
+<button class="w-8 h-8 rounded-xl bg-brand-600 text-white font-semibold text-xs border border-brand-500 shadow-sm flex items-center justify-center">
+            1
+          </button>
+<button class="w-8 h-8 rounded-xl bg-[#151926] hover:bg-[#1f2638] text-slate-300 font-medium text-xs border border-[#1e2638] transition-colors flex items-center justify-center">
+            2
+          </button>
+<button class="w-8 h-8 rounded-xl bg-[#151926] hover:bg-[#1f2638] text-slate-300 font-medium text-xs border border-[#1e2638] transition-colors flex items-center justify-center">
+            3
+          </button>
+<span class="px-2 text-slate-500">...</span>
+<button class="px-3 py-1.5 rounded-xl bg-[#151926] hover:bg-[#1f2638] border border-[#1e2638] text-slate-300 transition-colors text-xs font-medium">
+            Next
+          </button>
+</div>
+</div>
+</section>
+</main>
+<!-- END: MainContentArea -->
+</div>
+<!-- END: Main Layout Frame -->
+</body></html>

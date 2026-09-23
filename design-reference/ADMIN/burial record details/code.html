@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{width:6px;height:6px;}::-webkit-scrollbar-track{background:#0b0d13;}::-webkit-scrollbar-thumb{background:#1f2434;border-radius:9999px;}::-webkit-scrollbar-thumb:hover{background:#2e354b;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            50: '#ecfdf5',
+            100: '#d1fae5',
+            400: '#34d399',
+            500: '#10b981',
+            600: '#059669',
+            700: '#047857',
+            800: '#065f46',
+            900: '#064e3b',
+          }
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        }
+      }
+    }
+  }</script></head><body class="bg-[#0b0f17] font-sans text-sm text-slate-200 antialiased selection:bg-emerald-500 selection:text-white"><aside class="fixed left-0 top-0 h-full w-72 bg-[#0d111a] border-r border-[#1e2638] z-50 flex flex-col justify-between select-none"><div class="flex flex-col"><div class="h-16 flex items-center px-6 gap-3 border-b border-[#1e2638]/60"><div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 flex items-center justify-center shrink-0"><div class="w-full h-full bg-[#0d1018] rounded-[10px] flex items-center justify-center"><svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24"><path d="M12 2L4 12h5v8h6v-8h5L12 2z"></path></svg></div></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-bold text-sm tracking-tight text-white">GraveNav</span><span class="text-[10px] bg-emerald-950/80 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-semibold tracking-normal">ADMIN</span></div><span class="text-[10px] font-medium text-slate-400 tracking-wider uppercase">Cemetery Management</span></div></div><div class="px-4 py-4"><div class="px-3 pb-2"><span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Main Menu</span></div><nav class="space-y-1"><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="dashboard" href="#"><span class="material-symbols-outlined text-lg text-slate-400">dashboard</span><span>Dashboard</span></a><a class="flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-[#132d24] text-emerald-400 border border-emerald-500/30 font-semibold text-xs shadow-sm transition-all" data-path="burial-records" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-lg text-emerald-400">inventory_2</span><span>Burial Records</span></div><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="cemetery-map" href="#"><span class="material-symbols-outlined text-lg text-slate-400">map</span><span>Cemetery Map</span></a><a class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="coordinate-verification" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-lg text-slate-400">my_location</span><span>Coordinate Verification</span></div><span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full">45</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="plot-management" href="#"><span class="material-symbols-outlined text-lg text-slate-400">grid_on</span><span>Plot Management</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="photos" href="#"><span class="material-symbols-outlined text-lg text-slate-400">photo_library</span><span>Photos</span></a></nav></div><div class="px-4 py-2"><div class="px-3 pb-2"><span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Management &amp; System</span></div><nav class="space-y-1"><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="reports" href="#"><span class="material-symbols-outlined text-lg text-slate-400">bar_chart</span><span>Reports</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="audit-log" href="#"><span class="material-symbols-outlined text-lg text-slate-400">history</span><span>Audit Log</span></a><a class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="settings" href="#"><span class="material-symbols-outlined text-lg text-slate-400">settings</span><span>Settings</span></a></nav></div></div><div class="p-4 border-t border-[#1e2638]/60 space-y-2"><nav class="space-y-1"><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-[#182032] transition-colors text-xs font-medium" data-path="support" href="#"><span class="material-symbols-outlined text-lg">help_center</span><span>Support</span></a><a class="flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-red-950/40 hover:text-red-300 transition-colors text-xs font-semibold" data-path="login" href="#"><span class="material-symbols-outlined text-lg">logout</span><span>Log Out</span></a></nav><div class="pt-2"><div class="p-2.5 rounded-xl bg-[#141824] border border-[#1e2638] flex items-center gap-3"><img alt="Sarah Jenkins" class="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida/AEtjO1UV0Q2Zg18UAIUDZY0b_dfgoovDvgcCWBVU4K1ecHVBdSTtCX81LgDFNrlKFkqdDA5XqSDomW8iw5mJEswysuhikC29poBmpqmfL6GDyk9jp4gv-BBpOdHYY23qFNZDOA7YjRi0InPvQh8XvRtS3gqVtcqDZRKE2cppYMmeQv3zZ82r3Jx4r1pQYdzePIWl5-HlCcVxDDsoSzAyhj4PBTCxMK4exK3ARNfCbBIki6f2PZs56pFs4Pq26P6x9jzAq5_uGnAjQ1P4BD4"/><div class="flex-1 min-w-0"><p class="text-xs font-semibold text-white truncate leading-tight">Sarah Jenkins</p><p class="text-[11px] text-slate-400 truncate leading-tight mt-0.5">Super Admin</p></div><button class="text-slate-500 hover:text-slate-300 transition-colors" title="Account details" type="button"><span class="material-symbols-outlined text-base">more_vert</span></button></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-[#0d111a]/95 backdrop-blur-xl z-40 border-b border-[#1e2638] flex items-center justify-between px-8"><div class="flex items-center w-96"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3.5 text-slate-400 text-lg pointer-events-none">search</span><input class="w-full pl-10 pr-4 py-2 bg-[#151c2c] text-slate-100 placeholder-slate-500 border border-[#242f47] rounded-lg focus:outline-none focus:border-emerald-500/60 focus:bg-[#182032] text-xs font-normal transition-all" placeholder="Search records, plots, or names..." type="text"/></div></div><div class="flex items-center gap-3"><a class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#242f47] bg-[#151c2c] text-slate-200 hover:bg-[#1e2840] hover:text-white transition-all text-xs font-medium" data-path="cemetery-public-view" href="#"><span class="material-symbols-outlined text-sm text-emerald-400">open_in_new</span><span>Open Public Site</span></a><div class="flex items-center bg-[#131722] p-0.5 rounded-lg border border-[#242f47]"><button aria-label="Light mode" class="p-1 rounded-md text-slate-400 hover:text-white transition-colors" title="Light mode" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button><button aria-label="Dark mode active" class="p-1 rounded-md bg-emerald-600 text-white shadow-sm" title="Dark mode active" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button></div><button aria-label="Notifications" class="relative w-8 h-8 rounded-lg bg-[#151c2c] hover:bg-[#1e2840] border border-[#242f47] flex items-center justify-center text-slate-300 transition-colors" type="button"><span class="material-symbols-outlined text-base">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400"></span></button><button aria-label="Help Documentation" class="w-8 h-8 rounded-lg bg-[#151c2c] hover:bg-[#1e2840] border border-[#242f47] flex items-center justify-center text-slate-300 transition-colors" type="button"><span class="material-symbols-outlined text-base">help_outline</span></button><div class="flex items-center gap-3 pl-3 border-l border-[#1e2638]"><img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover ring-2 ring-emerald-500/40" src="https://lh3.googleusercontent.com/aida/AEtjO1UV0Q2Zg18UAIUDZY0b_dfgoovDvgcCWBVU4K1ecHVBdSTtCX81LgDFNrlKFkqdDA5XqSDomW8iw5mJEswysuhikC29poBmpqmfL6GDyk9jp4gv-BBpOdHYY23qFNZDOA7YjRi0InPvQh8XvRtS3gqVtcqDZRKE2cppYMmeQv3zZ82r3Jx4r1pQYdzePIWl5-HlCcVxDDsoSzAyhj4PBTCxMK4exK3ARNfCbBIki6f2PZs56pFs4Pq26P6x9jzAq5_uGnAjQ1P4BD4"/><div class="flex flex-col text-left"><span class="text-xs font-semibold leading-none text-white">Sarah Jenkins</span><span class="text-[11px] text-slate-400 leading-tight mt-0.5">Super Admin</span></div></div></div></header><main class="relative pt-16 min-h-screen bg-[#0b0f17]"><div class="flex flex-col w-full">
+<div class="p-8 max-w-7xl mx-auto w-full space-y-6">
+<!-- Top Navigation Breadcrumbs & Controls -->
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all font-body-sm text-body-sm" data-path="burial-records" href="#">
+<span class="material-symbols-outlined text-base">arrow_back</span>
+<span>Back to Burial Records</span>
+</a>
+<div class="flex items-center gap-2 font-label-caps text-label-caps text-secondary">
+<span>BURIAL RECORDS</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span>REC-2023-018</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-on-surface font-semibold">EVELYN HARPER</span>
+</div>
+</div>
+<!-- Actions Bar -->
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all flex items-center justify-center" title="Print Summary Card" type="button">
+<span class="material-symbols-outlined text-lg">print</span>
+</button>
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface transition-all font-body-sm text-body-sm" type="button">
+<span class="material-symbols-outlined text-lg">ios_share</span>
+<span>Export Record</span>
+</button>
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-surface-container-high hover:bg-error/20 text-on-surface-variant hover:text-error transition-all font-body-sm text-body-sm" type="button">
+<span class="material-symbols-outlined text-lg">archive</span>
+<span>Archive</span>
+</button>
+<a class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-all font-headline-md text-body-sm font-semibold shadow-md shadow-primary/20" data-path="edit-record" href="#">
+<span class="material-symbols-outlined text-base">edit_document</span>
+<span>Edit Record</span>
+</a>
+</div>
+</div>
+<!-- Record Header Hero Card -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-high p-6 shadow-sm">
+<div class="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+<div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="space-y-2">
+<div class="flex flex-wrap items-center gap-3">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Evelyn Harper</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-fixed/20 text-primary-fixed-variant font-label-caps text-label-caps font-bold tracking-wider uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+              Verified Record
+            </span>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-sm">public</span>
+              Public Domain
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-xs text-primary">gps_fixed</span>
+              RTK ±0.3m Acc.
+            </span>
+</div>
+<p class="font-body-lg text-body-lg text-secondary">
+            March 12, 1924 — October 4, 2011 • <span class="text-on-surface font-medium">Age 87</span> • Interned Plot <span class="font-semibold text-primary font-mono">A-402</span>
+</p>
+</div>
+<!-- Mini Quick-stats on Banner -->
+<div class="flex items-center gap-4 py-2 px-4 rounded-lg bg-surface-container font-body-sm text-body-sm">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Database Index</span>
+<span class="font-mono text-on-surface font-medium">REC-2023-018</span>
+</div>
+<div class="h-8 w-px bg-outline-variant/40"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Last Field Audit</span>
+<span class="text-on-surface font-medium">Oct 24, 2023</span>
+</div>
+<div class="h-8 w-px bg-outline-variant/40"></div>
+<div class="flex items-center justify-center">
+<button class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors" onclick="navigator.clipboard.writeText('https://gravenav.org/record/REC-2023-018'); alert('Permlink copied to clipboard!');" title="Copy Direct Permlink">
+<span class="material-symbols-outlined text-base">link</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- 4 High-Impact KPI Stat Cards (Cohesive with Burial Records List) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="p-5 rounded-xl bg-surface-container-high relative overflow-hidden transition-all hover:bg-surface-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Plot Location</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">pin_drop</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface">Sec A • P-402</p>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Block 2 • Row 14 • Plot 13</p>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-high relative overflow-hidden transition-all hover:bg-surface-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Interment Date</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface">Oct 10, 2011</p>
+<p class="font-body-sm text-body-sm text-secondary mt-1">6 days after passing</p>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-high relative overflow-hidden transition-all hover:bg-surface-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Deed Reference</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">verified_user</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface font-mono">#RES-2011-0492</p>
+<p class="font-body-sm text-body-sm text-primary font-medium mt-1">Endowed Perpetual Care</p>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-high relative overflow-hidden transition-all hover:bg-surface-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Surveyor Status</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg">satellite_alt</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface">Verified</p>
+<p class="font-body-sm text-body-sm text-secondary mt-1">By J. Smith (Geodetic Team)</p>
+</div>
+</div>
+<!-- 2-Column Bespoke Workspace Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Wide Column (8 cols): Deep Record Dossier -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Card: Biographical & Historical Timeline -->
+<div class="rounded-xl bg-surface-container-high p-6 space-y-6 shadow-sm">
+<div class="flex items-center justify-between pb-4 border-b border-surface-container">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl">person_book</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Biographical &amp; Vital Statistics</h2>
+</div>
+<span class="font-label-caps text-label-caps bg-surface-container px-2.5 py-1 rounded text-secondary">REGISTRY ARCHIVE 1924</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-body-sm text-body-sm">
+<!-- Birth Details -->
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<div class="flex items-center gap-2 text-secondary font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-sm text-primary">child_care</span>
+<span>BIRTH DETAILS</span>
+</div>
+<p class="text-on-surface font-semibold text-body-lg font-body-lg">March 12, 1924</p>
+<p class="text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span>
+                Cook County Hospital, Chicago, Illinois
+              </p>
+<p class="text-secondary text-xs">Father: Arthur J. Harper • Mother: Claire M. Vance</p>
+</div>
+<!-- Passing Details -->
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<div class="flex items-center gap-2 text-secondary font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-sm text-error">nightlight_round</span>
+<span>PASSING &amp; TRANSIT</span>
+</div>
+<p class="text-on-surface font-semibold text-body-lg font-body-lg">October 4, 2011</p>
+<p class="text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span>
+                Overlake Memorial Hospital, Seattle, WA
+              </p>
+<p class="text-secondary text-xs">Cause of Death: Natural Causes / Age Complications</p>
+</div>
+</div>
+<!-- Extended Relations and Veteran Information -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-body-sm text-body-sm pt-2">
+<div class="p-4 rounded-xl bg-surface-container flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-secondary">NEXT OF KIN / CONTACT</span>
+<div class="mt-2">
+<p class="text-on-surface font-semibold">Thomas Harper</p>
+<p class="text-secondary text-xs">Son • Estate Executor</p>
+<p class="text-primary font-mono text-xs mt-1">+1 (555) 912-3847</p>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-secondary">MILITARY / CIVIL HONOR</span>
+<div class="mt-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base">military_tech</span>
+<p class="text-on-surface font-semibold">US Cadet Nurse</p>
+</div>
+<p class="text-secondary text-xs mt-0.5">Corps Service (WWII 1944–1946)</p>
+<span class="inline-block mt-1 font-label-caps text-[10px] bg-primary-fixed/20 text-primary-fixed-variant px-1.5 py-0.5 rounded">VETERAN RECORD</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-secondary">MORTUARY SERVICE</span>
+<div class="mt-2">
+<p class="text-on-surface font-semibold">Bonney Watson</p>
+<p class="text-secondary text-xs">Seattle Chapel Operations</p>
+<p class="text-secondary text-xs mt-1">Director: Marcus Fletcher</p>
+</div>
+</div>
+</div>
+<!-- Narrative Bio Notes -->
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wide">Archival Biography &amp; In Memoriam Notes</span>
+<p class="text-on-surface leading-relaxed font-body-sm text-body-sm">
+              Evelyn served as an emergency civilian triage nurse during World War II in the Pacific Northwest staging hospitals before serving 34 years as Head of Pediatric Nursing at Providence Hospital. Preceded in death by her spouse of 54 years, Kenneth Vance Harper (interned adjacent, Plot A-401). Beloved grandmother of seven and great-grandmother of four.
+            </p>
+</div>
+</div>
+<!-- Card: Monument & Field Survey Photography -->
+<div class="rounded-xl bg-surface-container-high p-6 space-y-6 shadow-sm">
+<div class="flex items-center justify-between pb-4 border-b border-surface-container">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl">photo_camera</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Headstone &amp; Monument Media</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-secondary">3 PHOTOS CAPTURED</span>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container text-primary hover:bg-surface-variant text-xs font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-sm">add_photo_alternate</span>
+<span>Upload Media</span>
+</button>
+</div>
+</div>
+<!-- Primary Photo Display with OCR Inscription Extraction -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<div class="md:col-span-7 relative group rounded-xl overflow-hidden bg-surface-container aspect-[4/3]">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="High quality close up photorealistic documentary view of an engraved gray granite cemetery headstone with carved lettering reading Evelyn Harper 1924 2011 with morning soft sun casting gentle shadows and dewdrops on lush green cemetery grass around the granite base" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIF4DPvud-aGRxVPws3I1cKVgF4GNh-MiFJm6KWnhexNtwYJrG4rmLM4GHhywWpa8XaFwK8dFMha2JylbgEzs39BStMxfeRu2fwxWeqbfhhAysBqgL0q5BIUWYgdsEfLOzTmsNMJQoMP1Mga9tPUCDB5dqVNt05P15Fy5Nc6F9bB3lCqdsB6cd9E6rQ97hBJ5XQnQ2fJB_Taw1eZHyaoBp-ZqDqz_u_t-CKQI9LcnDxOoCB_eBD3oRIw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim/90 via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded bg-inverse-surface/80 backdrop-blur-md text-inverse-on-surface font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-xs text-primary-fixed">document_scanner</span>
+<span>OCR INSCRIPTION VERIFIED</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 flex items-end justify-between">
+<div class="text-white text-xs">
+<p class="font-semibold">Monument Front (High Res)</p>
+<p class="text-slate-300 text-[11px]">RAW • 61.2 MP • Photographed Oct 24, 2023</p>
+</div>
+<button class="p-2 rounded-lg bg-surface-container-highest/80 text-white hover:bg-surface-container-highest backdrop-blur-md transition-all">
+<span class="material-symbols-outlined text-base">zoom_in</span>
+</button>
+</div>
+</div>
+<!-- Inscription OCR Breakdown & Secondary Thumbnails -->
+<div class="md:col-span-5 flex flex-col justify-between space-y-4">
+<div class="p-4 rounded-xl bg-surface-container space-y-2">
+<div class="flex items-center justify-between text-secondary font-label-caps text-label-caps">
+<span>TRANSCRIPTION (OCR)</span>
+<span class="text-primary font-semibold">100% CONFIDENCE</span>
+</div>
+<blockquote class="p-2.5 rounded bg-surface-container-high border-l-2 border-primary text-on-surface font-mono text-xs leading-relaxed italic">
+                  “EVELYN HARPER<br/>
+                  MAR. 12, 1924 – OCT. 4, 2011<br/>
+                  DEVOTED MOTHER • HEALER OF HEARTS<br/>
+                  CADET NURSE CORPS WWII<br/>
+                  RESTING IN EVERLASTING PEACE”
+                </blockquote>
+<div class="flex items-center justify-between text-[11px] text-secondary pt-1">
+<span>Monument Style: Upright Granite</span>
+<span>Orientation: East Facing</span>
+</div>
+</div>
+<!-- Media Thumbnails Grid -->
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square rounded-lg overflow-hidden relative border-2 border-primary group">
+<img class="w-full h-full object-cover" data-alt="Close up architectural detail of carved floral motifs and cross carving on granite headstone edge in a historic cemetery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG6-fQs6DUWL_Qe0GaA3vCclYOSeTlXUpjrmMf4sq3F6wA9KoI0IFl0rXrkgURwu8iiCoh0wZjGyOrdrLblJ4qizL7ZdD4FBsqmDE5uK8Ge_R64BSyHFMvzImd0ai7Rr3vr4-W70q6h3hR2qo3op5xLZG1a1pCloFrh3zr04xWd_XinYqnziGcIl9fYL9pZAbpvpRiP4ZhY5YxubVgGuG_fjYiIajQVQ_VPGw0l7wxrGx7cbK3C8PSxQ"/>
+<span class="absolute bottom-1 right-1 px-1 rounded bg-black/70 text-[9px] text-white">Carving</span>
+</div>
+<div class="aspect-square rounded-lg overflow-hidden relative opacity-80 hover:opacity-100 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="Wide perspective shot of cemetery row with neat grass and headstones in line under tall oak trees on a calm morning" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV323EJkF0K9J7wC5GuiQo4iRtqCaOg1ZtKnfrOrd9Iyx8bYltSHtLbeGeQ0O4bHQSkUIgbCeCom3HFQ0hOaB3AVgJpHr6ena66vq2WKC5VQuRi0dcy4ER2ZGu6fYwRAB6sxlQUzi1L0Y9Z3Rzjb600LdxjIEmA4FTNh3quIuXy3zNa8_M87mtCNGqmsdCOPZ_FNAG7k-DkHi5Y48_mQKHVfZ3GQ4_c_Kg5DTE1Tnf-2dZ91910XtdEg"/>
+<span class="absolute bottom-1 right-1 px-1 rounded bg-black/70 text-[9px] text-white">Context</span>
+</div>
+<button class="aspect-square rounded-lg bg-surface-container hover:bg-surface-variant flex flex-col items-center justify-center text-secondary hover:text-on-surface transition-all" type="button">
+<span class="material-symbols-outlined text-xl">add</span>
+<span class="text-[10px] font-medium mt-1">Add Photo</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (4 cols): Spatial Geolocation & Operational Controls -->
+<div class="lg:col-span-4 space-y-6">
+<!-- Card: Spatial Coordinates & Aerial Geolocation -->
+<div class="rounded-xl bg-surface-container-high p-5 space-y-4 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">my_location</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Spatial Pin &amp; RTK</h2>
+</div>
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" title="RTK Satellite Lock"></span>
+</div>
+<!-- Map View Display (Static Geo Container) -->
+<div class="w-full h-52 rounded-xl bg-cover bg-center relative overflow-hidden shadow-inner flex items-center justify-center" data-location="Lake View Cemetery, Seattle, WA" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBut50u_wqyqC_shrf4RcJxKKYp3rqQpih9kP1dDCIGCuxfaDD1kPldEcH8RHl1cXnw9_NnoXym7XCB3Ot3nilr7FX28Dm0XVEr_MpcnLzL9FgFAP5IJyCUfFEXL_EKDutb1_-dRCx__Olyy_4w2bxo04c76iLRZygr5_gUB1VoMk9iJBzRd9egHCQeNwDK3zfnOBR2TlE8LJXpDn89evZJIK_7rjntP11lYp1vB1X12OSLQLmQu8gCQw')">
+<div class="absolute inset-0 bg-inverse-surface/40 backdrop-blur-[1px]"></div>
+<!-- Radiating Marker Pin -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="relative flex items-center justify-center">
+<span class="absolute w-12 h-12 rounded-full bg-primary/40 animate-ping"></span>
+<span class="relative w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-base">person_pin</span>
+</span>
+</div>
+<div class="mt-2 px-2.5 py-1 rounded bg-inverse-surface/90 text-inverse-on-surface font-mono font-bold text-xs shadow-md">
+                Plot A-402
+              </div>
+</div>
+<!-- Mini Overlay GPS Pill -->
+<div class="absolute bottom-2 left-2 px-2 py-1 rounded bg-inverse-surface/85 text-inverse-on-surface text-[10px] font-mono">
+              47.6062° N, 122.3321° W
+            </div>
+</div>
+<!-- Coordinate Data Details -->
+<div class="space-y-2.5 font-mono text-xs">
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container">
+<span class="text-secondary font-sans text-xs">Latitude</span>
+<span class="text-on-surface font-semibold">47.60620000° N</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container">
+<span class="text-secondary font-sans text-xs">Longitude</span>
+<span class="text-on-surface font-semibold">-122.33210000° W</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container">
+<span class="text-secondary font-sans text-xs">Elevation MSL</span>
+<span class="text-on-surface font-semibold">42.50 meters</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container">
+<span class="text-secondary font-sans text-xs">Geodetic Datum</span>
+<span class="text-primary font-medium">WGS 84 / UTM Zone 10N</span>
+</div>
+</div>
+<!-- Interactive Actions -->
+<div class="grid grid-cols-2 gap-2 pt-1 font-body-sm text-body-sm">
+<a class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-variant text-on-surface transition-colors" data-path="cemetery-map" href="#">
+<span class="material-symbols-outlined text-base text-primary">map</span>
+<span>Open on Map</span>
+</a>
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-variant text-on-surface transition-colors" onclick="alert('RTK recalibration beacon dispatched to field tablet.');" type="button">
+<span class="material-symbols-outlined text-base">tune</span>
+<span>Recalibrate</span>
+</button>
+</div>
+</div>
+<!-- Card: Public Portal & QR Kiosk Link -->
+<div class="rounded-xl bg-surface-container-high p-5 space-y-4 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">qr_code_2</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Public Kiosk &amp; QR</h2>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary-fixed/20 text-primary-fixed-variant font-label-caps text-label-caps font-semibold">LIVE</span>
+</div>
+<div class="flex items-center gap-4">
+<!-- Simulated QR Pattern with Inline SVG for visual richness -->
+<div class="p-2 rounded-lg bg-surface-container-lowest shrink-0 shadow-sm">
+<svg class="w-16 h-16 text-inverse-surface" fill="currentColor" viewbox="0 0 24 24">
+<path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm8-2h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v4h-2v-4zm-2 2h2v2h-2v-2zm4-2h2v4h-2v-4zm0-4h2v2h-2v-2zM4 6h4v1H4V6zm0 12h4v1H4v-1zm12-12h4v1h-4V6z"></path>
+</svg>
+</div>
+<div class="space-y-1 min-w-0">
+<p class="font-body-sm text-body-sm font-semibold text-on-surface truncate">Memorial QR Plaque</p>
+<p class="font-body-sm text-xs text-secondary leading-snug">Visitors can scan at gravesite to view public memorial tribute and turn-by-turn navigation.</p>
+</div>
+</div>
+<div class="p-2.5 rounded bg-surface-container flex items-center justify-between gap-2">
+<span class="font-mono text-xs text-secondary truncate">gravenav.org/r/A-402</span>
+<button class="text-primary hover:text-primary-container shrink-0 text-xs font-semibold flex items-center gap-1" onclick="navigator.clipboard.writeText('https://gravenav.org/r/A-402'); alert('Public URL copied!');">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+<!-- Card: Audit Log & Provenance Trail -->
+<div class="rounded-xl bg-surface-container-high p-5 space-y-4 shadow-sm">
+<div class="flex items-center justify-between pb-3 border-b border-surface-container">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">history_toggle_off</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Record Audit Trail</h2>
+</div>
+<a class="text-xs text-primary hover:underline" data-path="audit-log" href="#">Full Log</a>
+</div>
+<!-- Timeline Items -->
+<div class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-outline-variant/30 font-body-sm text-body-sm">
+<div class="relative">
+<span class="absolute -left-6 top-1 w-2 h-2 rounded-full bg-primary ring-4 ring-surface-container-high"></span>
+<p class="text-on-surface text-xs font-medium">Headstone OCR transcription validated</p>
+<p class="text-secondary text-[11px]">Sarah Jenkins (Super Admin) • Oct 24, 2023, 2:45 PM</p>
+</div>
+<div class="relative">
+<span class="absolute -left-6 top-1 w-2 h-2 rounded-full bg-primary-fixed ring-4 ring-surface-container-high"></span>
+<p class="text-on-surface text-xs font-medium">High precision RTK GPS coordinates locked</p>
+<p class="text-secondary text-[11px]">John Smith (Geodetic Tech) • Oct 24, 2023, 11:18 AM</p>
+</div>
+<div class="relative">
+<span class="absolute -left-6 top-1 w-2 h-2 rounded-full bg-secondary-fixed ring-4 ring-surface-container-high"></span>
+<p class="text-on-surface text-xs font-medium">Record migrated from Legacy Paper Ledger #14</p>
+<p class="text-secondary text-[11px]">System Ingestion Daemon • Oct 20, 2023, 9:02 AM</p>
+</div>
+</div>
+<div class="pt-2 border-t border-surface-container flex items-center justify-between text-xs text-secondary">
+<span>Database Status: <span class="text-primary font-medium">Live Synced</span></span>
+<span>Checksum: <span class="font-mono">e8f49a</span></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

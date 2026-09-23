@@ -20,12 +20,21 @@ function activeDestination(pathname: string) {
 }
 
 export function VisitorBottomNav() {
+  return <VisitorNavigation variant="mobile" />;
+}
+
+export function VisitorDesktopNav() {
+  return <VisitorNavigation variant="desktop" />;
+}
+
+function VisitorNavigation({ variant }: { variant: "mobile" | "desktop" }) {
   const pathname = usePathname() || "/";
   const active = activeDestination(pathname);
+  const navClass = variant === "desktop" ? "visitor-desktop-nav" : "visitor-bottom-nav";
 
   return (
-    <nav aria-label="Visitor navigation" className="visitor-bottom-nav">
-      <div className="visitor-bottom-nav__inner">
+    <nav aria-label={variant === "desktop" ? "Primary visitor navigation" : "Visitor navigation"} className={navClass}>
+      <div className={`${navClass}__inner`}>
         {destinations.map((destination) => {
           const isActive = destination.id === active;
           return <Link aria-current={isActive ? "page" : undefined} className={cn("visitor-nav-link", isActive && "visitor-nav-link--active")} href={destination.href} key={destination.id}><Icon name={destination.icon} size={19} /><span>{destination.label}</span></Link>;

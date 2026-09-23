@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GraveNav - Reports and Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-container-lowest": "#ffffff", "primary-fixed": "#a6f4b5", "surface-variant": "#dde3eb", secondary: "#5a5e68", "secondary-container": "#dee2ee", "secondary-fixed": "#dee2ee", "on-error": "#ffffff", background: "#f6f9ff", "on-secondary-fixed-variant": "#424750", "on-secondary-fixed": "#171c24", "surface-container-highest": "#dde3eb", "on-primary-fixed-variant": "#005226", "surface-container": "#e8eef6", "tertiary-fixed-dim": "#c4c7c9", "inverse-surface": "#2b3137", "tertiary-container": "#55585a", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "on-surface-variant": "#404940", "outline-variant": "#bfc9bd", "on-surface": "#161c22", "inverse-primary": "#8bd79b", "on-tertiary-container": "#ccced0", "secondary-fixed-dim": "#c2c6d2", "on-tertiary-fixed-variant": "#444749", outline: "#707a6f", error: "#ba1a1a", "surface-container-high": "#e3e9f1", "on-secondary": "#ffffff", "on-primary-fixed": "#00210b", tertiary: "#3d4143", "tertiary-fixed": "#e0e3e5", "on-tertiary-fixed": "#191c1e", surface: "#f6f9ff", "surface-container-low": "#eef4fc", "on-primary-container": "#93e0a2", "primary-fixed-dim": "#8bd79b", "primary-container": "#166534", "surface-dim": "#d4dbe2", "surface-tint": "#1f6c3a", primary: "#004c22", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-background": "#161c22", "on-secondary-container": "#60646f", "surface-bright": "#f6f9ff", "inverse-on-surface": "#ebf1f9"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {base: "8px", "stack-sm": "4px", gutter: "16px", "container-margin-desktop": "32px", "stack-md": "12px", "container-margin-mobile": "16px", "stack-lg": "24px"}, fontFamily: {"label-caps": ["Inter", "sans-serif"], "headline-lg": ["Inter", "sans-serif"], "body-sm": ["Inter", "sans-serif"], "body-lg": ["Inter", "sans-serif"], "headline-md": ["Inter", "sans-serif"], "headline-lg-mobile": ["Inter", "sans-serif"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700"}], "body-sm": ["14px", {lineHeight: "20px", fontWeight: "400"}], "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}], "headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700"}]}}}};</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#090d16] text-[#94a3b8] font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white"><!-- TopBar Header -->
+<header class="bg-[#090d16] border-b border-[#1e2638] px-5 sm:px-6 flex items-center justify-between select-none sticky top-0 z-40 h-16 w-full">
+<!-- Brand on Top Left -->
+<div class="flex items-center gap-3 w-64 flex-shrink-0">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 flex items-center justify-center">
+<div class="w-full h-full bg-[#0d111b] rounded-[10px] flex items-center justify-center">
+<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 2L4 12h5v8h6v-8h5L12 2z"></path>
+</svg>
+</div>
+</div>
+<div>
+<h1 class="text-white font-semibold tracking-wide text-sm leading-tight flex items-center gap-1.5">
+        GraveNav
+        <span class="text-[10px] bg-emerald-950/80 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-medium tracking-normal">ADMIN</span>
+</h1>
+<p class="text-[11px] text-slate-400">Cemetery Management</p>
+</div>
+</div>
+<!-- Center Search Bar -->
+<div class="flex-1 max-w-xl mx-4 hidden md:block">
+<div class="relative flex items-center bg-[#111625] rounded-full border border-[#1e2638] px-3.5 py-1.5 focus-within:border-emerald-500/60 transition-all">
+<svg class="w-4 h-4 text-slate-400 mr-2.5 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input class="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full border-0 p-0 focus:ring-0" placeholder="Search records, plots, or names..." type="text"/>
+<button class="bg-[#1a2133] hover:bg-emerald-600 hover:text-white text-slate-300 text-[11px] font-medium px-3 py-1 rounded-full border border-[#1e2638] transition-colors ml-2 flex-shrink-0">
+        Search
+      </button>
+</div>
+</div>
+<!-- Right Utility Header -->
+<div class="flex items-center gap-3 justify-end">
+<!-- Open Public Site Badge Link -->
+<a class="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/30 px-3 py-1.5 rounded-full transition-colors font-medium" href="#">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+      Open Public Site
+    </a>
+<!-- Notifications button with badge -->
+<button class="w-8 h-8 rounded-full bg-[#111625] hover:bg-[#181f33] border border-[#1e2638] flex items-center justify-center text-slate-300 relative transition-colors" title="Notifications">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="w-2 h-2 rounded-full bg-emerald-500 absolute top-1.5 right-1.5 ring-2 ring-[#090d16]"></span>
+</button>
+<!-- Help Icon -->
+<button class="w-8 h-8 rounded-full bg-[#111625] hover:bg-[#181f33] border border-[#1e2638] flex items-center justify-center text-slate-300 transition-colors" title="Help &amp; Documentation">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Theme Mode Toggle -->
+<div class="flex items-center bg-[#111625] p-0.5 rounded-full border border-[#1e2638]">
+<button class="p-1 rounded-full text-slate-400 hover:text-white transition-colors" title="Light mode">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<button class="p-1 rounded-full bg-emerald-600 text-white shadow-sm" title="Dark mode active">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Admin Top Right Avatar -->
+<div class="flex items-center pl-2 border-l border-[#1e2638]">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-full object-cover ring-2 ring-emerald-500/40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANchcBT9lt7UXiLp4DToeIk02ve8DAO93dK1agY4PW0c9q9oKfvmlNcHk7tWNuy_datqburPTzVnQp3R2WsJBTs3YOs3JxEqF8gq8hgT0bPo7SM7-KG2gHWasU0o7kneu8kkLTZHK-CZCQr6hDjVHUSSSmsntSk36QEu91rBqmj0306GYZa0YUzr4wIQBBAvzVSJwlqLxFUHDchrVBapwtPS5XqkJsieFd1AehKDD8dhtawDnKNa6B7ZJxiG8_UzLGY5U"/>
+</div>
+</div>
+</header>
+<!-- Main Workspace Frame -->
+<div class="flex flex-1 overflow-hidden min-h-[calc(100vh-4rem)]">
+<!-- LeftSidebar -->
+<aside class="w-64 bg-[#0d111b] border-r border-[#1e2638] flex flex-col justify-between flex-shrink-0 select-none">
+<div>
+<!-- Main Menu Section -->
+<div class="px-4 pt-5">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Main Menu</p>
+<nav class="space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Dashboard</span>
+</a>
+<!-- Burial Records -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Burial Records</span>
+</a>
+<!-- Cemetery Map -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Cemetery Map</span>
+</a>
+<!-- Coordinate Verification -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Coordinate Verification</span>
+<span class="ml-auto text-[10px] bg-red-950/70 text-red-400 border border-red-500/40 px-1.5 py-0.2 rounded font-semibold">45</span>
+</a>
+<!-- Plot Management -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Plot Management</span>
+</a>
+<!-- Photos -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Photos</span>
+</a>
+</nav>
+</div>
+<!-- Management & System Group -->
+<div class="px-4 pt-6">
+<p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider px-3 mb-2">Management &amp; System</p>
+<nav class="space-y-1">
+<!-- ACTIVE: Reports -->
+<a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600/20 to-teal-500/10 text-emerald-400 font-medium text-xs border border-emerald-500/30 shadow-sm transition-all group" href="#">
+<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Reports</span>
+<span class="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+</a>
+<!-- Audit Log -->
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Audit Log</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-normal" href="#">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Sidebar Bottom: Support, Log Out & Sarah Jenkins Admin Widget -->
+<div class="p-4 border-t border-[#1e2638] space-y-2">
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-xs text-slate-400 hover:text-rose-400 transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Log Out</span>
+</a>
+<!-- Administrator Profile Mini Widget -->
+<div class="pt-2">
+<div class="p-2.5 rounded-xl bg-[#131724] border border-[#1e2638] flex items-center gap-3">
+<img alt="Sarah Jenkins" class="w-8 h-8 rounded-lg object-cover ring-1 ring-white/10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3CUwZSLlqsKzsBoRKvOlrA3F3FHB9eZTyJ8NJ0khW3xTLFfW7EfjlqQ-ym3Q161bQFlMACSa3SwUVC90lCHBEOp3y9xk0eo6Cqp81D1iPqx63KUCTOWLstrVM0QIj9C5AZAsn8scDgu24Bo16wY5cx4FD4q9y3l6neKpbNAEhJtU2V823CskZuwq2bC7ncrM9Ub2-NTDMDnoRcIa5usHWbbl55T2gaLhr4j80bqFHPDIrHNw6z0zkUlipz6-pU06cLTk"/>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-medium text-white truncate">Sarah Jenkins</p>
+<p class="text-[11px] text-slate-400 truncate">admin@gravenav.com</p>
+</div>
+<button class="text-slate-500 hover:text-white transition-colors" title="User Actions">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-5 sm:p-6 lg:p-8 space-y-6 bg-[#090d16]">
+<!-- Page Header & Action Controls -->
+<section class="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-medium text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">Operational Intelligence</span>
+<span class="text-xs text-slate-500">• Real-Time Metrics</span>
+</div>
+<h2 class="text-2xl font-bold text-white tracking-tight">Reports &amp; Analytics</h2>
+<p class="text-xs text-slate-400 mt-0.5">Cemetery operational statistics, occupancy data, and record verification tracking.</p>
+</div>
+<!-- Action Controls -->
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Date Range Filter -->
+<div class="flex items-center bg-[#111625] border border-[#1e2638] rounded-xl px-3 py-1.5 text-xs text-slate-300">
+<svg class="w-3.5 h-3.5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<select class="bg-transparent border-0 p-0 text-xs text-white focus:ring-0 cursor-pointer font-medium outline-none pr-2">
+<option class="bg-[#111625] text-white" selected="">Year to Date</option>
+<option class="bg-[#111625] text-white">Past 30 Days</option>
+<option class="bg-[#111625] text-white">Last 12 Months</option>
+<option class="bg-[#111625] text-white">Custom Range...</option>
+</select>
+</div>
+<!-- Section Filter -->
+<div class="flex items-center bg-[#111625] border border-[#1e2638] rounded-xl px-3 py-1.5 text-xs text-slate-300">
+<svg class="w-3.5 h-3.5 text-slate-400 mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<select class="bg-transparent border-0 p-0 text-xs text-white focus:ring-0 cursor-pointer font-medium outline-none pr-2">
+<option class="bg-[#111625] text-white" selected="">All Sections</option>
+<option class="bg-[#111625] text-white">North Garden</option>
+<option class="bg-[#111625] text-white">Whispering Pines</option>
+<option class="bg-[#111625] text-white">The Meadows</option>
+<option class="bg-[#111625] text-white">Serenity Lawn</option>
+</select>
+</div>
+<!-- Print Button -->
+<button class="flex items-center gap-2 bg-[#111625] hover:bg-[#181f33] border border-[#1e2638] px-3.5 py-1.5 rounded-xl text-xs font-medium text-slate-200 transition-all">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Print</span>
+</button>
+<!-- Export PDF/CSV Button -->
+<button class="flex items-center gap-2 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:brightness-110 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-lg shadow-emerald-900/40 transition-all active:scale-95">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Export PDF/CSV</span>
+</button>
+</div>
+</section>
+<!-- KPI Cards Row -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Total Plots -->
+<div class="bg-[#111625] border border-[#1e2638] rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/30 shadow-lg shadow-black/20">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Total Plots</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-white tracking-tight">12,450</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>+24 this month</span>
+</div>
+</div>
+</div>
+<!-- Occupancy Rate -->
+<div class="bg-[#111625] border border-[#1e2638] rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/30 shadow-lg shadow-black/20">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Occupancy Rate</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-white tracking-tight">78.5%</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-slate-400">
+<span class="text-teal-400 font-semibold">9,773</span>
+<span class="text-slate-600">•</span>
+<span>Occupied plots</span>
+</div>
+</div>
+</div>
+<!-- Pending Verifications -->
+<div class="bg-[#111625] border border-[#1e2638] rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/30 shadow-lg shadow-black/20">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Pending Verifications</span>
+</div>
+<span class="inline-flex items-center gap-1 text-[10px] bg-rose-950/70 text-rose-400 border border-rose-500/40 px-1.5 py-0.5 rounded-full font-semibold">Action</span>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-rose-400 tracking-tight">142</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-slate-400">
+<span class="text-rose-400 font-medium">Requires GPS check</span>
+</div>
+</div>
+</div>
+<!-- Recent Burials (30d) -->
+<div class="bg-[#111625] border border-[#1e2638] rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/30 shadow-lg shadow-black/20">
+<div class="flex items-center justify-between text-slate-400 mb-2">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+<span class="text-xs font-medium text-slate-300">Recent Burials (30d)</span>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="Options">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="mt-2">
+<p class="text-2xl font-bold text-white tracking-tight">45</p>
+<div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>+12% vs last month</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Charts Row: Burials by Month & Plot Status Donut -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Burials by Month Line / Area Chart -->
+<div class="lg:col-span-2 bg-[#111625] border border-[#1e2638] rounded-2xl p-5 flex flex-col justify-between shadow-lg shadow-black/20">
+<div class="flex items-center justify-between pb-4 border-b border-[#1e2638]">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white">Burials by Month</h3>
+<p class="text-[11px] text-slate-400">Annual record modifications and registered burials trend</p>
+</div>
+</div>
+<span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Monthly Trend
+          </span>
+</div>
+<!-- SVG Smooth Chart -->
+<div class="relative w-full h-64 mt-4">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 700 240">
+<defs>
+<lineargradient id="emeraldGlow" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#10b981" stop-opacity="0.35"></stop>
+<stop offset="80%" stop-color="#10b981" stop-opacity="0.05"></stop>
+<stop offset="100%" stop-color="#10b981" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Gridlines -->
+<line stroke="#1e2638" stroke-dasharray="3 3" x1="40" x2="680" y1="30" y2="30"></line>
+<line stroke="#1e2638" stroke-dasharray="3 3" x1="40" x2="680" y1="75" y2="75"></line>
+<line stroke="#1e2638" stroke-dasharray="3 3" x1="40" x2="680" y1="120" y2="120"></line>
+<line stroke="#1e2638" stroke-dasharray="3 3" x1="40" x2="680" y1="165" y2="165"></line>
+<line stroke="#1e2638" x1="40" x2="680" y1="210" y2="210"></line>
+<!-- Y-Axis Labels -->
+<text fill="#64748b" font-family="Inter" font-size="10" text-anchor="end" x="30" y="34">60</text>
+<text fill="#64748b" font-family="Inter" font-size="10" text-anchor="end" x="30" y="79">45</text>
+<text fill="#64748b" font-family="Inter" font-size="10" text-anchor="end" x="30" y="124">30</text>
+<text fill="#64748b" font-family="Inter" font-size="10" text-anchor="end" x="30" y="169">15</text>
+<text fill="#64748b" font-family="Inter" font-size="10" text-anchor="end" x="30" y="214">0</text>
+<!-- Area Fill under line -->
+<path d="M 55 100 Q 110 115, 165 90 T 275 75 T 385 45 T 495 70 T 605 100 T 665 92 L 665 210 L 55 210 Z" fill="url(#emeraldGlow)"></path>
+<!-- Smooth Trend Line -->
+<path d="M 55 100 Q 110 115, 165 90 T 275 75 T 385 45 T 495 70 T 605 100 T 665 92" fill="none" stroke="#10b981" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="55" cy="100" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="110" cy="112" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="165" cy="90" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="220" cy="74" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="275" cy="78" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="330" cy="58" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="385" cy="45" fill="#34d399" r="5" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="440" cy="54" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="495" cy="70" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="550" cy="82" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="605" cy="98" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<circle cx="665" cy="92" fill="#10b981" r="4" stroke="#090d16" stroke-width="2"></circle>
+<!-- X-Axis Labels -->
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="55" y="230">Jan</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="110" y="230">Feb</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="165" y="230">Mar</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="220" y="230">Apr</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="275" y="230">May</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="330" y="230">Jun</text>
+<text fill="#34d399" font-family="Inter" font-size="10" font-weight="600" text-anchor="middle" x="385" y="230">Jul</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="440" y="230">Aug</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="495" y="230">Sep</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="550" y="230">Oct</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="605" y="230">Nov</text>
+<text fill="#94a3b8" font-family="Inter" font-size="10" text-anchor="middle" x="665" y="230">Dec</text>
+</svg>
+</div>
+</div>
+<!-- Plot Status Donut Chart -->
+<div class="bg-[#111625] border border-[#1e2638] rounded-2xl p-5 flex flex-col justify-between shadow-lg shadow-black/20">
+<div class="flex items-center justify-between pb-4 border-b border-[#1e2638]">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white">Plot Status</h3>
+<p class="text-[11px] text-slate-400">Distribution by current occupancy</p>
+</div>
+</div>
+<button class="text-slate-500 hover:text-slate-300" title="More info">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Circular Donut SVG Visual -->
+<div class="relative flex items-center justify-center my-4">
+<svg class="w-44 h-44 -rotate-90" viewbox="0 0 120 120">
+<!-- Background Track -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#1a2236" stroke-width="12"></circle>
+<!-- Occupied (78.5%) -> Circumference approx 301.6, stroke-dasharray ~ 236 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#10b981" stroke-dasharray="236.7 301.6" stroke-dashoffset="0" stroke-width="12"></circle>
+<!-- Available (15%) -> ~45.2 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#38bdf8" stroke-dasharray="45.2 301.6" stroke-dashoffset="-236.7" stroke-width="12"></circle>
+<!-- Reserved (5%) -> ~15.1 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#f43f5e" stroke-dasharray="15.1 301.6" stroke-dashoffset="-281.9" stroke-width="12"></circle>
+<!-- Maintenance (1.5%) -> ~4.5 -->
+<circle cx="60" cy="60" fill="none" r="48" stroke="#64748b" stroke-dasharray="4.5 301.6" stroke-dashoffset="-297.0" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center text-center">
+<span class="text-2xl font-bold text-white tracking-tight">78.5%</span>
+<span class="text-[11px] text-slate-400 font-medium">Occupied</span>
+</div>
+</div>
+<!-- Legend Grid -->
+<div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-[#1e2638]">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span class="text-slate-300">Occupied (78.5%)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+<span class="text-slate-300">Available (15.0%)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+<span class="text-slate-300">Reserved (5.0%)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+<span class="text-slate-300">Maintenance (1.5%)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Section: Record Verification Status Table Card -->
+<section class="bg-[#111625] border border-[#1e2638] rounded-2xl p-5 overflow-hidden shadow-lg shadow-black/20">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-4 border-b border-[#1e2638]">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-sm font-semibold text-white">Record Verification Status</h3>
+<p class="text-[11px] text-slate-400">GPS survey calibration and plot data integrity per sector</p>
+</div>
+</div>
+<button class="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1">
+<span>View All</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto mt-2">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-[#1e2638] bg-[#0c101b]/60">
+<th class="py-3 px-4 whitespace-nowrap">Section</th>
+<th class="py-3 px-4 whitespace-nowrap">Total Records</th>
+<th class="py-3 px-4 whitespace-nowrap">Verified (GPS)</th>
+<th class="py-3 px-4 whitespace-nowrap">Unverified</th>
+<th class="py-3 px-4 min-w-[180px]">Completion</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#1e2638] text-xs text-slate-300">
+<!-- Row 1: North Garden -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="py-3.5 px-4 font-semibold text-white flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span>North Garden</span>
+</td>
+<td class="py-3.5 px-4 font-mono text-slate-300">3,200</td>
+<td class="py-3.5 px-4 font-mono text-emerald-400 font-semibold">3,150</td>
+<td class="py-3.5 px-4 font-mono text-rose-400">50</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-full bg-[#181f33] rounded-full h-2 overflow-hidden border border-[#1e2638]">
+<div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full" style="width: 98%"></div>
+</div>
+<span class="text-[11px] font-mono font-medium text-emerald-400">98%</span>
+</div>
+</td>
+</tr>
+<!-- Row 2: Whispering Pines -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="py-3.5 px-4 font-semibold text-white flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-teal-400"></span>
+<span>Whispering Pines</span>
+</td>
+<td class="py-3.5 px-4 font-mono text-slate-300">4,100</td>
+<td class="py-3.5 px-4 font-mono text-emerald-400 font-semibold">3,980</td>
+<td class="py-3.5 px-4 font-mono text-rose-400">120</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-full bg-[#181f33] rounded-full h-2 overflow-hidden border border-[#1e2638]">
+<div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full" style="width: 97%"></div>
+</div>
+<span class="text-[11px] font-mono font-medium text-emerald-400">97%</span>
+</div>
+</td>
+</tr>
+<!-- Row 3: The Meadows -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="py-3.5 px-4 font-semibold text-white flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-sky-400"></span>
+<span>The Meadows</span>
+</td>
+<td class="py-3.5 px-4 font-mono text-slate-300">2,850</td>
+<td class="py-3.5 px-4 font-mono text-emerald-400 font-semibold">2,710</td>
+<td class="py-3.5 px-4 font-mono text-rose-400">140</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-full bg-[#181f33] rounded-full h-2 overflow-hidden border border-[#1e2638]">
+<div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full" style="width: 95%"></div>
+</div>
+<span class="text-[11px] font-mono font-medium text-emerald-400">95%</span>
+</div>
+</td>
+</tr>
+<!-- Row 4: Serenity Lawn -->
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="py-3.5 px-4 font-semibold text-white flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-amber-400"></span>
+<span>Serenity Lawn</span>
+</td>
+<td class="py-3.5 px-4 font-mono text-slate-300">2,300</td>
+<td class="py-3.5 px-4 font-mono text-emerald-400 font-semibold">2,050</td>
+<td class="py-3.5 px-4 font-mono text-rose-400">250</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-full bg-[#181f33] rounded-full h-2 overflow-hidden border border-[#1e2638]">
+<div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full" style="width: 89%"></div>
+</div>
+<span class="text-[11px] font-mono font-medium text-emerald-400">89%</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div></body></html>
