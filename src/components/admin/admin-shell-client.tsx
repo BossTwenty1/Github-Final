@@ -8,6 +8,7 @@ import { signOut } from "@/lib/auth-client";
 import type { StaffAccount } from "@/lib/supabase/types";
 import { localSupabaseConfig } from "@/lib/supabase/config";
 import { AdminSidebar } from "./admin-sidebar";
+import { StaffContext } from "./staff-context";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
@@ -35,14 +36,14 @@ export function AdminShellClient({ children, active, staff }: { children: ReactN
         <div className="admin-header__actions">
           <span className="admin-role-badge">{localSupabaseConfig.environmentLabel}</span>
           <span className="admin-role-badge">{staff.role}</span>
-          <button aria-label="View notifications" className="icon-button" type="button"><Icon name="bell" size={20} /></button>
-          <button aria-label="Open administrator help" className="icon-button admin-help-button" type="button"><Icon name="help" size={20} /></button>
+          <Link aria-label="View audit notifications" className="icon-button" href="/admin/audit-log"><Icon name="bell" size={20} /></Link>
+          <Link aria-label="Open administrator help" className="icon-button admin-help-button" href="/admin/support"><Icon name="help" size={20} /></Link>
           <span className="admin-header__divider" />
           <span aria-label={`Signed in as ${staff.username}`} className="admin-avatar">{initials}</span>
           <button className="admin-logout-button" disabled={loggingOut} onClick={logout} type="button">{loggingOut ? "Signing out..." : "Sign out"}</button>
         </div>
       </header>
-      <main className="admin-content">{children}</main>
+      <main className="admin-content"><StaffContext.Provider value={staff}>{children}</StaffContext.Provider></main>
     </div>
   </div>;
 }

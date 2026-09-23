@@ -17,6 +17,21 @@
 /.next/
 /out/
 
+# generated map previews and source-review renders
+/output/
+/tmp/
+
+# Local map experiments and reproducible review outputs (not runtime assets)
+/public/maps/legazpi-clean.svg
+/public/maps/legazpi-phase1-color.svg
+/public/maps/legazpi-phase1-visual.png
+/public/maps/legazpi-traced.svg
+/public/maps/phase1-plot-plan-review.html
+/public/maps/phase1-plot-plan-review/
+/public/maps/forest-lake-phase1-routing-network-preview.svg
+/public/maps/forest-lake-phase1-routing-network.kml
+/docs/forest-lake-phase1-routing-network-review.md
+
 # production
 /build
 

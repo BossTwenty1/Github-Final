@@ -1,12 +1,15 @@
 import { getPublicSupabase, localSupabaseConfig } from "./config";
 import type { PublicBurialRecord } from "./types";
 import { filterGravesites, getGravesiteById, getGravesiteByPlot, gravesites } from "@/lib/mock-data";
+import { phaseOneGardenNames } from "@/lib/map-layout";
 
 type PublicRow = {
   burial_id: number;
   display_name: string;
   birth_date: string | null;
   death_date: string | null;
+  interment_date?: string | null;
+  match_type?: "exact" | "matched" | "similar";
   record_status: "active";
   lot_code: string;
   area_name?: string | null;
@@ -18,64 +21,73 @@ type PublicRow = {
   location_verified: boolean;
 };
 
-const PUBLIC_COLUMNS = "burial_id,display_name,birth_date,death_date,record_status,lot_code,area_name,sector_name,block_number,location_geom,px_loc_x,px_loc_y,location_verified";
-const PUBLIC_BASE_COLUMNS = "burial_id,display_name,birth_date,death_date,record_status,lot_code,location_geom,px_loc_x,px_loc_y,location_verified";
+const PUBLIC_COLUMNS = "interment_date,burial_id,display_name,birth_date,death_date,record_status,lot_code,area_name,sector_name,block_number,location_geom,px_loc_x,px_loc_y,location_verified";
 
-export async function getPublicBurialRecords(filters: { query?: string; section?: string; year?: string } = {}) {
+export class PublicDataUnavailableError extends Error {
+  constructor() { super("Search is temporarily unavailable—try again."); }
+}
+export type PublicSearchFilters = { query?: string; section?: string; year?: string; sort?: "name" | "newest"; page?: number };
+export async function searchPublicBurials(filters: PublicSearchFilters = {}) {
+  const page = Number.isInteger(filters.page) ? Math.max(1, Math.min(filters.page || 1, 10000)) : 1;
+  const pageSize = 20;
   const client = getPublicSupabase();
   if (client) {
-    let request = client.from("public_burial_records").select(PUBLIC_COLUMNS).order("display_name");
-    const query = filters.query?.trim().replaceAll("%", "\\%").replaceAll("_", "\\_");
-    if (query) request = request.ilike("display_name", `%${query}%`);
-    if (filters.section && filters.section !== "all") request = request.eq("area_name", filters.section);
-    if (filters.year === "1800-1899") request = request.gte("death_date", "1800-01-01").lt("death_date", "1900-01-01");
-    if (filters.year === "1900-1999") request = request.gte("death_date", "1900-01-01").lt("death_date", "2000-01-01");
-    const { data, error } = await request;
-    if (!error && data?.length) return (data as PublicRow[]).map(toPublicRecord);
-    if (error && localSupabaseConfig.environment === "hosted") {
-      let safeRequest = client.from("public_burial_records").select(PUBLIC_BASE_COLUMNS).order("display_name");
-      if (query) safeRequest = safeRequest.ilike("display_name", `%${query}%`);
-      if (filters.year === "1800-1899") safeRequest = safeRequest.gte("death_date", "1800-01-01").lt("death_date", "1900-01-01");
-      if (filters.year === "1900-1999") safeRequest = safeRequest.gte("death_date", "1900-01-01").lt("death_date", "2000-01-01");
-      const { data: safeData, error: safeError } = await safeRequest;
-      if (!safeError && safeData?.length) return (safeData as PublicRow[]).map(toPublicRecord);
-    }
-    if (localSupabaseConfig.environment === "hosted") return [];
+    const { data, error } = await client.rpc("search_public_burials", {
+      p_query: (filters.query || "").slice(0, 160), p_section: filters.section || "all",
+      p_year: filters.year || "any", p_sort: filters.sort || "name", p_page: page, p_page_size: pageSize,
+    });
+    if (error || !data || typeof data !== "object" || Array.isArray(data) || !Array.isArray(data.items) || typeof data.total !== "number") throw new PublicDataUnavailableError();
+    return { items: (data.items as PublicRow[]).map(toPublicRecord), total: Number(data.total), page, pageSize };
   }
-
+  if (!shouldUseMockData()) throw new PublicDataUnavailableError();
+  const matches = filterGravesites(filters).map(toFallbackRecord);
+  return { items: matches.slice((page - 1) * pageSize, page * pageSize), total: matches.length, page, pageSize };
+}
+export async function getPublicBurialRecords(filters: PublicSearchFilters = {}) {
+  const client = getPublicSupabase();
+  if (client) {
+    const { data, error } = await client.from("public_burial_records").select(PUBLIC_COLUMNS).order("burial_id").limit(1000);
+    if (error) throw new PublicDataUnavailableError();
+    return (data || []).map((row) => toPublicRecord(row as PublicRow));
+  }
+  if (!shouldUseMockData()) throw new PublicDataUnavailableError();
   return filterGravesites(filters).map(toFallbackRecord);
+}
+
+export async function getPublicGardenNames() {
+  const client = getPublicSupabase();
+  if (client) {
+    const { data, error } = await client.from("public_burial_records").select("area_name").not("area_name", "is", null).order("area_name").limit(100);
+    if (!error) {
+      const names = (data || []).map((row) => row.area_name).filter((name): name is string => typeof name === "string" && Boolean(name.trim()));
+      if (names.length) return [...new Set([...phaseOneGardenNames, ...names])];
+    }
+    if (localSupabaseConfig.environment === "hosted") return [...phaseOneGardenNames];
+  }
+  return shouldUseMockData() ? [...new Set(gravesites.map((record) => record.section))] : [...phaseOneGardenNames];
 }
 
 export async function getPublicBurialRecord(id: string) {
   const client = getPublicSupabase();
-  if (client && /^\d+$/.test(id)) {
+  if (client) {
+    if (!/^\d+$/.test(id) || !Number.isSafeInteger(Number(id))) return null;
     const { data, error } = await client.from("public_burial_records").select(PUBLIC_COLUMNS).eq("burial_id", Number(id)).maybeSingle();
-    if (!error && data) return toPublicRecord(data as PublicRow);
-    if (error && localSupabaseConfig.environment === "hosted") {
-      const { data: safeData, error: safeError } = await client.from("public_burial_records").select(PUBLIC_BASE_COLUMNS).eq("burial_id", Number(id)).maybeSingle();
-      if (!safeError && safeData) return toPublicRecord(safeData as PublicRow);
-      return null;
-    }
-    if (localSupabaseConfig.environment === "hosted") return null;
+    if (error) throw new PublicDataUnavailableError();
+    return data ? toPublicRecord(data as PublicRow) : null;
   }
-
+  if (!shouldUseMockData()) throw new PublicDataUnavailableError();
   const mock = getGravesiteById(id);
   return mock ? toFallbackRecord(mock) : null;
 }
-
 export async function getPublicBurialRecordByPlot(plot: string) {
+  if (!plot.trim()) return null;
   const client = getPublicSupabase();
   if (client) {
-    const { data, error } = await client.from("public_burial_records").select(PUBLIC_COLUMNS).eq("lot_code", plot).maybeSingle();
-    if (!error && data) return toPublicRecord(data as PublicRow);
-    if (error && localSupabaseConfig.environment === "hosted") {
-      const { data: safeData, error: safeError } = await client.from("public_burial_records").select(PUBLIC_BASE_COLUMNS).eq("lot_code", plot).maybeSingle();
-      if (!safeError && safeData) return toPublicRecord(safeData as PublicRow);
-      return null;
-    }
-    if (localSupabaseConfig.environment === "hosted") return null;
+    const { data, error } = await client.from("public_burial_records").select(PUBLIC_COLUMNS).eq("lot_code", plot).limit(2);
+    if (error) throw new PublicDataUnavailableError();
+    return data?.length === 1 ? toPublicRecord(data[0] as PublicRow) : null;
   }
-
+  if (!shouldUseMockData()) throw new PublicDataUnavailableError();
   const mock = getGravesiteByPlot(plot);
   return mock ? toFallbackRecord(mock) : null;
 }
@@ -94,7 +106,8 @@ function toPublicRecord(row: PublicRow): PublicBurialRecord {
     plotLabel: `Plot ${row.lot_code}`,
     section,
     row: rowLabel,
-    burialDate: row.death_date ? formatDate(row.death_date) : "Not recorded",
+    matchType: row.match_type,
+    burialDate: row.interment_date ? formatDate(row.interment_date) : "Not recorded",
     status: "Active",
     location: parsePoint(row.location_geom),
     pixelLocation: row.px_loc_x !== null && row.px_loc_y !== null ? { x: row.px_loc_x, y: row.px_loc_y } : null,
@@ -104,10 +117,29 @@ function toPublicRecord(row: PublicRow): PublicBurialRecord {
 }
 
 function parsePoint(value: unknown) {
-  if (!value || typeof value !== "object" || !("coordinates" in value)) return null;
-  const coordinates = (value as { coordinates?: unknown }).coordinates;
-  if (!Array.isArray(coordinates) || coordinates.length < 2 || typeof coordinates[0] !== "number" || typeof coordinates[1] !== "number") return null;
-  return { longitude: coordinates[0], latitude: coordinates[1] };
+  const coordinates = getPointCoordinates(value);
+  return coordinates ? { longitude: coordinates[0], latitude: coordinates[1] } : null;
+}
+
+function getPointCoordinates(value: unknown): [number, number] | null {
+  if (value && typeof value === "object" && "coordinates" in value) {
+    const coordinates = (value as { coordinates?: unknown }).coordinates;
+    if (Array.isArray(coordinates) && coordinates.length >= 2 && typeof coordinates[0] === "number" && typeof coordinates[1] === "number") return [coordinates[0], coordinates[1]];
+  }
+  if (typeof value !== "string") return null;
+  const normalized = value.replace(/^\s*SRID=\d+\s*;\s*/i, "");
+  try {
+    const parsed = JSON.parse(normalized) as { coordinates?: unknown };
+    const coordinates = parsed.coordinates;
+    if (Array.isArray(coordinates) && coordinates.length >= 2 && typeof coordinates[0] === "number" && typeof coordinates[1] === "number") return [coordinates[0], coordinates[1]];
+  } catch {
+    // PostgREST may return geography as WKT text.
+  }
+  const match = normalized.match(/^\s*POINT\s*\(\s*([^\s,]+)\s+([^\s,)]+)\s*\)\s*$/i);
+  if (!match) return null;
+  const longitude = Number(match[1]);
+  const latitude = Number(match[2]);
+  return Number.isFinite(longitude) && Number.isFinite(latitude) ? [longitude, latitude] : null;
 }
 
 function formatDate(value: string) {
@@ -116,6 +148,10 @@ function formatDate(value: string) {
 
 export function getMockFallbackRecords() {
   return gravesites;
+}
+
+function shouldUseMockData() {
+  return process.env.NODE_ENV !== "production";
 }
 
 function toFallbackRecord(record: (typeof gravesites)[number]): PublicBurialRecord {

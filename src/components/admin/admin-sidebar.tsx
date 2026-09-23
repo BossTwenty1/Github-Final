@@ -15,11 +15,12 @@ export const adminNavItems: Array<{ label: string; icon: IconName; href: string 
   { label: "Photos", icon: "photos", href: "/admin/photos" },
   { label: "Reports", icon: "reports", href: "/admin/reports" },
   { label: "Audit Log", icon: "audit", href: "/admin/audit-log" },
+  { label: "Recovery", icon: "audit", href: "/admin/recovery" },
   { label: "Settings", icon: "settings", href: "/admin/settings" },
 ];
 
 export function AdminSidebar({ active, role, onNavigate, onLogout }: { active: string; role: StaffRole; onNavigate?: () => void; onLogout?: () => void }) {
-  const visibleItems = role === "ADMIN" ? [...adminNavItems.slice(0, -1), { label: "Account Management", icon: "users" as IconName, href: "/admin/accounts" }, adminNavItems[adminNavItems.length - 1]] : adminNavItems.filter((item) => item.label !== "Settings");
+  const visibleItems = role === "ADMIN" ? [...adminNavItems.slice(0, -1), { label: "Account Management", icon: "users" as IconName, href: "/admin/accounts" }, adminNavItems[adminNavItems.length - 1]] : adminNavItems.filter((item) => !["Settings", "Recovery", "Coordinate Verification"].includes(item.label));
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand"><BrandLockup admin /></div>

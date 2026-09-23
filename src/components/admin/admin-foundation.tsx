@@ -9,30 +9,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Icon } from "@/components/ui/icons";
 import { PageHeading } from "@/components/ui/page-heading";
-import { getAdminRecords, getAuditLog, getLotsForVerification } from "@/lib/supabase/admin-data";
-import type { AdminRecord, AuditLogEntry } from "@/lib/supabase/types";
+import { getDashboardCounts, getAuditLog, type DashboardCounts } from "@/lib/supabase/admin-data";
+import { useStaff } from "./staff-context";
+import type { AuditLogEntry } from "@/lib/supabase/types";
 
 export function AdminFoundation() {
-  const [records, setRecords] = useState<AdminRecord[]>([]);
-  const [lots, setLots] = useState<Array<{ lot_id: number; lot_code: string; coordinate_verified: boolean; coordinate_status: string }>>([]);
+  const canAdmin = useStaff()?.role === "ADMIN";
+  const [counts, setCounts] = useState<DashboardCounts | null>(null);
   const [audit, setAudit] = useState<AuditLogEntry[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([getAdminRecords(), getLotsForVerification(), getAuditLog()]).then(([nextRecords, nextLots, nextAudit]) => {
-      setRecords(nextRecords);
-      setLots(nextLots);
+    Promise.all([getDashboardCounts(), getAuditLog(false, { pageSize: 100 })]).then(([nextCounts, nextAudit]) => {
+      setCounts(nextCounts);
       setAudit(nextAudit);
     }).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "The operational data could not be loaded.")).finally(() => setLoading(false));
   }, []);
 
-  const active = records.filter((record) => record.recordStatus === "active").length;
-  const pending = records.filter((record) => record.recordStatus === "pending").length;
-  const archived = records.filter((record) => record.recordStatus === "archived").length;
-  const unverified = lots.filter((lot) => !lot.coordinate_verified).length;
+  const { active = 0, pending = 0, archived = 0, unverified = 0 } = counts || {};
 
-  return <div className="admin-foundation"><PageHeading actions={<><Link href="/admin/coordinate-verification"><Button icon="target" variant="secondary">Verify coordinates</Button></Link><Link href="/admin/reports"><Button icon="chart" variant="secondary">Generate report</Button></Link><Link href="/admin/burial-records?add=1"><Button icon="plus">Add burial record</Button></Link></>} description="Overview of cemetery operations and Supabase-backed records." eyebrow="Administrator workspace" title="Dashboard" />{error ? <Alert icon="alert" title="Supabase data connection unavailable" variant="danger">{error}</Alert> : null}{loading ? <Card><CardContent><p className="admin-card-muted">Loading operational data…</p></CardContent></Card> : <><div className="metrics-grid"><MetricCard href="/admin/burial-records" icon="records" label="Active records" value={active} trend={`${pending} pending · ${archived} archived`} /><MetricCard href="/admin/plot-management" icon="grid" label="Known plots" value={lots.length} trend="Loaded from Supabase" /><MetricCard href="/admin/coordinate-verification" icon="verification" label="Unverified locations" value={unverified} trend={unverified ? "Review queue" : "No locations awaiting review"} danger={unverified > 0} /><MetricCard href="/admin/audit-log" icon="audit" label="Recent audit events" value={audit.length} trend="Latest 100 events" /></div><div className="dashboard-grid"><Card><CardHeader><CardTitle>Record status</CardTitle><Badge variant="info">Connected data</Badge></CardHeader><CardContent className="bar-list"><Bar label="Active" value={active} total={Math.max(records.length, 1)} color="bar-fill--green" /><Bar label="Pending" value={pending} total={Math.max(records.length, 1)} color="bar-fill--light-green" /><Bar label="Archived" value={archived} total={Math.max(records.length, 1)} color="bar-fill--slate" /></CardContent></Card><Card><CardHeader><CardTitle>Recent audit events</CardTitle><Link className="text-button" href="/admin/audit-log">View all</Link></CardHeader>{audit.length ? <div className="change-list">{audit.slice(0, 4).map((entry) => <ChangeItem entry={entry} key={entry.audit_id} />)}</div> : <CardContent><EmptyState description="No application changes have been recorded in this environment yet." icon="audit" title="No audit events" /></CardContent>}</Card></div></>}</div>;
+  return <div className="admin-foundation"><PageHeading actions={<>{canAdmin ? <Link href="/admin/coordinate-verification"><Button icon="target" variant="secondary">Verify coordinates</Button></Link> : null}<Link href="/admin/reports"><Button icon="chart" variant="secondary">Generate report</Button></Link><Link href="/admin/burial-records?add=1"><Button icon="plus">Add burial record</Button></Link></>} description="Overview of cemetery operations and Supabase-backed records." eyebrow="Administrator workspace" title="Dashboard" />{error ? <Alert icon="alert" title="Supabase data connection unavailable" variant="danger">{error}</Alert> : null}{loading ? <Card><CardContent><p className="admin-card-muted">Loading operational data…</p></CardContent></Card> : counts ? <><div className="metrics-grid"><MetricCard href="/admin/burial-records" icon="records" label="Active records" value={active} trend={`${pending} pending · ${archived} archived`} /><MetricCard href="/admin/plot-management" icon="grid" label="Known plots" value={counts?.plots || 0} trend="All current plots" /><MetricCard href={canAdmin ? "/admin/coordinate-verification" : "/admin/plot-management"} icon="verification" label="Unverified locations" value={unverified} trend={`${counts?.missingCoordinates || 0} missing · ${counts?.pendingCoordinates || 0} ready for review`} danger={unverified > 0} /><MetricCard href="/admin/audit-log" icon="audit" label="Recent audit events" value={audit.length} trend="Latest 100 events" /></div><div className="dashboard-grid"><Card><CardHeader><CardTitle>Record status</CardTitle><Badge variant="info">Connected data</Badge></CardHeader><CardContent className="bar-list"><Bar label="Active" value={active} total={Math.max(active + pending + archived, 1)} color="bar-fill--green" /><Bar label="Pending" value={pending} total={Math.max(active + pending + archived, 1)} color="bar-fill--light-green" /><Bar label="Archived" value={archived} total={Math.max(active + pending + archived, 1)} color="bar-fill--slate" /></CardContent></Card><Card><CardHeader><CardTitle>Recent audit events</CardTitle><Link className="text-button" href="/admin/audit-log">View all</Link></CardHeader>{audit.length ? <div className="change-list">{audit.slice(0, 4).map((entry) => <ChangeItem entry={entry} key={entry.audit_id} />)}</div> : <CardContent><EmptyState description="No application changes have been recorded in this environment yet." icon="audit" title="No audit events" /></CardContent>}</Card></div></> : null}</div>;
 }
 
 function MetricCard({ href, icon, label, value, trend, danger = false }: { href: string; icon: "records" | "grid" | "verification" | "audit"; label: string; value: number; trend: string; danger?: boolean }) {

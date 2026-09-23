@@ -1,0 +1,1953 @@
+{
+  "type": "FeatureCollection",
+  "name": "Forest Lake Memorial Park Phase 1 cleaned network",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SITE-FL-LEG",
+        "feature_type": "site",
+        "name": "Forest Lake Memorial Park",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              123.7403651377267,
+              13.12782596874229
+            ],
+            [
+              123.7406037367828,
+              13.12784499525643
+            ],
+            [
+              123.7407289142752,
+              13.12788688507238
+            ],
+            [
+              123.7408464011529,
+              13.12789462764139
+            ],
+            [
+              123.740991875098,
+              13.12787949360306
+            ],
+            [
+              123.7411041243411,
+              13.12780317205446
+            ],
+            [
+              123.7413319691318,
+              13.1275506140704
+            ],
+            [
+              123.7417583862641,
+              13.12783968768569
+            ],
+            [
+              123.7417441848813,
+              13.12808293463575
+            ],
+            [
+              123.742417875768,
+              13.12840957824183
+            ],
+            [
+              123.7424363708249,
+              13.12906879532538
+            ],
+            [
+              123.7394451801504,
+              13.12934857493199
+            ],
+            [
+              123.7396684819317,
+              13.12801018088061
+            ],
+            [
+              123.7403651377267,
+              13.12782596874229
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AREA-FL-LEG-RPG",
+        "feature_type": "area",
+        "area_code": "RPG",
+        "name": "Royal Palm Garden",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              123.7405340513382,
+              13.12820755063447
+            ],
+            [
+              123.7405066612439,
+              13.12816343642655
+            ],
+            [
+              123.7404806711216,
+              13.12813767776098
+            ],
+            [
+              123.7404525209434,
+              13.12811525342111
+            ],
+            [
+              123.7404195603137,
+              13.1280999225715
+            ],
+            [
+              123.7403261297797,
+              13.12807332741856
+            ],
+            [
+              123.7403230036469,
+              13.12805506298938
+            ],
+            [
+              123.7403414812124,
+              13.12804960326467
+            ],
+            [
+              123.7404983315581,
+              13.12807232970278
+            ],
+            [
+              123.7406147024229,
+              13.12807392695482
+            ],
+            [
+              123.7407606331736,
+              13.12806048921294
+            ],
+            [
+              123.741036159797,
+              13.12796452541898
+            ],
+            [
+              123.7411429135648,
+              13.1278967151451
+            ],
+            [
+              123.7412141625103,
+              13.1278809595824
+            ],
+            [
+              123.7413123875126,
+              13.12776945816947
+            ],
+            [
+              123.7413414430044,
+              13.12774956908757
+            ],
+            [
+              123.7415185343968,
+              13.12783305447281
+            ],
+            [
+              123.7414976473856,
+              13.12840058018856
+            ],
+            [
+              123.7414705106534,
+              13.12841822289885
+            ],
+            [
+              123.7406339858848,
+              13.12849744433313
+            ],
+            [
+              123.7405340513382,
+              13.12820755063447
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AREA-FL-LEG-HPG",
+        "feature_type": "area",
+        "area_code": "HPG",
+        "name": "Hawaiian Palm Garden",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              123.7406121043902,
+              13.12873334794429
+            ],
+            [
+              123.7406412762299,
+              13.12868766866198
+            ],
+            [
+              123.7406562066809,
+              13.12865137358145
+            ],
+            [
+              123.7406665141622,
+              13.12857789560582
+            ],
+            [
+              123.7406698631599,
+              13.12855482306406
+            ],
+            [
+              123.7406945232056,
+              13.12854830358827
+            ],
+            [
+              123.7412478937839,
+              13.12849912978002
+            ],
+            [
+              123.7415008793705,
+              13.12847132505726
+            ],
+            [
+              123.7415041700287,
+              13.12849750663191
+            ],
+            [
+              123.7415096692245,
+              13.12902640559171
+            ],
+            [
+              123.74108839363,
+              13.12906780110058
+            ],
+            [
+              123.7408293370436,
+              13.12909000950886
+            ],
+            [
+              123.7406919013151,
+              13.12909264770115
+            ],
+            [
+              123.7406706013298,
+              13.1290847847856
+            ],
+            [
+              123.7406441417552,
+              13.12907039246089
+            ],
+            [
+              123.7406247145984,
+              13.12904951525065
+            ],
+            [
+              123.7406044681364,
+              13.12901703816797
+            ],
+            [
+              123.7405401489314,
+              13.12882240980647
+            ],
+            [
+              123.7406121043902,
+              13.12873334794429
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AREA-FL-LEG-DPG",
+        "feature_type": "area",
+        "area_code": "DPG",
+        "name": "Dates Palm Garden",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              123.7398135678771,
+              13.12850151092343
+            ],
+            [
+              123.7397498144484,
+              13.12850154906577
+            ],
+            [
+              123.7397133365944,
+              13.12847477736388
+            ],
+            [
+              123.7396930646815,
+              13.12838949138012
+            ],
+            [
+              123.7397288214942,
+              13.12836459529402
+            ],
+            [
+              123.7398216251688,
+              13.12831759389227
+            ],
+            [
+              123.7400198362306,
+              13.1282367966545
+            ],
+            [
+              123.7401067638377,
+              13.12821468399574
+            ],
+            [
+              123.7401919434392,
+              13.12818730562433
+            ],
+            [
+              123.7402554922226,
+              13.12817632170536
+            ],
+            [
+              123.7402941730351,
+              13.12815726357629
+            ],
+            [
+              123.7403265845668,
+              13.12812766645202
+            ],
+            [
+              123.7403704721411,
+              13.12813941732078
+            ],
+            [
+              123.7404220079671,
+              13.1281522471567
+            ],
+            [
+              123.7404631202201,
+              13.12819374379407
+            ],
+            [
+              123.7404899213332,
+              13.12823987551977
+            ],
+            [
+              123.7405277495677,
+              13.12836244204297
+            ],
+            [
+              123.7405737992595,
+              13.12849325396437
+            ],
+            [
+              123.7406111922961,
+              13.12862098644719
+            ],
+            [
+              123.7405993113786,
+              13.12865583994522
+            ],
+            [
+              123.740576692005,
+              13.12868794042411
+            ],
+            [
+              123.7405209393491,
+              13.12875850121638
+            ],
+            [
+              123.7405000063252,
+              13.12876589519994
+            ],
+            [
+              123.7403169730559,
+              13.12854362903269
+            ],
+            [
+              123.7402063519015,
+              13.12852939473058
+            ],
+            [
+              123.7398135678771,
+              13.12850151092343
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AREA-FL-LEG-YPG",
+        "feature_type": "area",
+        "area_code": "YPG",
+        "name": "Yellow Palm Garden",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              123.7415689093597,
+              13.12902139180967
+            ],
+            [
+              123.7415525600624,
+              13.12860433367676
+            ],
+            [
+              123.7415616435514,
+              13.12825715732427
+            ],
+            [
+              123.7415614653796,
+              13.12822846176834
+            ],
+            [
+              123.7416006616914,
+              13.12823833554374
+            ],
+            [
+              123.7422543920873,
+              13.12850944393344
+            ],
+            [
+              123.7422746225039,
+              13.12855377340774
+            ],
+            [
+              123.7422846588012,
+              13.12893205644994
+            ],
+            [
+              123.742249964703,
+              13.12894907134266
+            ],
+            [
+              123.7421931102673,
+              13.12895746120152
+            ],
+            [
+              123.7415689093597,
+              13.12902139180967
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N001",
+        "feature_type": "map_node",
+        "node_type": "rpg_junction",
+        "name": "Royal Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N001|RPG_JUNCTION|Royal Palm Junction",
+          "ROADWAY|FL-LEG|RW0002|Inner Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.740628344391,
+          13.12853063908331
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N002",
+        "feature_type": "map_node",
+        "node_type": "rpg_junction",
+        "name": "Royal Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N003|RPG_JUNCTION|Royal Palm Junction",
+          "ROADWAY|FL-LEG|RW0002|Inner Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7415273207423,
+          13.12843559705057
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N003",
+        "feature_type": "map_node",
+        "node_type": "rpg_landmark",
+        "name": "Royal Palm Landmark",
+        "source_names": [
+          "NODE|FL-LEG|N002|RPG_LANDMARK|Royal Palm Landmark"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410898523541,
+          13.12823832624933
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N004",
+        "feature_type": "map_node",
+        "node_type": "main_entrance",
+        "name": "Main Entrance",
+        "source_names": [
+          "NODE|FL-LEG|N001|MAIN_ENTRANCE|Main Entrance",
+          "ROADWAY|FL-LEG|Main Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.739711436971,
+          13.12801316723383
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N005",
+        "feature_type": "map_node",
+        "node_type": "main_exit",
+        "name": "Main Exit",
+        "source_names": [
+          "NODE|FL-LEG|N001|MAIN_EXIT|Main Exit"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7415512254145,
+          13.12772432667477
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N006",
+        "feature_type": "map_node",
+        "node_type": "rpg_junction",
+        "name": "Royal Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N004|RPG_JUNCTION|Royal Palm Junction",
+          "ROADWAY|FL-LEG|RW0003|Inner Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.741536644377,
+          13.12818940150263
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N007",
+        "feature_type": "map_node",
+        "node_type": "rpg_junction",
+        "name": "Royal Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N005|RPG_JUNCTION|Royal Palm Junction",
+          "ROADWAY|FL-LEG|RW001|Inner Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7402766825385,
+          13.12808698630982
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N008",
+        "feature_type": "map_node",
+        "node_type": "dpg_junction",
+        "name": "Dates Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N007|DPG_JUNCTION|Dates Palm Junction",
+          "ROADWAY|FL-LEG|RW001|Inner Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.740502504532,
+          13.12881097525611
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N009",
+        "feature_type": "map_node",
+        "node_type": "hpg_junction",
+        "name": "Hawaiian Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N008|HPG_JUNCTION|Hawaiian Palm Junction",
+          "ROADWAY|FL-LEG|RW0003|Inner Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7415394842868,
+          13.12903431284176
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N010",
+        "feature_type": "map_node",
+        "node_type": "hpg_junction",
+        "name": "Royal Palm Cross",
+        "source_names": [
+          "NODE|FL-LEG|N009|HPG_JUNCTION|Royal Palm Cross"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.741119288143,
+          13.12800019120587
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N011",
+        "feature_type": "map_node",
+        "node_type": "dpg_junction",
+        "name": "Hawaiian Palm Landmark",
+        "source_names": [
+          "NODE|FL-LEG|N010|DPG_JUNCTION|Hawaiian Palm Landmark"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.741064521153,
+          13.12879879596171
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N012",
+        "feature_type": "map_node",
+        "node_type": "ypg_junction",
+        "name": "Yellow Palm Landmark",
+        "source_names": [
+          "NODE|FL-LEG|N011|YPG_JUNCTION|Yellow Palm Landmark"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.741939127178,
+          13.12862518257746
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N013",
+        "feature_type": "map_node",
+        "node_type": "rpg_junction",
+        "name": "Royal Palm Junction",
+        "source_names": [
+          "NODE|FL-LEG|N012|RPG_JUNCTION|Royal Palm Junction",
+          "ROADWAY|FL-LEG|Main Roadway"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7402688445091,
+          13.12799022125917
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N014",
+        "feature_type": "map_node",
+        "node_type": "junction",
+        "name": "Derived junction 014",
+        "source_names": [
+          "PATH|FL-LEG|W001|RPG",
+          "PATH|FL-LEG|W002|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.74067641318726,
+          13.12826285121816
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N015",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W003|RPG Main"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7411038120985,
+          13.12845638635186
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N016",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W003|RPG Main"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410913777065,
+          13.12827804533663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N017",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W001|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7407437563408,
+          13.12848669992525
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N018",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W001|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7406191701803,
+          13.12806895323293
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N019",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W002|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410586019583,
+          13.12824302766891
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N020",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W004|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410829816531,
+          13.12820458724272
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N021",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W004|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7411036713225,
+          13.12794129821973
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N022",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W005|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7411210258106,
+          13.12823370366797
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N023",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W005|RPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7415097127076,
+          13.12819138231603
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N024",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W001|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410296297591,
+          13.12879412177239
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N025",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W001|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7405567062705,
+          13.12884564554591
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N026",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W002|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410663920915,
+          13.12883058569264
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N027",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W002|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410914578424,
+          13.12906599056837
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N028",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W003|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410943889899,
+          13.12878641535624
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N029",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W003|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7415015811615,
+          13.12873921939796
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N030",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W004|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410577506299,
+          13.12876742989936
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N031",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W004|HPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7410319420409,
+          13.12852876866479
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N032",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W001|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.741573835457,
+          13.12893220839772
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N033",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W001|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7422755173042,
+          13.12886425340776
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N034",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W002|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7419366147827,
+          13.12866285650484
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N035",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W002|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7419421506023,
+          13.12889272218984
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N036",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W003|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7419104118998,
+          13.12862527905005
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N037",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W003|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7415561335953,
+          13.12862919411653
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N038",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W004|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7419729722561,
+          13.12862538973531
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N039",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W004|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7422707228544,
+          13.12862567178184
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N040",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W005|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.7419382171864,
+          13.12860247231768
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "N041",
+        "feature_type": "map_node",
+        "node_type": "edge_endpoint",
+        "name": "Derived edge endpoint",
+        "source_names": [
+          "PATH|FL-LEG|W005|YPG"
+        ],
+        "phase": 1
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123.741942596372,
+          13.12838490674422
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E001",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W003|RPG Main",
+        "from_node_id": "N015",
+        "to_node_id": "N016",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7411038120985,
+            13.12845638635186
+          ],
+          [
+            123.7410913777065,
+            13.12827804533663
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E002",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W001|RPG",
+        "from_node_id": "N017",
+        "to_node_id": "N018",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7407437563408,
+            13.12848669992525
+          ],
+          [
+            123.7406766861297,
+            13.12826377575012
+          ],
+          [
+            123.7406191701803,
+            13.12806895323293
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E003",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W002|RPG",
+        "from_node_id": "N014",
+        "to_node_id": "N019",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7406758046639,
+            13.12826288278134
+          ],
+          [
+            123.7410586019583,
+            13.12824302766891
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E004",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W004|RPG",
+        "from_node_id": "N020",
+        "to_node_id": "N021",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7410829816531,
+            13.12820458724272
+          ],
+          [
+            123.7410678839943,
+            13.12801068950536
+          ],
+          [
+            123.7410851564649,
+            13.12799518223994
+          ],
+          [
+            123.7410807209723,
+            13.12797308966474
+          ],
+          [
+            123.7410911492804,
+            13.12795888981274
+          ],
+          [
+            123.7411051009502,
+            13.12795341293118
+          ],
+          [
+            123.7411036713225,
+            13.12794129821973
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E005",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W005|RPG",
+        "from_node_id": "N022",
+        "to_node_id": "N023",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7411210258106,
+            13.12823370366797
+          ],
+          [
+            123.7412184214383,
+            13.12822663773535
+          ],
+          [
+            123.7413150867108,
+            13.12821880609869
+          ],
+          [
+            123.7414128768224,
+            13.12820538204031
+          ],
+          [
+            123.7415097127076,
+            13.12819138231603
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E006",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W001|HPG",
+        "from_node_id": "N024",
+        "to_node_id": "N025",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7410296297591,
+            13.12879412177239
+          ],
+          [
+            123.7405567062705,
+            13.12884564554591
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E007",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W002|HPG",
+        "from_node_id": "N026",
+        "to_node_id": "N027",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7410663920915,
+            13.12883058569264
+          ],
+          [
+            123.7410914578424,
+            13.12906599056837
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E008",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W003|HPG",
+        "from_node_id": "N028",
+        "to_node_id": "N029",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7410943889899,
+            13.12878641535624
+          ],
+          [
+            123.7415015811615,
+            13.12873921939796
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E009",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W004|HPG",
+        "from_node_id": "N030",
+        "to_node_id": "N031",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7410577506299,
+            13.12876742989936
+          ],
+          [
+            123.7410319420409,
+            13.12852876866479
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E010",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W001|YPG",
+        "from_node_id": "N032",
+        "to_node_id": "N033",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.741573835457,
+            13.12893220839772
+          ],
+          [
+            123.7422755173042,
+            13.12886425340776
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E011",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W002|YPG",
+        "from_node_id": "N034",
+        "to_node_id": "N035",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7419366147827,
+            13.12866285650484
+          ],
+          [
+            123.7419421506023,
+            13.12889272218984
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E012",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W003|YPG",
+        "from_node_id": "N036",
+        "to_node_id": "N037",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7419104118998,
+            13.12862527905005
+          ],
+          [
+            123.7415561335953,
+            13.12862919411653
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E013",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W004|YPG",
+        "from_node_id": "N038",
+        "to_node_id": "N039",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7419729722561,
+            13.12862538973531
+          ],
+          [
+            123.7422707228544,
+            13.12862567178184
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E014",
+        "feature_type": "map_edge",
+        "edge_type": "path",
+        "source_name": "PATH|FL-LEG|W005|YPG",
+        "from_node_id": "N040",
+        "to_node_id": "N041",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7419382171864,
+            13.12860247231768
+          ],
+          [
+            123.741942596372,
+            13.12838490674422
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E015",
+        "feature_type": "map_edge",
+        "edge_type": "road",
+        "source_name": "ROADWAY|FL-LEG|Main Roadway",
+        "from_node_id": "N004",
+        "to_node_id": "N013",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7397112870844,
+            13.12801380647635
+          ],
+          [
+            123.73977072649,
+            13.12808280454901
+          ],
+          [
+            123.7398454959677,
+            13.12807027669366
+          ],
+          [
+            123.740229109141,
+            13.12794647249112
+          ],
+          [
+            123.7402710293218,
+            13.12799829758109
+          ],
+          [
+            123.7402771917625,
+            13.1280712789659
+          ],
+          [
+            123.7402606332397,
+            13.12813256949534
+          ],
+          [
+            123.7400153387492,
+            13.12820699852901
+          ],
+          [
+            123.7396818071203,
+            13.12835577396909
+          ],
+          [
+            123.7396574387865,
+            13.12839913422864
+          ],
+          [
+            123.739706816544,
+            13.12852110923973
+          ],
+          [
+            123.7398023173485,
+            13.12853685039488
+          ],
+          [
+            123.7402621309934,
+            13.12856995940548
+          ],
+          [
+            123.7403985962141,
+            13.12869665768937
+          ],
+          [
+            123.7405005150963,
+            13.12881540457152
+          ],
+          [
+            123.7405633928761,
+            13.12901679658876
+          ],
+          [
+            123.7406128162871,
+            13.12909026539858
+          ],
+          [
+            123.7406755666294,
+            13.12912496937015
+          ],
+          [
+            123.7407826917707,
+            13.12912944187823
+          ],
+          [
+            123.7422068286358,
+            13.12898337665594
+          ],
+          [
+            123.7422904940647,
+            13.1289662051758
+          ],
+          [
+            123.7423228442603,
+            13.12887177479097
+          ],
+          [
+            123.7423012204792,
+            13.12855986599199
+          ],
+          [
+            123.742264729358,
+            13.12847441843111
+          ],
+          [
+            123.7415367039778,
+            13.12818257919808
+          ],
+          [
+            123.7415466706432,
+            13.12786581449556
+          ],
+          [
+            123.7415510151604,
+            13.12772507351489
+          ],
+          [
+            123.7414668924936,
+            13.12776905249553
+          ],
+          [
+            123.7413298282025,
+            13.12770755396005
+          ],
+          [
+            123.7412202239299,
+            13.12781035503441
+          ],
+          [
+            123.741040309575,
+            13.12791854766088
+          ],
+          [
+            123.7408784887237,
+            13.12799195141249
+          ],
+          [
+            123.740751883595,
+            13.12802246539821
+          ],
+          [
+            123.7406734063201,
+            13.12803978961819
+          ],
+          [
+            123.7405731342115,
+            13.12804076787716
+          ],
+          [
+            123.7404338806394,
+            13.12803421332965
+          ],
+          [
+            123.7402691560207,
+            13.12799078864284
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E016",
+        "feature_type": "map_edge",
+        "edge_type": "road",
+        "source_name": "ROADWAY|FL-LEG|RW001|Inner Roadway",
+        "from_node_id": "N007",
+        "to_node_id": "N008",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7402763318098,
+            13.12808780714987
+          ],
+          [
+            123.7404266949776,
+            13.12812742967773
+          ],
+          [
+            123.7405026232816,
+            13.12819961248963
+          ],
+          [
+            123.7405980193756,
+            13.12848306702616
+          ],
+          [
+            123.7406225454643,
+            13.12853093319916
+          ],
+          [
+            123.7406345129928,
+            13.12858201686928
+          ],
+          [
+            123.7406338038292,
+            13.12864241376396
+          ],
+          [
+            123.7405850488708,
+            13.12872714075295
+          ],
+          [
+            123.7405027920662,
+            13.12881115440598
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E017",
+        "feature_type": "map_edge",
+        "edge_type": "road",
+        "source_name": "ROADWAY|FL-LEG|RW0002|Inner Roadway",
+        "from_node_id": "N001",
+        "to_node_id": "N002",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7406288426815,
+            13.12853092014226
+          ],
+          [
+            123.7408463128015,
+            13.12850621571828
+          ],
+          [
+            123.7415269139454,
+            13.12843619608978
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "E018",
+        "feature_type": "map_edge",
+        "edge_type": "road",
+        "source_name": "ROADWAY|FL-LEG|RW0003|Inner Roadway",
+        "from_node_id": "N006",
+        "to_node_id": "N009",
+        "phase": 1
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            123.7415363550128,
+            13.12818999489939
+          ],
+          [
+            123.7415311191783,
+            13.1284408016469
+          ],
+          [
+            123.7415297304188,
+            13.12862941754102
+          ],
+          [
+            123.7415320054693,
+            13.12879103829396
+          ],
+          [
+            123.7415393276134,
+            13.12903366393575
+          ]
+        ]
+      }
+    }
+  ]
+}
