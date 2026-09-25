@@ -66,7 +66,7 @@ test("protected provisioning keeps the Auth admin key server-side", async () => 
 
 test("navigation requests browser geolocation", async () => {
   const source = await read("src/components/visitor/navigation-route-map.tsx");
-  assert.match(source, /subscribeToLocation\(navigator\.geolocation/);
+  assert.match(source, /subscribeToLocation\(\s*navigator\.geolocation/);
 });
 
 test("photo uploads stay optional, validated, and recover from metadata failure", async () => {
