@@ -44,6 +44,7 @@ const paths = {
   support: <><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><path d="M4 14h3v4H5a1 1 0 0 1-1-1v-3ZM20 14h-3v4h2a1 1 0 0 0 1-1v-3Z" /><path d="M17 18c-1 1-2 1-3 1" /></>,
   sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41" /></>,
   target: <><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></>,
+  trash: <><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" /><path d="M10 11v5M14 11v5" /></>,
   tree: <><path d="M12 3 6 11h3l-4 5h5v5h4v-5h5l-4-5h3l-6-8Z" /></>,
   upload: <><path d="M12 16V4M7 9l5-5 5 5M5 20h14" /></>,
   userSearch: <><circle cx="10" cy="8" r="3" /><path d="M4 19c0-3 2.5-5 6-5 1.4 0 2.6.3 3.5.9M17 16l4 4M16 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /></>,

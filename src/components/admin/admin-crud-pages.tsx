@@ -12,14 +12,47 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@/components/ui/table";
 import { AdminPageFrame } from "@/components/admin/admin-page-content";
-import { createBurialRecord, createLot, createLotOwner, deleteBurialRecord, deleteLot, deleteLotOwner, getAdminLotsPage, getAdminRecordsPage, getAvailableBurialPlots, getOwnerRecords, getOwnerRecordsPage, getPlotAreas, updateBurialRecord, updateLot, updateLotOwner, type BurialRecordInput, type LotInput, type OwnerInput } from "@/lib/supabase/admin-data";
+import { BurialRecordList } from "@/components/admin/burial-record-list";
+import {
+  createBurialRecord,
+  createLot,
+  createLotOwner,
+  deleteBurialRecord,
+  deleteLot,
+  deleteLotOwner,
+  getAdminLotsPage,
+  getAdminRecordsPage,
+  getAvailableBurialPlots,
+  getDashboardCounts,
+  getOwnerRecords,
+  getOwnerRecordsPage,
+  getPlotAreas,
+  updateBurialRecord,
+  updateLot,
+  updateLotOwner,
+  type BurialRecordInput,
+  type DashboardCounts,
+  type LotInput,
+  type OwnerInput,
+} from "@/lib/supabase/admin-data";
 import type { AdminLot, AdminRecord, BurialPlotOption, LotOwner, PlotAreaOption } from "@/lib/supabase/types";
 
-export function BurialRecordsCrud({ showAdd = false, selectedRecordId = "" }: { showAdd?: boolean; selectedRecordId?: string }) {
+type BurialRecordsCrudProps = {
+  showAdd?: boolean;
+  selectedRecordId?: string;
+  initialQuery?: string;
+};
+
+export function BurialRecordsCrud({
+  showAdd = false,
+  selectedRecordId = "",
+  initialQuery = "",
+}: BurialRecordsCrudProps) {
   const canAdmin = useStaff()?.role === "ADMIN";
   const [records, setRecords] = useState<AdminRecord[]>([]);
   const [plots, setPlots] = useState<BurialPlotOption[]>([]);
-  const [query, setQuery] = useState("");
+  const [total, setTotal] = useState<number | null>(null);
+  const [counts, setCounts] = useState<DashboardCounts | null>(null);
   const [formOpen, setFormOpen] = useState(showAdd);
   const [editing, setEditing] = useState<AdminRecord | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AdminRecord | null>(null);
@@ -33,38 +66,183 @@ export function BurialRecordsCrud({ showAdd = false, selectedRecordId = "" }: { 
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    try { const [recordPage, nextPlots] = await Promise.all([getAdminRecordsPage({ page: 0 }), getAvailableBurialPlots()]); setRecords(recordPage.items); setPage(0); setHasMore(recordPage.hasMore); setPlots(nextPlots); setError(""); } catch (reason) { setError(errorMessage(reason)); } finally { setLoading(false); }
+    try {
+      const [recordPage, nextPlots] = await Promise.all([
+        getAdminRecordsPage({ page: 0 }),
+        getAvailableBurialPlots(),
+      ]);
+      setRecords(recordPage.items);
+      setTotal(recordPage.total);
+      setPage(0);
+      setHasMore(recordPage.hasMore);
+      setPlots(nextPlots);
+      setError("");
+      getDashboardCounts().then(setCounts).catch(() => setCounts(null));
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setLoading(false);
+    }
   }, []);
-  useEffect(() => { const timer = window.setTimeout(() => { void refresh(); }, 0); return () => window.clearTimeout(timer); }, [refresh]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void refresh();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [refresh]);
 
   async function loadMore() {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
-    try { const nextPage = await getAdminRecordsPage({ page: page + 1 }); setRecords((current) => [...current, ...nextPage.items]); setPage((current) => current + 1); setHasMore(nextPage.hasMore); } catch (reason) { setError(errorMessage(reason)); } finally { setLoadingMore(false); }
+    try {
+      const nextPage = await getAdminRecordsPage({ page: page + 1 });
+      setRecords((current) => [...current, ...nextPage.items]);
+      setPage((current) => current + 1);
+      setHasMore(nextPage.hasMore);
+      setTotal(nextPage.total);
+      setError("");
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setLoadingMore(false);
+    }
   }
 
-  const filtered = records.filter((record) => [record.name, record.plot, record.section, String(record.burialId)].some((value) => value.toLowerCase().includes(query.toLowerCase().trim())));
   const selected = records.find((record) => String(record.burialId) === selectedRecordId);
 
-  async function changeStatus(id: number, status: AdminRecord["recordStatus"]) {
-    if (busy) return; setBusy(true);
-    try { await updateBurialRecord(id, recordInputFromRecord(records.find((record) => record.burialId === id)!, { recordStatus: status })); await refresh(); setMessage("Burial record status updated."); } catch (reason) { setError(errorMessage(reason)); } finally { setBusy(false); }
+  async function changeStatus(record: AdminRecord, status: AdminRecord["recordStatus"]) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await updateBurialRecord(
+        record.burialId,
+        recordInputFromRecord(record, { recordStatus: status }),
+      );
+      await refresh();
+      setMessage("Burial record status updated.");
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function changeStatuses(
+    selectedRecords: AdminRecord[],
+    status: AdminRecord["recordStatus"],
+  ) {
+    if (busy || !selectedRecords.length) return;
+    setBusy(true);
+    try {
+      for (const record of selectedRecords) {
+        await updateBurialRecord(
+          record.burialId,
+          recordInputFromRecord(record, { recordStatus: status }),
+        );
+      }
+      await refresh();
+      setMessage(
+        `${selectedRecords.length} burial ${selectedRecords.length === 1 ? "record" : "records"} updated.`,
+      );
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function removeRecord() {
     if (!deleteTarget || busy) return;
     setBusy(true);
-    try { await deleteBurialRecord(deleteTarget.burialId, deleteTarget.revision); setDeleteTarget(null); setMessage("Burial record removed. It can be restored in Recovery."); await refresh(); } catch (reason) { setError(errorMessage(reason)); } finally { setBusy(false); }
+    try {
+      await deleteBurialRecord(deleteTarget.burialId, deleteTarget.revision);
+      setDeleteTarget(null);
+      setMessage("Burial record removed. It can be restored in Recovery.");
+      await refresh();
+    } catch (reason) {
+      setError(errorMessage(reason));
+    } finally {
+      setBusy(false);
+    }
   }
 
-  return <AdminPageFrame title="Burial Records" description="Create, edit, archive, and remove operational records from the protected Supabase database." actions={<Button icon="plus" onClick={() => { setEditing(null); setFormOpen(true); }}>Add burial record</Button>}>
-    {error ? <DataError message={error} /> : null}
-    {message ? <Alert icon="check" title="Record update" variant="success">{message}</Alert> : null}
-    {selected ? <Alert title={"Selected burial " + selected.burialId} variant="info">{selected.name} · {selected.plot}</Alert> : null}
-    {formOpen ? <BurialRecordForm key={editing?.burialId ?? "new"} availablePlots={plots} record={editing} onCancel={() => { setFormOpen(false); setEditing(null); }} onSaved={async () => { setFormOpen(false); setEditing(null); setMessage(editing ? "Burial record updated." : "Burial record created."); await refresh(); }} /> : null}
-    <Card><CardHeader><CardTitle>Operational records</CardTitle><Badge variant="info">{loading ? "Loading…" : filtered.length + " shown"}</Badge></CardHeader><CardContent><Input aria-label="Search burial records" icon="search" onChange={(event) => setQuery(event.target.value)} placeholder="Search loaded names, plots, sections, or IDs" value={query} /></CardContent>{loading ? <CardContent><p className="admin-card-muted">Loading records…</p></CardContent> : filtered.length ? <><Table caption="Local burial records"><TableHead><TableRow><TableHeaderCell>Record</TableHeaderCell><TableHeaderCell>Plot</TableHeaderCell><TableHeaderCell>Status</TableHeaderCell><TableHeaderCell>Public</TableHeaderCell><TableHeaderCell>Actions</TableHeaderCell></TableRow></TableHead><TableBody>{filtered.map((record) => <TableRow key={record.burialId}><TableCell><strong>{record.name}</strong><span className="table-secondary">#{record.burialId} · {record.section}</span></TableCell><TableCell>{record.plot}</TableCell><TableCell><Badge variant={record.recordStatus === "active" ? "success" : record.recordStatus === "pending" ? "warning" : "neutral"}>{record.recordStatus}</Badge></TableCell><TableCell>{record.publicDisplay ? "Yes" : "No"}</TableCell><TableCell><div className="table-actions"><Button size="sm" variant="secondary" onClick={() => { setEditing(record); setFormOpen(true); }}>Edit</Button>{record.recordStatus === "active" ? <Button disabled={busy} size="sm" variant="quiet" onClick={() => void changeStatus(record.burialId, "archived")}>Archive</Button> : <Button disabled={busy} size="sm" variant="quiet" onClick={() => void changeStatus(record.burialId, "active")}>Activate</Button>}<Button disabled={busy || !canAdmin} title={canAdmin ? "Remove record" : "Only administrators can remove records"} size="sm" variant="danger" onClick={() => setDeleteTarget(record)}>Delete</Button></div></TableCell></TableRow>)}</TableBody></Table>{hasMore ? <CardContent><Button disabled={loadingMore} onClick={() => void loadMore()} variant="secondary">{loadingMore ? "Loading more…" : "Load more records"}</Button></CardContent> : null}</> : <CardContent><EmptyState description="Create a record by selecting an available plot." icon="records" title="No burial records" /></CardContent>}</Card>
-    <ConfirmationDialog open={Boolean(deleteTarget)} title="Delete burial record?" description={<p>This hides the burial record from visitors and operational lists. Administrators can restore it in Recovery. Its plot remains reserved.</p>} confirmLabel={busy ? "Deleting…" : "Delete record"} variant="danger" onConfirm={() => void removeRecord()} onClose={() => { if (!busy) setDeleteTarget(null); }} />
-  </AdminPageFrame>;
+  return (
+    <div className="admin-page-frame admin-burial-page">
+      {error ? <DataError message={error} /> : null}
+      {message ? (
+        <Alert icon="check" title="Record update" variant="success">{message}</Alert>
+      ) : null}
+      {selected ? (
+        <Alert title={`Selected burial ${selected.burialId}`} variant="info">
+          {selected.name} · {selected.plot}
+        </Alert>
+      ) : null}
+      {formOpen ? (
+        <BurialRecordForm
+          availablePlots={plots}
+          key={editing?.burialId ?? "new"}
+          record={editing}
+          onCancel={() => {
+            setFormOpen(false);
+            setEditing(null);
+          }}
+          onSaved={async () => {
+            setFormOpen(false);
+            setEditing(null);
+            setMessage(editing ? "Burial record updated." : "Burial record created.");
+            await refresh();
+          }}
+        />
+      ) : null}
+      <BurialRecordList
+        busy={busy}
+        canAdmin={canAdmin}
+        counts={counts}
+        hasMore={hasMore}
+        initialQuery={initialQuery}
+        loading={loading}
+        loadingMore={loadingMore}
+        records={records}
+        selectedRecordId={selectedRecordId}
+        total={total}
+        onAdd={() => {
+          setEditing(null);
+          setFormOpen(true);
+        }}
+        onBatchStatus={(selectedRecords, status) => {
+          void changeStatuses(selectedRecords, status);
+        }}
+        onChangeStatus={(record, status) => {
+          void changeStatus(record, status);
+        }}
+        onDelete={setDeleteTarget}
+        onEdit={(record) => {
+          setEditing(record);
+          setFormOpen(true);
+        }}
+        onLoadMore={() => {
+          void loadMore();
+        }}
+      />
+      <ConfirmationDialog
+        confirmLabel={busy ? "Deleting…" : "Delete record"}
+        description={(
+          <p>
+            This hides the burial record from visitors and operational lists.
+            Administrators can restore it in Recovery. Its plot remains reserved.
+          </p>
+        )}
+        open={Boolean(deleteTarget)}
+        title="Delete burial record?"
+        variant="danger"
+        onClose={() => {
+          if (!busy) setDeleteTarget(null);
+        }}
+        onConfirm={() => void removeRecord()}
+      />
+    </div>
+  );
 }
 
 function BurialRecordForm({ record, availablePlots, onCancel, onSaved }: { record: AdminRecord | null; availablePlots: BurialPlotOption[]; onCancel: () => void; onSaved: () => Promise<void> }) {
