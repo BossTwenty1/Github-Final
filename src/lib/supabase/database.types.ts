@@ -14,6 +14,182 @@ export type Database = {
   }
   public: {
     Tables: {
+      georeferencing_run: {
+        Row: {
+          run_id: string
+          release_id: string
+          site_id: number
+          run_code: string
+          source_reference: string
+          source_hash: string
+          source_width: number | null
+          source_height: number | null
+          source_coordinate_space: string
+          working_srid: number
+          output_srid: number
+          method: string
+          processing_parameters: Json
+          processed_at: string
+          qgis_version: string
+          operator_reference: string | null
+          reviewer_reference: string | null
+          output_artifact_reference: string
+          output_artifact_hash: string
+          review_state: string
+          revision: number
+          notes: string | null
+          review_notes: string | null
+          created_at: string
+          created_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          run_id?: string
+          release_id: string
+          site_id: number
+          run_code: string
+          source_reference: string
+          source_hash: string
+          source_width?: number | null
+          source_height?: number | null
+          source_coordinate_space: string
+          working_srid: number
+          output_srid: number
+          method: string
+          processing_parameters?: Json
+          processed_at: string
+          qgis_version: string
+          operator_reference?: string | null
+          reviewer_reference?: string | null
+          output_artifact_reference: string
+          output_artifact_hash: string
+          review_state?: string
+          revision?: number
+          notes?: string | null
+          review_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          run_id?: string
+          release_id?: string
+          site_id?: number
+          run_code?: string
+          source_reference?: string
+          source_hash?: string
+          source_width?: number | null
+          source_height?: number | null
+          source_coordinate_space?: string
+          working_srid?: number
+          output_srid?: number
+          method?: string
+          processing_parameters?: Json
+          processed_at?: string
+          qgis_version?: string
+          operator_reference?: string | null
+          reviewer_reference?: string | null
+          output_artifact_reference?: string
+          output_artifact_hash?: string
+          review_state?: string
+          revision?: number
+          notes?: string | null
+          review_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "georeferencing_run_release_site_fkey"; columns: ["release_id", "site_id"]; isOneToOne: false; referencedRelation: "mapping_release"; referencedColumns: ["release_id", "site_id"] },
+          { foreignKeyName: "georeferencing_run_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+          { foreignKeyName: "georeferencing_run_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+        ]
+      }
+      georeferencing_run_point: {
+        Row: {
+          run_point_id: string
+          run_id: string
+          release_id: string
+          site_id: number
+          point_id: string
+          capture_id: string
+          role: string
+          source_x: number
+          source_y: number
+          fitting_residual_m: number | null
+          created_at: string
+        }
+        Insert: {
+          run_point_id?: string
+          run_id: string
+          release_id: string
+          site_id: number
+          point_id: string
+          capture_id: string
+          role: string
+          source_x: number
+          source_y: number
+          fitting_residual_m?: number | null
+          created_at?: string
+        }
+        Update: {
+          run_point_id?: string
+          run_id?: string
+          release_id?: string
+          site_id?: number
+          point_id?: string
+          capture_id?: string
+          role?: string
+          source_x?: number
+          source_y?: number
+          fitting_residual_m?: number | null
+          created_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "georeferencing_run_point_run_scope_fkey"; columns: ["run_id", "release_id", "site_id"]; isOneToOne: false; referencedRelation: "georeferencing_run"; referencedColumns: ["run_id", "release_id", "site_id"] },
+          { foreignKeyName: "georeferencing_run_point_point_site_fkey"; columns: ["point_id", "site_id"]; isOneToOne: false; referencedRelation: "survey_point"; referencedColumns: ["point_id", "site_id"] },
+          { foreignKeyName: "georeferencing_run_point_capture_fkey"; columns: ["capture_id", "point_id", "site_id"]; isOneToOne: false; referencedRelation: "survey_capture"; referencedColumns: ["capture_id", "point_id", "site_id"] },
+        ]
+      }
+      georeferencing_validation: {
+        Row: {
+          run_point_id: string
+          transformed_plan_point: unknown
+          review_state: string
+          revision: number
+          notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          created_at: string
+        }
+        Insert: {
+          run_point_id: string
+          transformed_plan_point: unknown
+          review_state?: string
+          revision?: number
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          run_point_id?: string
+          transformed_plan_point?: unknown
+          review_state?: string
+          revision?: number
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "georeferencing_validation_run_point_id_fkey"; columns: ["run_point_id"]; isOneToOne: true; referencedRelation: "georeferencing_run_point"; referencedColumns: ["run_point_id"] },
+          { foreignKeyName: "georeferencing_validation_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+        ]
+      }
       survey_point: {
         Row: {
           point_id: string
@@ -337,6 +513,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "account"
             referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_selected_run_fkey"
+            columns: ["selected_run_id", "release_id", "site_id"]
+            isOneToOne: false
+            referencedRelation: "georeferencing_run"
+            referencedColumns: ["run_id", "release_id", "site_id"]
           },
         ]
       }
@@ -1301,6 +1484,28 @@ export type Database = {
       }
     }
     Functions: {
+      staff_save_georeferencing_run: {
+        Args: {
+          p_run_id: string | null
+          p_expected_revision: number | null
+          p_values: Json
+          p_memberships: Json
+          p_results: Json
+          p_request_id: string
+        }
+        Returns: Json
+      }
+      staff_review_georeferencing_run: {
+        Args: {
+          p_run_id: string
+          p_expected_revision: number
+          p_decision: string
+          p_acknowledgements: Json
+          p_notes: string | null
+          p_request_id: string
+        }
+        Returns: Json
+      }
       staff_save_survey_point: {
         Args: { p_point_id: string | null; p_expected_revision: number | null; p_values: Json; p_request_id: string }
         Returns: Json

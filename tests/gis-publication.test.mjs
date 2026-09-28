@@ -194,10 +194,21 @@ test("M01 protected GIS release foundation", async (t) => {
         ...["draft","staged","validated","approved"].map((state) => [state,"rejected","staff_reject_mapping_release"]),
       ];
       for (const [from,to,operation] of transitions) await withOwnerTransaction(db, async () => {
+        // M03 makes selected_run_id relational. Seed one owner-only synthetic run so
+        // this lifecycle-guard fixture keeps exercising restage invalidation with a
+        // valid same-release/site reference; restore its guard before assertions.
+        const selectedRunId = randomUUID();
+        await db.exec("alter table public.georeferencing_run disable trigger user");
+        await db.query(`insert into public.georeferencing_run(run_id,release_id,site_id,run_code,source_reference,source_hash,
+          source_width,source_height,source_coordinate_space,working_srid,output_srid,method,processed_at,qgis_version,
+          output_artifact_reference,output_artifact_hash,created_by)
+          values($1,$2,1,$3,'synthetic/plan.png',$4,100,100,'pixels',32651,4326,'synthetic',now(),'3.40',
+          'synthetic/output.tif',$5,$6)`, [selectedRunId,release.id,`fixture-${randomUUID()}`,"a".repeat(64),"b".repeat(64),gisActors.admin]);
+        await db.exec("alter table public.georeferencing_run enable trigger user");
         await db.exec("alter table public.mapping_release disable trigger user");
         await db.query(`update public.mapping_release set status=$2,revision=1,selected_run_id=$3,validation_report_hash=$4,
           validation_summary='{"schemaVersion":1,"featureCount":2}',validated_at=now(),reviewed_at=now(),published_at=now()
-          where release_id=$1`, [release.id,from,randomUUID(),"d".repeat(64)]);
+          where release_id=$1`, [release.id,from,selectedRunId,"d".repeat(64)]);
         await db.exec("alter table public.mapping_release enable trigger user");
         await db.query(`insert into gis_private.gis_mutation_request(request_id,actor_account_id,operation,input_hash)
           values($1,$2,$3,$4)`, [randomUUID(),gisActors.admin,operation,"e".repeat(64)]);
