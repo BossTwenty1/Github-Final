@@ -250,7 +250,7 @@ test("M01 protected GIS release foundation", async (t) => {
       assert.doesNotMatch(JSON.stringify(receipts), /PRIVATE_SYNTHETIC|fictional\//i);
       await gisLogin(db);
     });
-    await t.test("publication history is append-only and M01 exposes no later pipeline RPC", async () => {
+    await t.test("publication history is append-only", async () => {
       const release = await createRelease(db);
       await withOwnerTransaction(db, async () => {
         await db.query(`insert into public.mapping_publication_event(site_id,area_id,new_release_id,request_id,kind,actor_account_id)
@@ -260,14 +260,18 @@ test("M01 protected GIS release foundation", async (t) => {
         await db.exec("rollback to savepoint history_write");
         await assert.rejects(db.exec("delete from public.mapping_publication_event"), /append.only|immutable/i);
       });
-      await gisLogin(db, gisActors.admin, "postgres");
-      const later = (await db.query(`select proname from pg_proc where pronamespace='public'::regnamespace
-        and proname in ('staff_begin_mapping_import','staff_seal_mapping_import','staff_finalize_mapping_import','staff_review_mapping_release','staff_publish_mapping_release','staff_rollback_mapping_release')`)).rows;
-      assert.deepEqual(later, []);
-      await gisLogin(db);
+    });
+    await t.test("later pipeline RPCs are absent at the M01 migration boundary", async () => {
+      const m01Db = await createTestDatabase({ throughMigration: "20260928160000_gis_release_foundation.sql" });
+      try {
+        const later = (await m01Db.query(`select proname from pg_proc where pronamespace='public'::regnamespace
+          and proname in ('staff_begin_mapping_import','staff_seal_mapping_import','staff_finalize_mapping_import','staff_review_mapping_release','staff_publish_mapping_release','staff_rollback_mapping_release')`)).rows;
+        assert.deepEqual(later, []);
+      } finally { await m01Db.close(); }
     });
     await t.test("catalog enforces RLS function profiles pinned search_path and explicit ACLs", async () => {
       await gisLogin(db, gisActors.admin, "postgres");
+      assert.equal((await db.query("select to_regclass('public.survey_capture')::text relation")).rows[0].relation, "survey_capture");
       const tables = ["mapping_release","mapping_release_area","mapping_publication","mapping_publication_event"];
       for (const table of tables) {
         const catalog = (await db.query("select relrowsecurity from pg_class where oid=$1::regclass", [`public.${table}`])).rows[0];
@@ -281,8 +285,16 @@ test("M01 protected GIS release foundation", async (t) => {
       }
       const functions = (await db.query(`select n.nspname,p.proname,p.prosecdef,p.proconfig,pg_get_function_identity_arguments(p.oid) args,p.oid
         from pg_proc p join pg_namespace n on n.oid=p.pronamespace
-        where n.nspname='gis_private' or (n.nspname='public' and p.proname in ('staff_create_mapping_release','staff_reject_mapping_release'))`)).rows;
+        where (n.nspname='gis_private' and p.proname in ('assert_admin','assert_pilot_scope','claim_request',
+          'finish_request','audit_event','guard_release','guard_release_area','guard_publication_history'))
+          or (n.nspname='public' and p.proname in ('staff_create_mapping_release','staff_reject_mapping_release'))`)).rows;
       assert.equal(functions.length, 10);
+      assert.deepEqual(functions.map((fn) => `${fn.nspname}.${fn.proname}`).sort(), [
+        'gis_private.assert_admin','gis_private.assert_pilot_scope','gis_private.audit_event',
+        'gis_private.claim_request','gis_private.finish_request','gis_private.guard_publication_history',
+        'gis_private.guard_release','gis_private.guard_release_area',
+        'public.staff_create_mapping_release','public.staff_reject_mapping_release',
+      ]);
       for (const fn of functions) {
         assert.equal(fn.prosecdef, fn.nspname === "public");
         assert.deepEqual(fn.proconfig, ["search_path=pg_catalog, extensions, pg_temp"]);

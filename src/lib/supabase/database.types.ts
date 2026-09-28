@@ -14,6 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
+      survey_point: {
+        Row: {
+          point_id: string
+          site_id: number
+          point_code: string
+          role: string
+          description: string | null
+          source_plan_reference: string | null
+          notes: string | null
+          active: boolean
+          review_state: string
+          revision: number
+          predecessor_point_id: string | null
+          created_at: string
+          created_by: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          point_id?: string
+          site_id: number
+          point_code: string
+          role: string
+          description?: string | null
+          source_plan_reference?: string | null
+          notes?: string | null
+          active?: boolean
+          review_state?: string
+          revision?: number
+          predecessor_point_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          point_id?: string
+          site_id?: number
+          point_code?: string
+          role?: string
+          description?: string | null
+          source_plan_reference?: string | null
+          notes?: string | null
+          active?: boolean
+          review_state?: string
+          revision?: number
+          predecessor_point_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "survey_point_site_id_fkey"; columns: ["site_id"]; isOneToOne: false; referencedRelation: "site"; referencedColumns: ["site_id"] },
+          { foreignKeyName: "survey_point_predecessor_fkey"; columns: ["predecessor_point_id"]; isOneToOne: false; referencedRelation: "survey_point"; referencedColumns: ["point_id"] },
+          { foreignKeyName: "survey_point_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+          { foreignKeyName: "survey_point_updated_by_fkey"; columns: ["updated_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+        ]
+      }
+      survey_capture: {
+        Row: {
+          capture_id: string
+          point_id: string
+          site_id: number
+          capture_code: string
+          started_at: string
+          ended_at: string | null
+          device_reference: string | null
+          operator_reference: string | null
+          notes: string | null
+          remeasures_capture_id: string | null
+          remeasure_required: boolean
+          review_state: string
+          review_reason: string | null
+          revision: number
+          created_at: string
+          created_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          capture_id?: string
+          point_id: string
+          site_id: number
+          capture_code: string
+          started_at: string
+          ended_at?: string | null
+          device_reference?: string | null
+          operator_reference?: string | null
+          notes?: string | null
+          remeasures_capture_id?: string | null
+          remeasure_required?: boolean
+          review_state?: string
+          review_reason?: string | null
+          revision?: number
+          created_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          capture_id?: string
+          point_id?: string
+          site_id?: number
+          capture_code?: string
+          started_at?: string
+          ended_at?: string | null
+          device_reference?: string | null
+          operator_reference?: string | null
+          notes?: string | null
+          remeasures_capture_id?: string | null
+          remeasure_required?: boolean
+          review_state?: string
+          review_reason?: string | null
+          revision?: number
+          created_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "survey_capture_point_site_fkey"; columns: ["point_id", "site_id"]; isOneToOne: false; referencedRelation: "survey_point"; referencedColumns: ["point_id", "site_id"] },
+          { foreignKeyName: "survey_capture_parent_fkey"; columns: ["remeasures_capture_id", "point_id", "site_id"]; isOneToOne: false; referencedRelation: "survey_capture"; referencedColumns: ["capture_id", "point_id", "site_id"] },
+          { foreignKeyName: "survey_capture_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+          { foreignKeyName: "survey_capture_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+        ]
+      }
+      survey_observation: {
+        Row: {
+          observation_id: string
+          capture_id: string
+          observation_order: number
+          latitude: number
+          longitude: number
+          reported_accuracy_m: number
+          captured_at: string
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          observation_id?: string
+          capture_id: string
+          observation_order: number
+          latitude: number
+          longitude: number
+          reported_accuracy_m: number
+          captured_at: string
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          observation_id?: string
+          capture_id?: string
+          observation_order?: number
+          latitude?: number
+          longitude?: number
+          reported_accuracy_m?: number
+          captured_at?: string
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          { foreignKeyName: "survey_observation_capture_id_fkey"; columns: ["capture_id"]; isOneToOne: false; referencedRelation: "survey_capture"; referencedColumns: ["capture_id"] },
+        ]
+      }
       mapping_release: {
         Row: {
           created_at: string
@@ -1136,6 +1301,18 @@ export type Database = {
       }
     }
     Functions: {
+      staff_save_survey_point: {
+        Args: { p_point_id: string | null; p_expected_revision: number | null; p_values: Json; p_request_id: string }
+        Returns: Json
+      }
+      staff_record_survey_capture: {
+        Args: { p_point_id: string; p_capture_code: string; p_meta: Json; p_observations: Json; p_request_id: string }
+        Returns: Json
+      }
+      staff_review_survey_capture: {
+        Args: { p_capture_id: string; p_expected_revision: number; p_decision: string; p_acknowledgements: Json; p_notes: string | null; p_request_id: string }
+        Returns: Json
+      }
       staff_create_mapping_release: {
         Args: { p_values: Json; p_request_id: string }
         Returns: Json
