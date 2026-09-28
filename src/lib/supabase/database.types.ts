@@ -14,6 +14,332 @@ export type Database = {
   }
   public: {
     Tables: {
+      mapping_release: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          field_srid: number
+          notes: string | null
+          package_hash: string | null
+          package_reference: string | null
+          pilot_area_id: number | null
+          published_at: string | null
+          published_by: string | null
+          published_srid: number
+          qgis_version: string | null
+          rejection_reason: string | null
+          release_code: string
+          release_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          revision: number
+          scope_kind: string
+          selected_run_id: string | null
+          site_id: number
+          source_coordinate_space: string | null
+          source_plan_hash: string | null
+          source_plan_reference: string | null
+          source_plan_version: string | null
+          staged_at: string | null
+          staged_by: string | null
+          status: string
+          title: string
+          validated_at: string | null
+          validated_by: string | null
+          validation_report_hash: string | null
+          validation_summary: Json | null
+          working_srid: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_srid?: number
+          notes?: string | null
+          package_hash?: string | null
+          package_reference?: string | null
+          pilot_area_id?: number | null
+          published_at?: string | null
+          published_by?: string | null
+          published_srid?: number
+          qgis_version?: string | null
+          rejection_reason?: string | null
+          release_code: string
+          release_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revision?: number
+          scope_kind: string
+          selected_run_id?: string | null
+          site_id: number
+          source_coordinate_space?: string | null
+          source_plan_hash?: string | null
+          source_plan_reference?: string | null
+          source_plan_version?: string | null
+          staged_at?: string | null
+          staged_by?: string | null
+          status?: string
+          title: string
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_report_hash?: string | null
+          validation_summary?: Json | null
+          working_srid?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_srid?: number
+          notes?: string | null
+          package_hash?: string | null
+          package_reference?: string | null
+          pilot_area_id?: number | null
+          published_at?: string | null
+          published_by?: string | null
+          published_srid?: number
+          qgis_version?: string | null
+          rejection_reason?: string | null
+          release_code?: string
+          release_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revision?: number
+          scope_kind?: string
+          selected_run_id?: string | null
+          site_id?: number
+          source_coordinate_space?: string | null
+          source_plan_hash?: string | null
+          source_plan_reference?: string | null
+          source_plan_version?: string | null
+          staged_at?: string | null
+          staged_by?: string | null
+          status?: string
+          title?: string
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_report_hash?: string | null
+          validation_summary?: Json | null
+          working_srid?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_release_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "site"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_pilot_area_id_fkey"
+            columns: ["pilot_area_id"]
+            isOneToOne: false
+            referencedRelation: "area"
+            referencedColumns: ["area_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_staged_by_fkey"
+            columns: ["staged_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_validated_by_fkey"
+            columns: ["validated_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+        ]
+      }
+      mapping_release_area: {
+        Row: {
+          release_id: string
+          site_id: number
+          area_id: number
+        }
+        Insert: {
+          release_id: string
+          site_id: number
+          area_id: number
+        }
+        Update: {
+          release_id?: string
+          site_id?: number
+          area_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_release_area_release_site_fkey"
+            columns: ["release_id", "site_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_release"
+            referencedColumns: ["release_id", "site_id"]
+          },
+          {
+            foreignKeyName: "mapping_release_area_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "area"
+            referencedColumns: ["area_id"]
+          },
+        ]
+      }
+      mapping_publication: {
+        Row: {
+          site_id: number
+          area_id: number
+          release_id: string
+          published_at: string
+          published_by: string | null
+        }
+        Insert: {
+          site_id: number
+          area_id: number
+          release_id: string
+          published_at?: string
+          published_by?: string | null
+        }
+        Update: {
+          site_id?: number
+          area_id?: number
+          release_id?: string
+          published_at?: string
+          published_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_publication_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "site"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "area"
+            referencedColumns: ["area_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_membership_fkey"
+            columns: ["release_id", "site_id", "area_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_release_area"
+            referencedColumns: ["release_id", "site_id", "area_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+        ]
+      }
+      mapping_publication_event: {
+        Row: {
+          event_id: string
+          site_id: number
+          area_id: number
+          previous_release_id: string | null
+          new_release_id: string
+          request_id: string
+          kind: string
+          actor_account_id: string | null
+          created_at: string
+        }
+        Insert: {
+          event_id?: string
+          site_id: number
+          area_id: number
+          previous_release_id?: string | null
+          new_release_id: string
+          request_id: string
+          kind: string
+          actor_account_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          event_id?: string
+          site_id?: number
+          area_id?: number
+          previous_release_id?: string | null
+          new_release_id?: string
+          request_id?: string
+          kind?: string
+          actor_account_id?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_publication_event_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "site"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_event_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "area"
+            referencedColumns: ["area_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_event_previous_release_id_fkey"
+            columns: ["previous_release_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_release"
+            referencedColumns: ["release_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_event_new_release_id_fkey"
+            columns: ["new_release_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_release"
+            referencedColumns: ["release_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_event_membership_fkey"
+            columns: ["new_release_id", "site_id", "area_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_release_area"
+            referencedColumns: ["release_id", "site_id", "area_id"]
+          },
+          {
+            foreignKeyName: "mapping_publication_event_actor_account_id_fkey"
+            columns: ["actor_account_id"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+        ]
+      }
       account: {
         Row: {
           account_id: string
@@ -810,6 +1136,19 @@ export type Database = {
       }
     }
     Functions: {
+      staff_create_mapping_release: {
+        Args: { p_values: Json; p_request_id: string }
+        Returns: Json
+      }
+      staff_reject_mapping_release: {
+        Args: {
+          p_release_id: string
+          p_expected_revision: number
+          p_reason: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
       admin_activate_account: {
         Args: { p_account_id: string }
         Returns: {
