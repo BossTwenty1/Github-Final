@@ -101,8 +101,8 @@ export async function loadPhaseOneMapDataFromSupabase(): Promise<PhaseOneMapData
   const [{ data: sites, error: siteError }, { data: areas, error: areaError }, { data: nodes, error: nodeError }, { data: edges, error: edgeError }] = await Promise.all([
     client.from("site").select("site_id,site_name,boundary_geom").order("site_id"),
     client.from("area").select("area_id,site_id,area_code,area_name,area_category,boundary_geom").eq("area_category", "garden").in("area_code", [...phaseOneAreaCodes]),
-    client.from("map_node").select("node_id,site_id,node_name,node_type,px_loc_x,px_loc_y,location_geom").order("node_id"),
-    client.from("map_edge").select("edge_id,from_node_id,to_node_id,path_geom,distance_m,edge_type,is_restricted").order("edge_id"),
+    client.from("map_node").select("node_id,site_id,node_name,node_type,px_loc_x,px_loc_y,location_geom").is("mapping_release_id", null).order("node_id"),
+    client.from("map_edge").select("edge_id,from_node_id,to_node_id,path_geom,distance_m,edge_type,is_restricted").is("mapping_release_id", null).order("edge_id"),
   ]);
   if (siteError) throw siteError;
   if (areaError) throw areaError;
