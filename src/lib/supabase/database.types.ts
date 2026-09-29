@@ -190,6 +190,158 @@ export type Database = {
           { foreignKeyName: "georeferencing_validation_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
         ]
       }
+      grave_access_point: {
+        Row: {
+          access_point_id: string
+          mapping_release_id: string
+          site_id: number
+          georeferencing_run_id: string
+          source_feature_id: string
+          artifact_hash: string
+          layer_name: string
+          layer_version: string
+          lot_id: number
+          area_id: number
+          node_id: number
+          access_point_geom: unknown
+          review_state: string
+          revision: number
+          private_notes: string | null
+          created_at: string
+          imported_at: string
+          created_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          access_point_id?: string
+          mapping_release_id: string
+          site_id: number
+          georeferencing_run_id: string
+          source_feature_id: string
+          artifact_hash: string
+          layer_name: string
+          layer_version: string
+          lot_id: number
+          area_id: number
+          node_id: number
+          access_point_geom: unknown
+          review_state?: string
+          revision?: number
+          private_notes?: string | null
+          created_at?: string
+          imported_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          access_point_id?: string
+          mapping_release_id?: string
+          site_id?: number
+          georeferencing_run_id?: string
+          source_feature_id?: string
+          artifact_hash?: string
+          layer_name?: string
+          layer_version?: string
+          lot_id?: number
+          area_id?: number
+          node_id?: number
+          access_point_geom?: unknown
+          review_state?: string
+          revision?: number
+          private_notes?: string | null
+          created_at?: string
+          imported_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "grave_access_point_release_site_fkey"; columns: ["mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "mapping_release"; referencedColumns: ["release_id", "site_id"] },
+          { foreignKeyName: "grave_access_point_run_scope_fkey"; columns: ["georeferencing_run_id", "mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "georeferencing_run"; referencedColumns: ["run_id", "release_id", "site_id"] },
+          { foreignKeyName: "grave_access_point_plot_fkey"; columns: ["mapping_release_id", "lot_id"]; isOneToOne: true; referencedRelation: "plot_geometry"; referencedColumns: ["mapping_release_id", "lot_id"] },
+          { foreignKeyName: "grave_access_point_area_fkey"; columns: ["mapping_release_id", "site_id", "area_id"]; isOneToOne: false; referencedRelation: "mapping_release_area"; referencedColumns: ["release_id", "site_id", "area_id"] },
+          { foreignKeyName: "grave_access_point_node_fkey"; columns: ["node_id", "site_id", "mapping_release_id"]; isOneToOne: false; referencedRelation: "map_node"; referencedColumns: ["node_id", "site_id", "mapping_release_id"] },
+          { foreignKeyName: "grave_access_point_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+          { foreignKeyName: "grave_access_point_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+        ]
+      }
+      mapping_display_feature: {
+        Row: {
+          display_feature_id: string
+          mapping_release_id: string
+          site_id: number
+          georeferencing_run_id: string
+          source_feature_id: string
+          artifact_hash: string
+          layer_name: string
+          layer_version: string
+          kind: string
+          label: string
+          route_node_id: number | null
+          display_geom: unknown
+          review_state: string
+          revision: number
+          private_notes: string | null
+          created_at: string
+          imported_at: string
+          created_by: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          display_feature_id?: string
+          mapping_release_id: string
+          site_id: number
+          georeferencing_run_id: string
+          source_feature_id: string
+          artifact_hash: string
+          layer_name: string
+          layer_version: string
+          kind: string
+          label: string
+          route_node_id?: number | null
+          display_geom: unknown
+          review_state?: string
+          revision?: number
+          private_notes?: string | null
+          created_at?: string
+          imported_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          display_feature_id?: string
+          mapping_release_id?: string
+          site_id?: number
+          georeferencing_run_id?: string
+          source_feature_id?: string
+          artifact_hash?: string
+          layer_name?: string
+          layer_version?: string
+          kind?: string
+          label?: string
+          route_node_id?: number | null
+          display_geom?: unknown
+          review_state?: string
+          revision?: number
+          private_notes?: string | null
+          created_at?: string
+          imported_at?: string
+          created_by?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: [
+          { foreignKeyName: "mapping_display_feature_release_site_fkey"; columns: ["mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "mapping_release"; referencedColumns: ["release_id", "site_id"] },
+          { foreignKeyName: "mapping_display_feature_run_scope_fkey"; columns: ["georeferencing_run_id", "mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "georeferencing_run"; referencedColumns: ["run_id", "release_id", "site_id"] },
+          { foreignKeyName: "mapping_display_feature_node_fkey"; columns: ["route_node_id", "site_id", "mapping_release_id"]; isOneToOne: false; referencedRelation: "map_node"; referencedColumns: ["node_id", "site_id", "mapping_release_id"] },
+          { foreignKeyName: "mapping_display_feature_created_by_fkey"; columns: ["created_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+          { foreignKeyName: "mapping_display_feature_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
+        ]
+      }
       mapping_boundary: {
         Row: {
           boundary_id: string
@@ -1355,31 +1507,82 @@ export type Database = {
       }
       map_edge: {
         Row: {
+          artifact_hash: string | null
           distance_m: number | null
           edge_id: number
           edge_type: string
+          forward_cost_m: number | null
           from_node_id: number
+          imported_at: string | null
           is_restricted: boolean
+          layer_name: string | null
+          layer_version: string | null
+          mapping_release_id: string | null
           path_geom: unknown
+          reverse_cost_m: number | null
+          review_notes: string | null
+          review_state: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          revision: number | null
+          site_id: number | null
+          source_feature_id: string | null
+          source_walkway_id: string | null
           to_node_id: number
+          direction: string | null
+          walking_allowed: boolean | null
         }
         Insert: {
+          artifact_hash?: string | null
           distance_m?: number | null
           edge_id?: number
           edge_type: string
+          forward_cost_m?: number | null
           from_node_id: number
+          imported_at?: string | null
           is_restricted?: boolean
+          layer_name?: string | null
+          layer_version?: string | null
+          mapping_release_id?: string | null
           path_geom?: unknown
+          reverse_cost_m?: number | null
+          review_notes?: string | null
+          review_state?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revision?: number | null
+          site_id?: number | null
+          source_feature_id?: string | null
+          source_walkway_id?: string | null
           to_node_id: number
+          direction?: string | null
+          walking_allowed?: boolean | null
         }
         Update: {
+          artifact_hash?: string | null
           distance_m?: number | null
           edge_id?: number
           edge_type?: string
+          forward_cost_m?: number | null
           from_node_id?: number
+          imported_at?: string | null
           is_restricted?: boolean
+          layer_name?: string | null
+          layer_version?: string | null
+          mapping_release_id?: string | null
           path_geom?: unknown
+          reverse_cost_m?: number | null
+          review_notes?: string | null
+          review_state?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revision?: number | null
+          site_id?: number | null
+          source_feature_id?: string | null
+          source_walkway_id?: string | null
           to_node_id?: number
+          direction?: string | null
+          walking_allowed?: boolean | null
         }
         Relationships: [
           {
@@ -1396,35 +1599,73 @@ export type Database = {
             referencedRelation: "map_node"
             referencedColumns: ["node_id"]
           },
+          { foreignKeyName: "map_edge_release_site_fkey"; columns: ["mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "mapping_release"; referencedColumns: ["release_id", "site_id"] },
+          { foreignKeyName: "map_edge_from_release_node_fkey"; columns: ["from_node_id", "site_id", "mapping_release_id"]; isOneToOne: false; referencedRelation: "map_node"; referencedColumns: ["node_id", "site_id", "mapping_release_id"] },
+          { foreignKeyName: "map_edge_to_release_node_fkey"; columns: ["to_node_id", "site_id", "mapping_release_id"]; isOneToOne: false; referencedRelation: "map_node"; referencedColumns: ["node_id", "site_id", "mapping_release_id"] },
+          { foreignKeyName: "map_edge_source_walkway_fkey"; columns: ["source_walkway_id", "mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "mapping_walkway_source"; referencedColumns: ["walkway_source_id", "mapping_release_id", "site_id"] },
+          { foreignKeyName: "map_edge_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
         ]
       }
       map_node: {
         Row: {
+          artifact_hash: string | null
+          imported_at: string | null
+          layer_name: string | null
+          layer_version: string | null
           location_geom: unknown
+          mapping_release_id: string | null
           node_id: number
           node_name: string
           node_type: string
           px_loc_x: number | null
           px_loc_y: number | null
+          review_notes: string | null
+          review_state: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          revision: number | null
           site_id: number
+          source_feature_id: string | null
         }
         Insert: {
+          artifact_hash?: string | null
+          imported_at?: string | null
+          layer_name?: string | null
+          layer_version?: string | null
           location_geom?: unknown
+          mapping_release_id?: string | null
           node_id?: number
           node_name: string
           node_type: string
           px_loc_x?: number | null
           px_loc_y?: number | null
+          review_notes?: string | null
+          review_state?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revision?: number | null
           site_id: number
+          source_feature_id?: string | null
         }
         Update: {
+          artifact_hash?: string | null
+          imported_at?: string | null
+          layer_name?: string | null
+          layer_version?: string | null
           location_geom?: unknown
+          mapping_release_id?: string | null
           node_id?: number
           node_name?: string
           node_type?: string
           px_loc_x?: number | null
           px_loc_y?: number | null
+          review_notes?: string | null
+          review_state?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revision?: number | null
           site_id?: number
+          source_feature_id?: string | null
         }
         Relationships: [
           {
@@ -1434,6 +1675,8 @@ export type Database = {
             referencedRelation: "site"
             referencedColumns: ["site_id"]
           },
+          { foreignKeyName: "map_node_release_site_fkey"; columns: ["mapping_release_id", "site_id"]; isOneToOne: false; referencedRelation: "mapping_release"; referencedColumns: ["release_id", "site_id"] },
+          { foreignKeyName: "map_node_reviewed_by_fkey"; columns: ["reviewed_by"]; isOneToOne: false; referencedRelation: "account"; referencedColumns: ["account_id"] },
         ]
       }
       photo: {
