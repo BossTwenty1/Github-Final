@@ -733,6 +733,249 @@ export type Database = {
           { foreignKeyName: "survey_observation_capture_id_fkey"; columns: ["capture_id"]; isOneToOne: false; referencedRelation: "survey_capture"; referencedColumns: ["capture_id"] },
         ]
       }
+      mapping_import: {
+        Row: {
+          abandon_reason: string | null
+          abandoned_at: string | null
+          actor_account_id: string
+          area_id: number
+          base_revision: number
+          created_at: string
+          current_report_id: string | null
+          failure_classification: string | null
+          import_id: string
+          manifest_sha256: string
+          package_digest: string
+          release_id: string
+          request_id: string
+          revision: number
+          sealed_at: string | null
+          site_id: number
+          state: string
+          target_revision: number
+          updated_at: string
+          validator_version: string
+        }
+        Insert: {
+          abandon_reason?: string | null
+          abandoned_at?: string | null
+          actor_account_id: string
+          area_id: number
+          base_revision: number
+          created_at?: string
+          current_report_id?: string | null
+          failure_classification?: string | null
+          import_id?: string
+          manifest_sha256: string
+          package_digest: string
+          release_id: string
+          request_id: string
+          revision?: number
+          sealed_at?: string | null
+          site_id: number
+          state?: string
+          target_revision: number
+          updated_at?: string
+          validator_version?: string
+        }
+        Update: {
+          abandon_reason?: string | null
+          abandoned_at?: string | null
+          actor_account_id?: string
+          area_id?: number
+          base_revision?: number
+          created_at?: string
+          current_report_id?: string | null
+          failure_classification?: string | null
+          import_id?: string
+          manifest_sha256?: string
+          package_digest?: string
+          release_id?: string
+          request_id?: string
+          revision?: number
+          sealed_at?: string | null
+          site_id?: number
+          state?: string
+          target_revision?: number
+          updated_at?: string
+          validator_version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_import_actor_account_id_fkey"
+            columns: ["actor_account_id"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_import_release_scope_fkey"
+            columns: ["release_id", "site_id", "area_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_release_area"
+            referencedColumns: ["release_id", "site_id", "area_id"]
+          },
+          {
+            foreignKeyName: "mapping_import_current_report_fkey"
+            columns: ["import_id", "current_report_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_import_report"
+            referencedColumns: ["import_id", "report_id"]
+          },
+        ]
+      }
+      mapping_import_chunk: {
+        Row: {
+          byte_count: number
+          chunk_bytes: string
+          chunk_index: number
+          chunk_sha256: string
+          file_name: string
+          import_id: string
+          received_at: string
+          received_by: string
+        }
+        Insert: {
+          byte_count: number
+          chunk_bytes: string
+          chunk_index: number
+          chunk_sha256: string
+          file_name: string
+          import_id: string
+          received_at?: string
+          received_by: string
+        }
+        Update: {
+          byte_count?: number
+          chunk_bytes?: string
+          chunk_index?: number
+          chunk_sha256?: string
+          file_name?: string
+          import_id?: string
+          received_at?: string
+          received_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_import_chunk_file_fkey"
+            columns: ["import_id", "file_name"]
+            isOneToOne: false
+            referencedRelation: "mapping_import_file"
+            referencedColumns: ["import_id", "file_name"]
+          },
+          {
+            foreignKeyName: "mapping_import_chunk_received_by_fkey"
+            columns: ["received_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+        ]
+      }
+      mapping_import_file: {
+        Row: {
+          created_at: string
+          declared_bytes: number
+          declared_chunk_count: number
+          declared_feature_count: number
+          declared_sha256: string
+          file_name: string
+          import_id: string
+          layer_version: string | null
+        }
+        Insert: {
+          created_at?: string
+          declared_bytes: number
+          declared_chunk_count: number
+          declared_feature_count: number
+          declared_sha256: string
+          file_name: string
+          import_id: string
+          layer_version?: string | null
+        }
+        Update: {
+          created_at?: string
+          declared_bytes?: number
+          declared_chunk_count?: number
+          declared_feature_count?: number
+          declared_sha256?: string
+          file_name?: string
+          import_id?: string
+          layer_version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_import_file_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_import"
+            referencedColumns: ["import_id"]
+          },
+        ]
+      }
+      mapping_import_report: {
+        Row: {
+          baseline_publication_revision: number
+          created_at: string
+          created_by: string
+          entries: Json
+          failure_classification: string | null
+          import_id: string
+          live_dependency_digest: string | null
+          package_digest: string
+          release_revision: number
+          report_hash: string
+          report_id: string
+          summary: Json
+          validator_version: string
+        }
+        Insert: {
+          baseline_publication_revision?: number
+          created_at?: string
+          created_by: string
+          entries: Json
+          failure_classification?: string | null
+          import_id: string
+          live_dependency_digest?: string | null
+          package_digest: string
+          release_revision: number
+          report_hash: string
+          report_id?: string
+          summary: Json
+          validator_version: string
+        }
+        Update: {
+          baseline_publication_revision?: number
+          created_at?: string
+          created_by?: string
+          entries?: Json
+          failure_classification?: string | null
+          import_id?: string
+          live_dependency_digest?: string | null
+          package_digest?: string
+          release_revision?: number
+          report_hash?: string
+          report_id?: string
+          summary?: Json
+          validator_version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mapping_import_report_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "account"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "mapping_import_report_import_id_fkey"
+            columns: ["import_id"]
+            isOneToOne: false
+            referencedRelation: "mapping_import"
+            referencedColumns: ["import_id"]
+          },
+        ]
+      }
       mapping_release: {
         Row: {
           created_at: string
@@ -1997,6 +2240,55 @@ export type Database = {
           p_expected_revision: number
           p_reason: string
           p_request_id: string
+        }
+        Returns: Json
+      }
+      staff_begin_mapping_import: {
+        Args: {
+          p_release_id: string
+          p_expected_revision: number
+          p_request_id: string
+          p_package_digest: string
+          p_manifest_bytes_base64: string
+        }
+        Returns: Json
+      }
+      staff_stage_mapping_import_chunk: {
+        Args: {
+          p_import_id: string
+          p_request_id: string
+          p_package_digest: string
+          p_expected_revision: number
+          p_file_name: string
+          p_chunk_index: number
+          p_bytes_base64: string
+        }
+        Returns: Json
+      }
+      staff_seal_mapping_import: {
+        Args: {
+          p_import_id: string
+          p_expected_revision: number
+          p_request_id: string
+          p_operation_id: string
+        }
+        Returns: Json
+      }
+      staff_abandon_mapping_import: {
+        Args: {
+          p_import_id: string
+          p_expected_revision: number
+          p_reason: string
+          p_request_id: string
+          p_operation_id: string
+        }
+        Returns: Json
+      }
+      staff_mapping_import_status: {
+        Args: {
+          p_import_id: string
+          p_report_page?: number
+          p_report_page_size?: number
         }
         Returns: Json
       }
