@@ -1,6 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash, randomUUID } from "node:crypto";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import { createTestDatabase } from "./database-helper.mjs";
 import {
@@ -18,8 +21,11 @@ import {
 } from "../scripts/gis/package-contract.mjs";
 import { parseStrictJson } from "../scripts/gis/strict-json.mjs";
 import { GIS_STRICT_JSON_CORPUS } from "./fixtures/gis-strict-json-corpus.mjs";
+import { createImportClient, readResumeState, writeResumeState } from "../scripts/gis/import-client.mjs";
+import { run as runImportCli } from "../scripts/import-gis-package.mjs";
 
 const M06 = "20260928210000_gis_import_transport.sql";
+const M07 = "20260928220000_gis_import_validation.sql";
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
 
 function stableJson(value) {
@@ -99,6 +105,48 @@ function packageFixture(releaseCode, overrides = {}) {
     manifestBytes,
     digest: computePackageDigest(manifestBytes, manifest.files),
   };
+}
+
+function finalizablePackageFixture(releaseCode, lotId = "1") {
+  const common = (source_feature_id) => ({ source_feature_id, site_id: "1", artifact_hash: "e".repeat(64), layer_version: "v1" });
+  const observations = [];
+  for (const capture_code of ["CAP-GCP-01", "CAP-VAL-01"]) {
+    for (let index = 0; index < 5; index += 1) observations.push({ capture_code, observation_order: index + 1,
+      latitude: 13.006, longitude: 123.006, reported_accuracy_m: 1,
+      captured_at: new Date(Date.parse("2026-09-28T01:00:00.000Z") + index * 30_000).toISOString() });
+  }
+  return packageFixture(releaseCode, { data: {
+    "cemetery_boundary.geojson": featureCollection([{ type: "Feature", geometry: { type: "Polygon", coordinates: [[[123, 13], [123.02, 13], [123.02, 13.02], [123, 13.02], [123, 13]]] }, properties: { ...common("cemetery-1"), kind: "cemetery", area_id: "1" } }]),
+    "garden_sections.geojson": featureCollection([{ type: "Feature", geometry: { type: "Polygon", coordinates: [[[123.001, 13.001], [123.019, 13.001], [123.019, 13.019], [123.001, 13.019], [123.001, 13.001]]] }, properties: { ...common("area-1"), kind: "area", area_id: "1" } }]),
+    "roads_walkways.geojson": featureCollection([{ type: "Feature", geometry: { type: "LineString", coordinates: [[123.002, 13.002], [123.009, 13.009]] }, properties: { ...common("walkway-1"), edge_type: "path", walking_allowed: true, is_restricted: false } }]),
+    "grave_plots.geojson": featureCollection([{ type: "Feature", geometry: { type: "Polygon", coordinates: [[[123.01, 13.01], [123.011, 13.01], [123.011, 13.011], [123.01, 13.011], [123.01, 13.01]]] }, properties: { ...common("plot-1"), lot_id: lotId, area_id: "1" } }]),
+    "grave_access_points.geojson": featureCollection([{ type: "Feature", geometry: { type: "Point", coordinates: [123.009, 13.009] }, properties: { ...common("access-1"), lot_id: lotId, area_id: "1", node_source_feature_id: "node-access" } }]),
+    "route_nodes.geojson": featureCollection([
+      { type: "Feature", geometry: { type: "Point", coordinates: [123.002, 13.002] }, properties: { ...common("node-entrance"), node_name: "Pilot entrance", node_type: "entrance" } },
+      { type: "Feature", geometry: { type: "Point", coordinates: [123.009, 13.009] }, properties: { ...common("node-access"), node_name: "Plot access", node_type: "junction" } },
+    ]),
+    "route_edges.geojson": featureCollection([{ type: "Feature", geometry: { type: "LineString", coordinates: [[123.002, 13.002], [123.009, 13.009]] }, properties: { ...common("edge-1"), from_source_feature_id: "node-entrance", to_source_feature_id: "node-access", walkway_source_feature_id: "walkway-1", edge_type: "path", walking_allowed: true, is_restricted: false, direction: "both" } }]),
+    "landmarks.geojson": featureCollection([]),
+    "survey_points.json": [
+      { point_code: "GCP-01", site_id: "1", role: "GCP", description: "Synthetic fitting control" },
+      { point_code: "VAL-01", site_id: "1", role: "VALIDATION", description: "Synthetic independent validation" },
+    ],
+    "survey_captures.json": [
+      { capture_code: "CAP-GCP-01", point_code: "GCP-01", site_id: "1", started_at: "2026-09-28T01:00:00.000Z", ended_at: "2026-09-28T01:05:00.000Z" },
+      { capture_code: "CAP-VAL-01", point_code: "VAL-01", site_id: "1", started_at: "2026-09-28T01:00:00.000Z", ended_at: "2026-09-28T01:05:00.000Z" },
+    ],
+    "survey_observations.json": observations,
+    "georeferencing_runs.json": [{ run_code: "RUN-01", release_code: releaseCode, site_id: "1",
+      source_reference: "synthetic/plan.png", source_sha256: "c".repeat(64), source_width: 1000, source_height: 800,
+      source_coordinate_space: "pixel coordinates", working_srid: 32651, output_srid: 4326, method: "polynomial-1",
+      processing_parameters: { expected_validation_count: 1 }, processed_at: "2026-09-28T02:00:00.000Z", qgis_version: "3.40",
+      output_artifact_reference: "synthetic/georeferenced.tif", output_artifact_sha256: "d".repeat(64) }],
+    "georeferencing_run_points.json": [
+      { run_code: "RUN-01", point_code: "GCP-01", capture_code: "CAP-GCP-01", role: "FITTING", source_x: 100, source_y: 100, fitting_residual_m: 1 },
+      { run_code: "RUN-01", point_code: "VAL-01", capture_code: "CAP-VAL-01", role: "VALIDATION", source_x: 200, source_y: 200 },
+    ],
+    "georeferencing_validation.json": [{ run_code: "RUN-01", point_code: "VAL-01", transformed_plan_point: { type: "Point", coordinates: [123.00601, 13.00601] }, review_state: "reviewed" }],
+  }, manifest: { selected_run_code: "RUN-01", pilot_lot_ids: [lotId], limitations: [] } });
 }
 
 function refreshFixtureManifest(fixture) {
@@ -182,10 +230,86 @@ async function operationalCounts(db) {
   return result;
 }
 
+async function releaseSnapshot(db, releaseId) {
+  await gisLogin(db, gisActors.admin, "postgres");
+  const rows = {};
+  for (const [key, table, id, geom] of [
+    ["boundaries", "mapping_boundary", "boundary_id", "boundary_geom"],
+    ["plots", "plot_geometry", "plot_geometry_id", "plot_geom"],
+    ["walkways", "mapping_walkway_source", "walkway_source_id", "centerline_geom"],
+    ["access", "grave_access_point", "access_point_id", "access_point_geom"],
+    ["display", "mapping_display_feature", "display_feature_id", "display_geom"],
+  ]) rows[key] = (await db.query(`select ${id}::text id,source_feature_id,extensions.st_asgeojson(${geom}) geom
+    from public.${table} where mapping_release_id=$1 order by source_feature_id`, [releaseId])).rows;
+  rows.nodes = (await db.query(`select node_id::text id,source_feature_id,extensions.st_asgeojson(location_geom::extensions.geometry) geom
+    from public.map_node where mapping_release_id=$1 order by source_feature_id`, [releaseId])).rows;
+  rows.edges = (await db.query(`select edge_id::text id,source_feature_id,extensions.st_asgeojson(path_geom::extensions.geometry) geom
+    from public.map_edge where mapping_release_id=$1 order by source_feature_id`, [releaseId])).rows;
+  await gisLogin(db);
+  return rows;
+}
+
 async function prepareRelease(db, overrides = {}) {
   const values = releaseValues({ release_code: `transport-${randomUUID()}`, ...overrides });
   const release = await createRelease(db, values);
   return { release, values, fixture: packageFixture(values.release_code) };
+}
+
+async function createAcceptedEvidence(db, releaseId) {
+  async function savePoint(role, code) {
+    const existing = (await db.query("select point_id id from public.survey_point where site_id=1 and point_code=$1", [code])).rows[0];
+    if (existing) return existing;
+    return (await db.query("select public.staff_save_survey_point(null,null,$1::jsonb,$2::uuid) result", [
+      JSON.stringify({ site_id: "1", point_code: code, role, description: "Synthetic Task 10 evidence" }), randomUUID(),
+    ])).rows[0].result;
+  }
+  async function capture(pointId, code) {
+    const existing = (await db.query("select capture_id id from public.survey_capture where point_id=$1 and capture_code=$2 and review_state='accepted'", [pointId, code])).rows[0];
+    if (existing) return existing;
+    const observations = Array.from({ length: 5 }, (_, index) => ({ observation_order: index + 1,
+      latitude: 13.006, longitude: 123.006, reported_accuracy_m: 1,
+      captured_at: new Date(Date.parse("2026-09-28T01:00:00.000Z") + index * 30_000).toISOString() }));
+    const recorded = (await db.query("select public.staff_record_survey_capture($1::uuid,$2,$3::jsonb,$4::jsonb,$5::uuid) result", [
+      pointId, code, JSON.stringify({ started_at: "2026-09-28T01:00:00.000Z", ended_at: "2026-09-28T01:05:00.000Z" }), JSON.stringify(observations), randomUUID(),
+    ])).rows[0].result;
+    return (await db.query("select public.staff_review_survey_capture($1::uuid,1,'accepted','[]'::jsonb,null,$2::uuid) result", [recorded.id, randomUUID()])).rows[0].result;
+  }
+  const gcp = await savePoint("GCP", "GCP-01");
+  const validation = await savePoint("VALIDATION", "VAL-01");
+  const gcpCapture = await capture(gcp.id, "CAP-GCP-01");
+  const validationCapture = await capture(validation.id, "CAP-VAL-01");
+  const values = { release_id: releaseId, run_code: "RUN-01", source_reference: "synthetic/plan.png", source_hash: "c".repeat(64),
+    source_width: 1000, source_height: 800, source_coordinate_space: "pixel coordinates", working_srid: 32651, output_srid: 4326,
+    method: "polynomial-1", processing_parameters: { expected_validation_count: 1 }, processed_at: "2026-09-28T02:00:00.000Z",
+    qgis_version: "3.40", output_artifact_reference: "synthetic/georeferenced.tif", output_artifact_hash: "d".repeat(64) };
+  const run = (await db.query("select public.staff_save_georeferencing_run(null,null,$1::jsonb,$2::jsonb,$3::jsonb,$4::uuid) result", [
+    JSON.stringify(values), JSON.stringify([
+      { point_id: gcp.id, capture_id: gcpCapture.id, role: "FITTING", source_x: 100, source_y: 100, fitting_residual_m: 1 },
+      { point_id: validation.id, capture_id: validationCapture.id, role: "VALIDATION", source_x: 200, source_y: 200 },
+    ]), JSON.stringify([{ point_id: validation.id, transformed_longitude: 123.00601, transformed_latitude: 13.00601, review_state: "reviewed" }]), randomUUID(),
+  ])).rows[0].result;
+  await db.query("select public.staff_review_georeferencing_run($1::uuid,1,'accepted',$2::jsonb,null,$3::uuid)", [
+    run.id, JSON.stringify(["fitting_count_below_target", "validation_count_below_target"]), randomUUID(),
+  ]);
+  return { run, gcp, validation, gcpCapture, validationCapture };
+}
+
+async function prepareFinalizableRelease(db) {
+  await gisLogin(db, gisActors.admin, "postgres");
+  await db.exec(`insert into public.sector(sector_id,area_id,sector_code,sector_name) values(1,1,'S1','Synthetic sector') on conflict do nothing;
+    insert into public.block(block_id,sector_id,block_number,block_name) values(1,1,1,'Synthetic block') on conflict do nothing;
+    insert into public.lot(lot_id,block_id,lot_code,legacy_location_code,area_id) values(1,1,'LOT-1','LEGACY-1',1) on conflict do nothing;`);
+  await gisLogin(db);
+  const values = releaseValues({ release_code: `finalize-${randomUUID()}` });
+  const release = await createRelease(db, values);
+  const evidence = await createAcceptedEvidence(db, release.id);
+  return { release, values, evidence, fixture: finalizablePackageFixture(values.release_code) };
+}
+
+function finalizationAcknowledgements(fixture) {
+  return { warnings: [], reviewed_layer_hashes: Object.fromEntries(
+    fixture.manifest.files.filter((file) => file.name.endsWith(".geojson")).map((file) => [file.name, file.sha256]),
+  ) };
 }
 
 async function withCommittedOwnerOperation(db, callback) {
@@ -559,5 +683,414 @@ test("M06 bounded private import transport", async (t) => {
     assert.equal(auditText.includes("Synthetic cancellation"), false);
     assert.equal(auditText.includes(prepared.fixture.manifestBytes.toString("base64")), false);
     assert.equal(HASH_PATTERN.test(prepared.fixture.digest), true);
+  });
+});
+
+test("M07 deterministic validation and atomic finalization contracts", async (t) => {
+  const db = await createTestDatabase({ throughMigration: M07 });
+  t.after(() => db.close());
+  await seedGisFixtures(db);
+  await gisLogin(db);
+
+  await t.test("adds only the protected validate/finalize surface with private helpers", async () => {
+    const publicFunctions = (await db.query(`select p.proname,pg_get_function_identity_arguments(p.oid) args,
+        p.prosecdef,'search_path=pg_catalog, extensions, pg_temp'=any(p.proconfig) pinned
+      from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+      where n.nspname='public' and p.proname in ('staff_validate_mapping_import','staff_finalize_mapping_import')
+      order by p.proname`)).rows;
+    assert.deepEqual(publicFunctions, [
+      { proname: "staff_finalize_mapping_import", args: "p_import_id uuid, p_expected_revision integer, p_report_digest text, p_acknowledgements jsonb, p_request_id uuid, p_operation_id uuid", prosecdef: true, pinned: true },
+      { proname: "staff_validate_mapping_import", args: "p_import_id uuid, p_expected_revision integer, p_request_id uuid, p_operation_id uuid", prosecdef: true, pinned: true },
+    ]);
+    const privateFunctions = (await db.query(`select p.proname,p.prosecdef,
+        has_function_privilege('authenticated',p.oid,'EXECUTE') may_execute
+      from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+      where n.nspname='gis_private' and p.proname in ('validate_import','validate_release','materialize_import')
+      order by p.proname`)).rows;
+    assert.deepEqual(privateFunctions.map(({ proname, prosecdef, may_execute }) => ({ proname, prosecdef, may_execute })), [
+      { proname: "materialize_import", prosecdef: false, may_execute: false },
+      { proname: "validate_import", prosecdef: false, may_execute: false },
+      { proname: "validate_release", prosecdef: false, may_execute: false },
+    ]);
+    assert.equal((await db.query("select to_regclass('public.mapping_import_validation') is null absent")).rows[0].absent, true);
+  });
+
+  await t.test("complete import transition matrix is encoded and unlisted transitions remain denied", async () => {
+    const source = (await readFile(new URL(`../supabase/migrations/${M07}`, import.meta.url), "utf8")).replace(/\s+/g, " ");
+    for (const pair of [
+      "sealed.*validated", "sealed.*invalid", "invalid.*validated", "invalid.*invalid",
+      "validated.*validated", "validated.*invalid", "validated.*finalized",
+    ]) assert.match(source, new RegExp(pair, "i"), pair);
+    for (const forbidden of ["invalid.*finalized", "abandoned.*receiving", "finalized.*abandoned"])
+      assert.match(source, new RegExp(forbidden, "i"), forbidden);
+    assert.match(source, /assert_pilot_scope/i);
+    assert.match(source, /mapping_publication/i);
+
+    const prepared = await prepareRelease(db);
+    const begin = await beginImport(db, prepared.release.id, 1, prepared.fixture);
+    const allowed = [
+      ["receiving", "sealed", "staff_seal_mapping_import"], ["receiving", "invalid", "staff_seal_mapping_import"],
+      ["receiving", "abandoned", "staff_abandon_mapping_import"], ["sealed", "validated", "staff_validate_mapping_import"],
+      ["sealed", "invalid", "staff_validate_mapping_import"], ["sealed", "abandoned", "staff_abandon_mapping_import"],
+      ["invalid", "validated", "staff_validate_mapping_import"], ["invalid", "invalid", "staff_validate_mapping_import"],
+      ["invalid", "abandoned", "staff_abandon_mapping_import"], ["validated", "validated", "staff_validate_mapping_import"],
+      ["validated", "invalid", "staff_finalize_mapping_import"], ["validated", "finalized", "staff_finalize_mapping_import"],
+      ["validated", "abandoned", "staff_abandon_mapping_import"],
+    ];
+    for (const [from, to, operation] of allowed) await withOwnerTransaction(db, async () => {
+      await db.exec("alter table public.mapping_import disable trigger mapping_import_guard");
+      await db.query("update public.mapping_import set state=$2,revision=10,abandon_reason=null where import_id=$1", [begin.importId, from]);
+      await db.exec("alter table public.mapping_import enable trigger mapping_import_guard");
+      await db.query("insert into gis_private.gis_mutation_request(request_id,actor_account_id,operation,input_hash) values($1,$2,$3,$4)",
+        [randomUUID(), gisActors.admin, operation, "a".repeat(64)]);
+      await db.query("update public.mapping_import set state=$2,revision=11,abandon_reason=case when $2='abandoned' then 'matrix fixture' else null end where import_id=$1", [begin.importId, to]);
+      assert.deepEqual((await db.query("select state,revision from public.mapping_import where import_id=$1", [begin.importId])).rows[0], { state: to, revision: 11 });
+    });
+    const states = ["receiving", "sealed", "invalid", "validated", "finalized", "abandoned"];
+    const allowedKeys = new Set(allowed.map(([from, to]) => `${from}:${to}`));
+    for (const from of states) for (const to of states) {
+      if (allowedKeys.has(`${from}:${to}`)) continue;
+      const operation = to === "finalized" ? "staff_finalize_mapping_import" : to === "abandoned" ? "staff_abandon_mapping_import" :
+        to === "sealed" ? "staff_seal_mapping_import" : "staff_validate_mapping_import";
+      await withOwnerTransaction(db, async () => {
+        await db.exec("alter table public.mapping_import disable trigger mapping_import_guard");
+        await db.query("update public.mapping_import set state=$2,revision=10,abandon_reason=case when $2='abandoned' then 'terminal fixture' else null end where import_id=$1", [begin.importId, from]);
+        await db.exec("alter table public.mapping_import enable trigger mapping_import_guard");
+        await db.query("insert into gis_private.gis_mutation_request(request_id,actor_account_id,operation,input_hash) values($1,$2,$3,$4)",
+          [randomUUID(), gisActors.admin, operation, "b".repeat(64)]);
+        await assert.rejects(db.query("update public.mapping_import set state=$2,revision=11,abandon_reason=case when $2='abandoned' then 'denied fixture' else null end where import_id=$1", [begin.importId, to]), /forbidden|transition|operation/i);
+      });
+    }
+  });
+
+  await t.test("validation reports are deterministic, ordered, bounded, and validation never materializes", async () => {
+    const { release, fixture } = await prepareRelease(db);
+    const begin = await beginImport(db, release.id, 1, fixture);
+    await stagePackage(db, begin, fixture);
+    const sealed = await sealImport(db, begin);
+    assert.equal(sealed.state, "sealed");
+    const baseline = await operationalCounts(db);
+    const operation = randomUUID();
+    const first = (await db.query(
+      "select public.staff_validate_mapping_import($1::uuid,$2::int,$3::uuid,$4::uuid) result",
+      [begin.importId, 2, begin.rootRequestId, operation],
+    )).rows[0].result;
+    const replay = (await db.query(
+      "select public.staff_validate_mapping_import($1::uuid,$2::int,$3::uuid,$4::uuid) result",
+      [begin.importId, 2, begin.rootRequestId, operation],
+    )).rows[0].result;
+    assert.deepEqual(replay, first);
+    assert.equal(HASH_PATTERN.test(first.digest), true);
+    assert.deepEqual(await operationalCounts(db), baseline);
+    const report = (await db.query("select entries,summary,report_hash,live_dependency_digest from public.mapping_import_report where report_id=$1", [first.reportId])).rows[0];
+    assert.equal(report.report_hash, first.digest);
+    assert.equal(HASH_PATTERN.test(report.live_dependency_digest), true);
+    assert.ok(report.summary.errorCount > 0);
+    const sorted = [...report.entries].sort((left, right) =>
+      `${left.severity}\u0000${left.layer}\u0000${left.sourceFeatureId ?? ""}\u0000${left.lotId ?? ""}\u0000${left.code}`.localeCompare(
+        `${right.severity}\u0000${right.layer}\u0000${right.sourceFeatureId ?? ""}\u0000${right.lotId ?? ""}\u0000${right.code}`,
+      ));
+    assert.deepEqual(report.entries, sorted);
+    assert.ok(report.entries.some((entry) => entry.code === "missing_independent_validation"));
+    assert.equal(first.state, "invalid");
+  });
+
+  await t.test("dry-run reports frozen-evidence mismatches and concrete topology categories", async () => {
+    const prepared = await prepareFinalizableRelease(db);
+    const fixture = finalizablePackageFixture(prepared.values.release_code);
+    replaceFixtureFile(fixture, "survey_points.json", fixture.data["survey_points.json"].map((point) =>
+      point.point_code === "GCP-01" ? { ...point, role: "VALIDATION" } : point));
+    replaceFixtureFile(fixture, "survey_captures.json", fixture.data["survey_captures.json"].map((capture) =>
+      capture.point_code === "GCP-01" ? { ...capture, capture_code: "CAP-NOT-FROZEN" } : capture));
+    replaceFixtureFile(fixture, "georeferencing_run_points.json", fixture.data["georeferencing_run_points.json"].map((membership) =>
+      membership.point_code === "GCP-01" ? { ...membership, capture_code: "CAP-NOT-FROZEN" } : membership));
+    replaceFixtureFile(fixture, "georeferencing_runs.json", fixture.data["georeferencing_runs.json"].map((run) =>
+      ({ ...run, source_sha256: "a".repeat(64) })));
+    replaceFixtureFile(fixture, "route_nodes.geojson", featureCollection([
+      ...fixture.data["route_nodes.geojson"].features,
+      { type: "Feature", geometry: { type: "Point", coordinates: [123.004, 13.008] }, properties: { ...fixture.data["route_nodes.geojson"].features[0].properties, source_feature_id: "node-cross-a", node_type: "junction" } },
+      { type: "Feature", geometry: { type: "Point", coordinates: [123.008, 13.004] }, properties: { ...fixture.data["route_nodes.geojson"].features[0].properties, source_feature_id: "node-cross-b", node_type: "junction" } },
+      { type: "Feature", geometry: { type: "Point", coordinates: [123.015, 13.015] }, properties: { ...fixture.data["route_nodes.geojson"].features[0].properties, source_feature_id: "node-isolated", node_type: "junction" } },
+    ]));
+    replaceFixtureFile(fixture, "route_edges.geojson", featureCollection([
+      { ...fixture.data["route_edges.geojson"].features[0], geometry: { type: "LineString", coordinates: [[123.0021, 13.0021], [123.009, 13.009]] } },
+      { type: "Feature", geometry: { type: "LineString", coordinates: [[123.004, 13.008], [123.008, 13.004]] }, properties: {
+        ...fixture.data["route_edges.geojson"].features[0].properties, source_feature_id: "edge-cross",
+        from_source_feature_id: "node-cross-a", to_source_feature_id: "node-cross-b",
+      } },
+    ]));
+    replaceFixtureFile(fixture, "grave_access_points.geojson", featureCollection([
+      { ...fixture.data["grave_access_points.geojson"].features[0], properties: { ...fixture.data["grave_access_points.geojson"].features[0].properties, node_source_feature_id: "node-isolated" } },
+      { ...fixture.data["grave_access_points.geojson"].features[0], properties: { ...fixture.data["grave_access_points.geojson"].features[0].properties, source_feature_id: "access-orphan", node_source_feature_id: "node-missing" } },
+    ]));
+    const begin = await beginImport(db, prepared.release.id, 1, fixture);
+    await stagePackage(db, begin, fixture);
+    await sealImport(db, begin);
+    const validation = (await db.query(
+      "select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, randomUUID()],
+    )).rows[0].result;
+    assert.equal(validation.state, "invalid");
+    const report = (await db.query("select entries,summary,failure_classification from public.mapping_import_report where report_id=$1", [validation.reportId])).rows[0];
+    const codes = new Set(report.entries.map((entry) => entry.code));
+    for (const code of ["survey_point_identity_mismatch", "capture_not_frozen", "accepted_run_evidence_mismatch",
+      "run_membership_evidence_mismatch", "edge_endpoint_mismatch", "edge_walkway_lineage_mismatch",
+      "unnoded_edge_crossing", "orphan_access_point", "unreachable_access_point"]) assert.equal(codes.has(code), true, code);
+    assert.ok(report.summary.disconnectedGraphElements > 0);
+    assert.ok(report.summary.orphanAccessPoints > 0);
+    assert.ok(report.summary.unreachableDestinations > 0);
+    assert.equal(report.failure_classification, "package", "package defects dominate simultaneous live dependency failures");
+    await assert.rejects(db.query(
+      "select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid)",
+      [begin.importId, begin.rootRequestId, randomUUID()],
+    ), /package-content defects.*new import|new import.*root request/i);
+  });
+
+  await t.test("pilot scope is enforced again by validate and finalize without side effects", async () => {
+    const prepared = await prepareRelease(db);
+    const begin = await beginImport(db, prepared.release.id, 1, prepared.fixture);
+    await stagePackage(db, begin, prepared.fixture);
+    await sealImport(db, begin);
+    const baseline = await operationalCounts(db);
+    await withOwnerTransaction(db, async () => {
+      await db.exec("alter table public.mapping_release_area disable trigger user");
+      await db.query("insert into public.mapping_release_area(release_id,site_id,area_id) values($1,1,2)", [prepared.release.id]);
+      await assert.rejects(db.query(
+        "select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid)",
+        [begin.importId, begin.rootRequestId, randomUUID()],
+      ), /pilot|scope|area/i);
+    });
+    assert.deepEqual(await operationalCounts(db), baseline);
+  });
+
+  await t.test("finalization rejects stale or unacknowledged reports and never creates publication", async () => {
+    const prepared = await prepareRelease(db);
+    const begin = await beginImport(db, prepared.release.id, 1, prepared.fixture);
+    await stagePackage(db, begin, prepared.fixture);
+    await sealImport(db, begin);
+    const validation = (await db.query(
+      "select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, randomUUID()],
+    )).rows[0].result;
+    await assert.rejects(db.query(
+      "select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid)",
+      [begin.importId, "f".repeat(64), "{}", begin.rootRequestId, randomUUID()],
+    ), /report|digest|validated|state/i);
+    assert.equal((await operationalCounts(db)).publications, 0);
+    assert.ok(["invalid", "validated"].includes(validation.state));
+  });
+
+  await t.test("successful initial finalization installs one reviewed snapshot and exact retry is duplicate-free", async () => {
+    const prepared = await prepareFinalizableRelease(db);
+    const begin = await beginImport(db, prepared.release.id, 1, prepared.fixture);
+    await stagePackage(db, begin, prepared.fixture);
+    await sealImport(db, begin);
+    const validationOperation = randomUUID();
+    const validation = (await db.query(
+      "select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, validationOperation],
+    )).rows[0].result;
+    const validationStatus = (await db.query("select public.staff_mapping_import_status($1::uuid,1,200) result", [begin.importId])).rows[0].result;
+    assert.equal(validation.state, "validated", JSON.stringify(validationStatus.report));
+    const finalizeOperation = randomUUID();
+    const args = [begin.importId, validation.reportDigest, JSON.stringify(finalizationAcknowledgements(prepared.fixture)), begin.rootRequestId, finalizeOperation];
+    await assert.rejects(db.query(
+      "select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid)",
+      [begin.importId, validation.reportDigest, JSON.stringify({ warnings: [], reviewed_layer_hashes: {} }), begin.rootRequestId, randomUUID()],
+    ), /layer acknowledgement|exact hash/i);
+    await assert.rejects(db.query(
+      "select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid)",
+      [begin.importId, validation.reportDigest, JSON.stringify({ ...finalizationAcknowledgements(prepared.fixture), warnings: ["invented:*"] }), begin.rootRequestId, randomUUID()],
+    ), /unknown warning acknowledgement/i);
+    const finalized = (await db.query(
+      "select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid) result", args,
+    )).rows[0].result;
+    assert.equal(finalized.state, "finalized");
+    const snapshot = await operationalCounts(db);
+    assert.deepEqual(snapshot, { mapping_boundary: 2, plot_geometry: 1, mapping_walkway_source: 1,
+      grave_access_point: 1, mapping_display_feature: 0, release_nodes: 2, release_edges: 1, publications: 0 });
+    assert.deepEqual((await db.query("select status,revision from public.mapping_release where release_id=$1", [prepared.release.id])).rows[0], { status: "validated", revision: 3 });
+    assert.equal((await db.query("select state from public.mapping_import where import_id=$1", [begin.importId])).rows[0].state, "finalized");
+    assert.deepEqual((await db.query(
+      "select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid) result", args,
+    )).rows[0].result, finalized);
+    assert.deepEqual(await operationalCounts(db), snapshot);
+    assert.equal((await db.query("select count(*)::int n from public.mapping_publication where release_id=$1", [prepared.release.id])).rows[0].n, 0);
+  });
+
+  await t.test("same bytes revalidate only after a live lot dependency correction with a new operation", async () => {
+    const prepared = await prepareFinalizableRelease(db);
+    prepared.fixture = finalizablePackageFixture(prepared.values.release_code, "2");
+    const begin = await beginImport(db, prepared.release.id, 1, prepared.fixture);
+    await stagePackage(db, begin, prepared.fixture);
+    await sealImport(db, begin);
+    const operationalBefore = await operationalCounts(db);
+    const before = (await db.query(`select request_id,release_id,site_id,area_id,package_digest,manifest_sha256,
+      base_revision,target_revision from public.mapping_import where import_id=$1`, [begin.importId])).rows[0];
+    const chunkHashes = (await db.query("select file_name,chunk_index,chunk_sha256 from public.mapping_import_chunk where import_id=$1 order by file_name,chunk_index", [begin.importId])).rows;
+    const oldOperation = randomUUID();
+    const failed = (await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, oldOperation])).rows[0].result;
+    assert.equal(failed.state, "invalid");
+    assert.deepEqual((await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, oldOperation])).rows[0].result, failed);
+
+    const stillBlockedOperation = randomUUID();
+    const stillBlocked = (await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, stillBlockedOperation])).rows[0].result;
+    assert.equal(stillBlocked.state, "invalid");
+    assert.deepEqual((await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, stillBlockedOperation])).rows[0].result, stillBlocked);
+
+    await gisLogin(db, gisActors.admin, "postgres");
+    await db.exec("insert into public.lot(lot_id,block_id,lot_code,legacy_location_code,area_id) values(2,1,'LOT-2','LEGACY-2',1)");
+    await gisLogin(db);
+    const newOperation = randomUUID();
+    const validated = (await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, newOperation])).rows[0].result;
+    assert.equal(validated.state, "validated");
+    assert.deepEqual((await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [begin.importId, begin.rootRequestId, newOperation])).rows[0].result, validated);
+    assert.notEqual(validated.reportId, failed.reportId);
+    assert.deepEqual((await db.query(`select request_id,release_id,site_id,area_id,package_digest,manifest_sha256,
+      base_revision,target_revision from public.mapping_import where import_id=$1`, [begin.importId])).rows[0], before);
+    assert.deepEqual((await db.query("select file_name,chunk_index,chunk_sha256 from public.mapping_import_chunk where import_id=$1 order by file_name,chunk_index", [begin.importId])).rows, chunkHashes);
+    assert.deepEqual(await operationalCounts(db), operationalBefore);
+  });
+
+  await t.test("seven replacement cases retain old children on restage/failure and install one corrected snapshot atomically", async () => {
+    const prepared = await prepareFinalizableRelease(db);
+    await gisLogin(db, gisActors.admin, "postgres");
+    await db.query("insert into public.map_node(site_id,node_name,node_type) values(1,'Legacy NULL release node','junction')");
+    await gisLogin(db);
+    const first = await beginImport(db, prepared.release.id, 1, prepared.fixture);
+    await stagePackage(db, first, prepared.fixture); await sealImport(db, first);
+    const firstValidation = (await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [first.importId, first.rootRequestId, randomUUID()])).rows[0].result;
+    const firstFinalized = (await db.query("select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid) result",
+      [first.importId, firstValidation.reportDigest, JSON.stringify(finalizationAcknowledgements(prepared.fixture)), first.rootRequestId, randomUUID()])).rows[0].result;
+    assert.equal(firstFinalized.state, "finalized", "initial finalization");
+    const original = await releaseSnapshot(db, prepared.release.id);
+
+    const other = await prepareFinalizableRelease(db);
+    const otherImport = await beginImport(db, other.release.id, 1, other.fixture);
+    await stagePackage(db, otherImport, other.fixture); await sealImport(db, otherImport);
+    const otherValidation = (await db.query("select public.staff_validate_mapping_import($1::uuid,2,$2::uuid,$3::uuid) result",
+      [otherImport.importId, otherImport.rootRequestId, randomUUID()])).rows[0].result;
+    const otherFinalized = (await db.query("select public.staff_finalize_mapping_import($1::uuid,2,$2,$3::jsonb,$4::uuid,$5::uuid) result",
+      [otherImport.importId, otherValidation.reportDigest, JSON.stringify(finalizationAcknowledgements(other.fixture)), otherImport.rootRequestId, randomUUID()])).rows[0].result;
+    assert.equal(otherFinalized.state, "finalized");
+    const otherSnapshot = await releaseSnapshot(db, other.release.id);
+
+    const corrected = finalizablePackageFixture(prepared.values.release_code);
+    replaceFixtureFile(corrected, "grave_plots.geojson", featureCollection([{ type: "Feature",
+      geometry: { type: "Polygon", coordinates: [[[123.0101, 13.0101], [123.0111, 13.0101], [123.0111, 13.0111], [123.0101, 13.0111], [123.0101, 13.0101]]] },
+      properties: prepared.fixture.data["grave_plots.geojson"].features[0].properties }]));
+    const second = await beginImport(db, prepared.release.id, 3, corrected);
+    await stagePackage(db, second, corrected); await sealImport(db, second, 3);
+    assert.deepEqual((await db.query("select status,revision from public.mapping_release where release_id=$1", [prepared.release.id])).rows[0], { status: "staged", revision: 4 });
+    assert.deepEqual(await releaseSnapshot(db, prepared.release.id), original, "validated -> staged retains old children");
+    const secondValidation = (await db.query("select public.staff_validate_mapping_import($1::uuid,4,$2::uuid,$3::uuid) result",
+      [second.importId, second.rootRequestId, randomUUID()])).rows[0].result;
+    assert.equal(secondValidation.state, "validated");
+
+    await gisLogin(db, gisActors.admin, "postgres");
+    await db.exec(`create function public.task10_fail_audit() returns trigger language plpgsql as $$begin raise exception 'injected late audit failure'; end$$;
+      create trigger task10_fail_audit before insert on public.audit_log for each row execute function public.task10_fail_audit();`);
+    await gisLogin(db);
+    const failedOperation = randomUUID();
+    const failed = (await db.query("select public.staff_finalize_mapping_import($1::uuid,4,$2,$3::jsonb,$4::uuid,$5::uuid) result",
+      [second.importId, secondValidation.reportDigest, JSON.stringify(finalizationAcknowledgements(corrected)), second.rootRequestId, failedOperation])).rows[0].result;
+    assert.equal(failed.state, "validated", "pure execution failure keeps import validated");
+    assert.deepEqual(await releaseSnapshot(db, prepared.release.id), original, "old IDs/geometries/counts survive halfway replacement failure");
+    assert.deepEqual(await releaseSnapshot(db, other.release.id), otherSnapshot, "other release survives halfway replacement failure");
+    assert.equal((await db.query("select failure_classification from public.mapping_import_report where report_id=$1", [failed.reportId])).rows[0].failure_classification, "execution");
+    assert.deepEqual((await db.query("select public.staff_finalize_mapping_import($1::uuid,4,$2,$3::jsonb,$4::uuid,$5::uuid) result",
+      [second.importId, secondValidation.reportDigest, JSON.stringify(finalizationAcknowledgements(corrected)), second.rootRequestId, failedOperation])).rows[0].result, failed);
+    await gisLogin(db, gisActors.admin, "postgres");
+    await db.exec("drop trigger task10_fail_audit on public.audit_log; drop function public.task10_fail_audit()");
+    await gisLogin(db);
+
+    const replaced = (await db.query("select public.staff_finalize_mapping_import($1::uuid,4,$2,$3::jsonb,$4::uuid,$5::uuid) result",
+      [second.importId, secondValidation.reportDigest, JSON.stringify(finalizationAcknowledgements(corrected)), second.rootRequestId, randomUUID()])).rows[0].result;
+    assert.equal(replaced.state, "finalized", "successful replacement");
+    const after = await releaseSnapshot(db, prepared.release.id);
+    assert.notDeepEqual(after.plots, original.plots);
+    assert.deepEqual(await releaseSnapshot(db, other.release.id), otherSnapshot, "other release is never replaced");
+    const sourceKeys = Object.entries(after).flatMap(([layer, values]) => values.map((row) => `${layer}:${row.source_feature_id}`));
+    assert.equal(new Set(sourceKeys).size, sourceKeys.length, "no duplicate layer/source identities");
+    assert.equal((await db.query("select count(*)::int n from public.plot_geometry where mapping_release_id=$1 and lot_id=1", [prepared.release.id])).rows[0].n, 1);
+    assert.equal((await db.query("select count(*)::int n from public.grave_access_point where mapping_release_id=$1 and lot_id=1", [prepared.release.id])).rows[0].n, 1);
+    assert.equal((await db.query("select count(*)::int n from public.map_node where mapping_release_id is null and node_name='Legacy NULL release node'")).rows[0].n, 1);
+    assert.equal((await db.query("select count(*)::int n from public.mapping_publication where release_id=$1", [prepared.release.id])).rows[0].n, 0);
+
+    for (const frozenStatus of ["approved", "published", "superseded", "rejected"]) {
+      await withOwnerTransaction(db, async () => {
+        await db.exec("alter table public.mapping_release disable trigger mapping_release_guard; alter table public.mapping_import disable trigger mapping_import_guard");
+        await db.query("update public.mapping_release set status=$2,revision=4 where release_id=$1", [prepared.release.id, frozenStatus]);
+        await db.query("update public.mapping_import set state='validated',revision=20 where import_id=$1", [second.importId]);
+        await db.exec("alter table public.mapping_release enable trigger mapping_release_guard; alter table public.mapping_import enable trigger mapping_import_guard");
+        await gisLogin(db);
+        await assert.rejects(db.query("select public.staff_finalize_mapping_import($1::uuid,4,$2,$3::jsonb,$4::uuid,$5::uuid)",
+          [second.importId, secondValidation.reportDigest, JSON.stringify(finalizationAcknowledgements(corrected)), second.rootRequestId, randomUUID()]), /staged|frozen|replace|validated/i);
+      });
+    }
+    await gisLogin(db);
+  });
+
+  await t.test("manager, inactive, anonymous, direct helper and spoofed context are denied", async () => {
+    for (const [actor, role] of [[gisActors.manager, "authenticated"], [gisActors.inactive, "authenticated"], [null, "anon"]]) {
+      await gisLogin(db, actor, role);
+      await assert.rejects(db.query(
+        "select public.staff_validate_mapping_import($1::uuid,1,$2::uuid,$3::uuid)",
+        [randomUUID(), randomUUID(), randomUUID()],
+      ), /administrator|permission/i);
+      await assert.rejects(db.query("select gis_private.validate_import($1::uuid)", [randomUUID()]), /permission denied|schema/i);
+    }
+    await gisLogin(db);
+  });
+});
+
+test("Task 10 import CLI uses only normal session auth, redacted resumable state, and bounded transient retries", async (t) => {
+  const env = {
+    NEXT_PUBLIC_SUPABASE_URL: "https://fictional-project.supabase.co",
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "fictional-publishable-key",
+    GRAVENAV_GIS_ACCESS_TOKEN: "fictional-normal-user-jwt",
+  };
+
+  await t.test("RPC client retries transient failures without logging or returning credentials", async () => {
+    const requests = [];
+    const fetchImpl = async (url, options) => {
+      requests.push({ url, options });
+      if (requests.length === 1) return new Response(JSON.stringify({ message: "temporary" }), { status: 503 });
+      return new Response(JSON.stringify({ state: "validated", reportDigest: "a".repeat(64) }), { status: 200 });
+    };
+    const client = createImportClient({ env, fetchImpl, maxAttempts: 3 });
+    const result = await client.validate({ p_import_id: randomUUID() });
+    assert.equal(result.state, "validated");
+    assert.equal(requests.length, 2);
+    assert.equal(requests.every((request) => request.options.headers.Authorization === `Bearer ${env.GRAVENAV_GIS_ACCESS_TOKEN}`), true);
+    assert.equal(JSON.stringify(result).includes(env.GRAVENAV_GIS_ACCESS_TOKEN), false);
+  });
+
+  await t.test("resume file accepts only UUID/digest/chunk receipt metadata", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "gravenav-gis-resume-"));
+    t.after(() => rm(directory, { recursive: true, force: true }));
+    const path = join(directory, "resume.json");
+    const state = { schemaVersion: 1, rootRequestId: randomUUID(), importId: randomUUID(), releaseId: randomUUID(),
+      packageDigest: "b".repeat(64), baseRevision: 1, targetRevision: 2, chunks: { "route_nodes.geojson": [0, 1] } };
+    await writeResumeState(path, state);
+    assert.deepEqual(await readResumeState(path), state);
+    const text = await readFile(path, "utf8");
+    assert.equal(/token|jwt|secret|raw_bytes|bytes_base64/i.test(text), false);
+    await assert.rejects(writeResumeState(path, { ...state, access_token: "forbidden" }), /invalid|forbidden/i);
+  });
+
+  await t.test("CLI supports only stage/resume/validate/finalize/status and has no publish or command-line token", async () => {
+    const source = await readFile(new URL("../scripts/import-gis-package.mjs", import.meta.url), "utf8");
+    assert.match(source, /stage.*resume.*validate.*finalize.*status/);
+    assert.doesNotMatch(source, /["']publish["']/);
+    await assert.rejects(runImportCli(["publish"], { env, fetchImpl: async () => new Response("{}", { status: 200 }) }), /usage/i);
+    await assert.rejects(runImportCli(["status", "--resume-file", "missing.json", "--token", "forbidden"], { env }), /usage/i);
   });
 });

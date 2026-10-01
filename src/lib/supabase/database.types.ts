@@ -2292,6 +2292,26 @@ export type Database = {
         }
         Returns: Json
       }
+      staff_validate_mapping_import: {
+        Args: {
+          p_import_id: string
+          p_expected_revision: number
+          p_request_id: string
+          p_operation_id: string
+        }
+        Returns: Json
+      }
+      staff_finalize_mapping_import: {
+        Args: {
+          p_import_id: string
+          p_expected_revision: number
+          p_report_digest: string
+          p_acknowledgements: Json
+          p_request_id: string
+          p_operation_id: string
+        }
+        Returns: Json
+      }
       admin_activate_account: {
         Args: { p_account_id: string }
         Returns: {
