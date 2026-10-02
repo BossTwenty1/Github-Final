@@ -1,8 +1,136 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { createTestDatabase } from "./database-helper.mjs";
 import { gisActors, gisLogin, seedGisFixtures, releaseValues, createRelease, rejectRelease, withOwnerTransaction } from "./gis-fixtures.mjs";
+
+const M09 = "20260929000000_gis_publication.sql";
+const REPORT_HASH = "9".repeat(64);
+const PACKAGE_HASH = "8".repeat(64);
+
+async function asOwner(db, callback) {
+  await gisLogin(db, gisActors.admin, "postgres");
+  try { return await callback(); }
+  finally { await gisLogin(db); }
+}
+
+async function withTriggersDisabled(db, tables, callback) {
+  await asOwner(db, async () => {
+    for (const table of tables) await db.exec(`alter table public.${table} disable trigger user`);
+    try { await callback(); }
+    finally { for (const table of [...tables].reverse()) await db.exec(`alter table public.${table} enable trigger user`); }
+  });
+}
+
+let savepointNumber = 0;
+async function rejectsAtSavepoint(db, callback, pattern) {
+  const name = `m09_expected_${savepointNumber++}`;
+  await db.exec(`savepoint ${name}`);
+  try { await assert.rejects(callback(), pattern); }
+  finally { await db.exec(`rollback to savepoint ${name}; release savepoint ${name}`); }
+}
+
+let publicationLotId = 7000;
+async function seedPublicationReadyRelease(db, { code = `publication-${randomUUID()}`, status = "validated" } = {}) {
+  const release = await createRelease(db, releaseValues({ release_code: code, package_hash: PACKAGE_HASH }));
+  const runId = randomUUID();
+  const importId = randomUUID();
+  const reportId = randomUUID();
+  const rootRequestId = randomUUID();
+  const lotId = publicationLotId++;
+  const nodeA = publicationLotId++;
+  const nodeB = publicationLotId++;
+  const walkwayId = randomUUID();
+  const tables = ["lot", "mapping_release", "georeferencing_run", "mapping_boundary", "plot_geometry",
+    "mapping_walkway_source", "map_node", "map_edge", "grave_access_point", "mapping_import", "mapping_import_report"];
+  await withTriggersDisabled(db, tables, async () => {
+    await db.query("insert into public.lot(lot_id,area_id,lot_code,status) values($1,1,$2,'AVAILABLE')", [lotId, `PUB-${lotId}`]);
+    await db.query(`insert into public.georeferencing_run(run_id,release_id,site_id,run_code,source_reference,source_hash,
+      source_width,source_height,source_coordinate_space,working_srid,output_srid,method,processed_at,qgis_version,
+      output_artifact_reference,output_artifact_hash,review_state,created_by,reviewed_at,reviewed_by)
+      values($1,$2,1,$3,'synthetic/plan.png',$4,1000,1000,'pixels',32651,4326,'polynomial-1',now(),'3.40',
+      'synthetic/output.tif',$5,'accepted',$6,now(),$6)`,
+    [runId, release.id, `run-${randomUUID()}`, "a".repeat(64), "b".repeat(64), gisActors.admin]);
+    await db.query(`insert into public.mapping_boundary(mapping_release_id,site_id,georeferencing_run_id,source_feature_id,
+      artifact_hash,layer_name,layer_version,kind,area_id,boundary_geom,review_state,created_by,reviewed_at,reviewed_by)
+      values($1,1,$2,'cemetery',$3,'boundaries','v1','cemetery',null,
+        extensions.st_geomfromtext('POLYGON((123 13,123.02 13,123.02 13.02,123 13.02,123 13))',4326),
+        'approved',$4,now(),$4),
+      ($1,1,$2,'area',$3,'boundaries','v1','area',1,
+        extensions.st_geomfromtext('POLYGON((123.001 13.001,123.019 13.001,123.019 13.019,123.001 13.019,123.001 13.001))',4326),
+        'approved',$4,now(),$4)`, [release.id, runId, "c".repeat(64), gisActors.admin]);
+    await db.query(`insert into public.plot_geometry(mapping_release_id,site_id,georeferencing_run_id,source_feature_id,
+      artifact_hash,layer_name,layer_version,lot_id,area_id,plot_geom,review_state,created_by,reviewed_at,reviewed_by)
+      values($1,1,$2,$3,$4,'plots','v1',$5,1,
+        extensions.st_geomfromtext('POLYGON((123.005 13.005,123.0052 13.005,123.0052 13.0052,123.005 13.0052,123.005 13.005))',4326),
+        'approved',$6,now(),$6)`, [release.id, runId, `plot-${lotId}`, "d".repeat(64), lotId, gisActors.admin]);
+    await db.query(`insert into public.mapping_walkway_source(walkway_source_id,mapping_release_id,site_id,georeferencing_run_id,
+      source_feature_id,artifact_hash,layer_name,layer_version,area_id,walkway_type,walking_allowed,centerline_geom,
+      review_state,created_by,reviewed_at,reviewed_by)
+      values($1,$2,1,$3,$4,$5,'walkways','v1',1,'path',true,
+        extensions.st_geomfromtext('LINESTRING(123.001 13.005,123.018 13.005)',4326),'approved',$6,now(),$6)`,
+    [walkwayId, release.id, runId, `walk-${lotId}`, "e".repeat(64), gisActors.admin]);
+    await db.query(`insert into public.map_node(node_id,site_id,node_name,node_type,location_geom,mapping_release_id,
+      source_feature_id,artifact_hash,layer_name,layer_version,review_state,revision,imported_at,reviewed_at,reviewed_by)
+      values($1,1,'Entrance','entrance',extensions.st_geomfromtext('POINT(123.001 13.005)',4326)::extensions.geography,
+        $3,$4,$5,'nodes','v1','approved',1,now(),now(),$6),
+      ($2,1,'Destination','junction',extensions.st_geomfromtext('POINT(123.005 13.005)',4326)::extensions.geography,
+        $3,$7,$5,'nodes','v1','approved',1,now(),now(),$6)`,
+    [nodeA, nodeB, release.id, `node-a-${lotId}`, "f".repeat(64), gisActors.admin, `node-b-${lotId}`]);
+    await db.query(`insert into public.map_edge(from_node_id,to_node_id,path_geom,distance_m,edge_type,is_restricted,
+      mapping_release_id,site_id,source_feature_id,artifact_hash,layer_name,layer_version,review_state,revision,imported_at,
+      source_walkway_id,walking_allowed,direction,forward_cost_m,reverse_cost_m,reviewed_at,reviewed_by)
+      values($1,$2,extensions.st_geomfromtext('LINESTRING(123.001 13.005,123.005 13.005)',4326)::extensions.geography,
+        433,'path',false,$3,1,$4,$5,'edges','v1','approved',1,now(),$6,true,'both',433,433,now(),$7)`,
+    [nodeA, nodeB, release.id, `edge-${lotId}`, "1".repeat(64), walkwayId, gisActors.admin]);
+    await db.query(`insert into public.grave_access_point(mapping_release_id,site_id,georeferencing_run_id,source_feature_id,
+      artifact_hash,layer_name,layer_version,lot_id,area_id,node_id,access_point_geom,review_state,created_by,reviewed_at,reviewed_by)
+      values($1,1,$2,$3,$4,'access','v1',$5,1,$6,extensions.st_geomfromtext('POINT(123.005 13.005)',4326),
+        'approved',$7,now(),$7)`, [release.id, runId, `access-${lotId}`, "2".repeat(64), lotId, nodeB, gisActors.admin]);
+    await db.query(`insert into public.mapping_import(import_id,request_id,actor_account_id,release_id,site_id,area_id,
+      base_revision,target_revision,package_digest,manifest_sha256,state,revision)
+      values($1,$2,$3,$4,1,1,1,2,$5,$5,'finalized',5)`,
+    [importId, rootRequestId, gisActors.admin, release.id, PACKAGE_HASH]);
+    await db.query(`insert into public.mapping_import_report(report_id,import_id,release_revision,package_digest,validator_version,
+      baseline_publication_revision,live_dependency_digest,summary,entries,report_hash,created_by)
+      values($1,$2,2,$3,'gis-pilot-v1',0,null,'{"errorCount":0,"warningCount":0,"infoCount":0}'::jsonb,'[]'::jsonb,$4,$5)`,
+    [reportId, importId, PACKAGE_HASH, REPORT_HASH, gisActors.admin]);
+    await db.query("update public.mapping_import set current_report_id=$2 where import_id=$1", [importId, reportId]);
+    await db.query(`update public.mapping_release set status=$2,revision=3,selected_run_id=$3,
+      validation_report_hash=$4::text,validation_summary=jsonb_build_object('schemaVersion',1,'featureCount',6,
+        'errorCount',0,'warningCount',0,'reportDigest',$4::text),validated_at=now(),validated_by=$5
+      where release_id=$1`, [release.id, status, runId, REPORT_HASH, gisActors.admin]);
+  });
+  return { ...release, revision: 3, lotId, runId, importId, reportId };
+}
+
+function approvalAcknowledgements(overrides = {}) {
+  return {
+    packageDigest: PACKAGE_HASH,
+    reportDigest: REPORT_HASH,
+    warnings: [],
+    suitabilityReviewed: true,
+    omissionsReviewed: true,
+    privacyReviewed: true,
+    ...overrides,
+  };
+}
+
+async function reviewRelease(db, releaseId, revision, decision = "approve", acknowledgements = approvalAcknowledgements(), notes = null, requestId = randomUUID()) {
+  return (await db.query("select public.staff_review_mapping_release($1,$2,$3,$4::jsonb,$5,$6) result",
+    [releaseId, revision, decision, JSON.stringify(acknowledgements), notes, requestId])).rows[0].result;
+}
+
+async function publishRelease(db, releaseId, revision, scopeRevision, requestId = randomUUID()) {
+  return (await db.query("select public.staff_publish_mapping_release($1,$2,$3,$4) result",
+    [releaseId, revision, scopeRevision, requestId])).rows[0].result;
+}
+
+async function rollbackRelease(db, releaseId, revision, scopeRevision, reason = "Synthetic rollback reason", requestId = randomUUID()) {
+  return (await db.query("select public.staff_rollback_mapping_release($1,$2,$3,$4,$5) result",
+    [releaseId, revision, scopeRevision, reason, requestId])).rows[0].result;
+}
 
 test("M01 protected GIS release foundation", async (t) => {
   const db = await createTestDatabase();
@@ -317,6 +445,164 @@ test("M01 protected GIS release foundation", async (t) => {
         assert.equal((await db.query("select has_table_privilege($1,'gis_private.gis_mutation_request','SELECT') ok", [role])).rows[0].ok, false);
       }
       await gisLogin(db);
+    });
+  } finally { await db.close(); }
+});
+
+test("M09 protected approval publication and rollback", async (t) => {
+  const db = await createTestDatabase();
+  try {
+    await seedGisFixtures(db);
+    await gisLogin(db);
+
+    await t.test("M09 exposes only the exact protected publication surface", async () => {
+      const functions = (await asOwner(db, async () => (await db.query(`select n.nspname,p.proname,
+        pg_get_function_identity_arguments(p.oid) args,p.prosecdef,p.proconfig,p.oid
+        from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+        where (n.nspname='public' and p.proname in ('staff_review_mapping_release','staff_publish_mapping_release','staff_rollback_mapping_release'))
+           or (n.nspname='gis_private' and p.proname in ('activate_release','release_live_dependency_digest','assert_release_live'))
+        order by n.nspname,p.proname`)).rows)).sort((a, b) => `${a.nspname}.${a.proname}`.localeCompare(`${b.nspname}.${b.proname}`));
+      assert.deepEqual(functions.filter((fn) => fn.nspname === "public").map((fn) => [fn.proname, fn.args]), [
+        ["staff_publish_mapping_release", "p_release_id uuid, p_expected_revision integer, p_expected_scope_revision integer, p_request_id uuid"],
+        ["staff_review_mapping_release", "p_release_id uuid, p_expected_revision integer, p_decision text, p_acknowledgements jsonb, p_notes text, p_request_id uuid"],
+        ["staff_rollback_mapping_release", "p_release_id uuid, p_expected_revision integer, p_expected_scope_revision integer, p_reason text, p_request_id uuid"],
+      ]);
+      for (const fn of functions) {
+        assert.deepEqual(fn.proconfig, ["search_path=pg_catalog, extensions, pg_temp"]);
+        assert.equal(fn.prosecdef, fn.nspname === "public");
+        for (const role of ["anon", "authenticated", "service_role"])
+          assert.equal((await db.query("select has_function_privilege($1,$2::oid,'EXECUTE') ok", [role, fn.oid])).rows[0].ok,
+            role === "authenticated" && fn.nspname === "public");
+      }
+    });
+
+    await t.test("approval, first publication, replacement and rollback are exact and idempotent", async () => {
+      const first = await seedPublicationReadyRelease(db, { code: `first-${randomUUID()}` });
+      const second = await seedPublicationReadyRelease(db, { code: `second-${randomUUID()}` });
+      const atomicTarget = await seedPublicationReadyRelease(db, { code: `atomic-${randomUUID()}` });
+
+      await assert.rejects(reviewRelease(db, first.id, 99), /stale|revision/i);
+      await assert.rejects(reviewRelease(db, first.id, 3, "approve", approvalAcknowledgements({ reportDigest: "7".repeat(64) })), /digest|stale|acknowledgement/i);
+      await assert.rejects(reviewRelease(db, first.id, 3, "approve", approvalAcknowledgements({ suitabilityReviewed: false })), /acknowledgement|review/i);
+      const reviewRequest = randomUUID();
+      const approved = await reviewRelease(db, first.id, 3, "approve", approvalAcknowledgements(), "PRIVATE APPROVAL NOTE", reviewRequest);
+      assert.equal(approved.state, "approved"); assert.equal(approved.revision, 4);
+      assert.deepEqual(await reviewRelease(db, first.id, 3, "approve", approvalAcknowledgements(), "PRIVATE APPROVAL NOTE", reviewRequest), approved);
+      await assert.rejects(reviewRelease(db, first.id, 4, "approve", approvalAcknowledgements(), "changed", reviewRequest), /conflict|reused/i);
+      await gisLogin(db, gisActors.otherAdmin);
+      await assert.rejects(reviewRelease(db, first.id, 3, "approve", approvalAcknowledgements(), "PRIVATE APPROVAL NOTE", reviewRequest), /conflict|reused/i);
+      await gisLogin(db);
+
+      const publishRequest = randomUUID();
+      const firstPublished = await publishRelease(db, first.id, 4, 0, publishRequest);
+      assert.equal(firstPublished.state, "published"); assert.equal(firstPublished.revision, 5); assert.equal(firstPublished.scopeRevision, 1);
+      assert.deepEqual(await publishRelease(db, first.id, 4, 0, publishRequest), firstPublished);
+      await assert.rejects(publishRelease(db, first.id, 5, 1, publishRequest), /conflict|reused/i);
+      assert.equal((await db.query("select release_id from public.mapping_publication where site_id=1 and area_id=1")).rows[0].release_id, first.id);
+
+      const firstFrozenBefore = (await db.query(`select to_jsonb(r)-array['status','revision','published_at','published_by'] frozen
+        from public.mapping_release r where release_id=$1`, [first.id])).rows[0].frozen;
+      const secondApproved = await reviewRelease(db, second.id, 3);
+      const replaced = await publishRelease(db, second.id, secondApproved.revision, 1);
+      assert.equal(replaced.scopeRevision, 2);
+      assert.deepEqual((await db.query("select release_id,status from public.mapping_release where release_id in ($1,$2) order by release_id", [first.id, second.id])).rows,
+        [first.id, second.id].sort().map((id) => ({ release_id: id, status: id === second.id ? "published" : "superseded" })));
+      assert.deepEqual((await db.query(`select to_jsonb(r)-array['status','revision','published_at','published_by'] frozen
+        from public.mapping_release r where release_id=$1`, [first.id])).rows[0].frozen, firstFrozenBefore);
+
+      const firstRevision = (await db.query("select revision from public.mapping_release where release_id=$1", [first.id])).rows[0].revision;
+      const rolledBack = await rollbackRelease(db, first.id, firstRevision, 2);
+      assert.equal(rolledBack.state, "published"); assert.equal(rolledBack.scopeRevision, 3);
+      assert.equal((await db.query("select release_id from public.mapping_publication where site_id=1 and area_id=1")).rows[0].release_id, first.id);
+      assert.deepEqual((await db.query("select kind from public.mapping_publication_event where site_id=1 and area_id=1 order by created_at,event_id")).rows.map((row) => row.kind),
+        ["publish", "publish", "rollback"]);
+
+      const atomicApproved = await reviewRelease(db, atomicTarget.id, 3);
+      const before = {
+        scope: (await db.query("select * from public.mapping_publication where site_id=1 and area_id=1")).rows,
+        states: (await db.query("select release_id,status,revision from public.mapping_release where release_id in ($1,$2,$3) order by release_id", [first.id, second.id, atomicTarget.id])).rows,
+        eventCount: (await db.query("select count(*)::int n from public.mapping_publication_event where site_id=1 and area_id=1")).rows[0].n,
+      };
+      await asOwner(db, async () => db.exec(`create function public.fail_m09_audit() returns trigger language plpgsql as $$begin
+        raise exception 'synthetic final audit failure'; end$$;
+        create trigger fail_m09_audit before insert on public.audit_log for each row execute function public.fail_m09_audit();`));
+      await assert.rejects(publishRelease(db, atomicTarget.id, atomicApproved.revision, 3), /synthetic final audit failure/i);
+      await asOwner(db, async () => db.exec("drop trigger fail_m09_audit on public.audit_log; drop function public.fail_m09_audit()"));
+      assert.deepEqual((await db.query("select * from public.mapping_publication where site_id=1 and area_id=1")).rows, before.scope);
+      assert.deepEqual((await db.query("select release_id,status,revision from public.mapping_release where release_id in ($1,$2,$3) order by release_id", [first.id, second.id, atomicTarget.id])).rows, before.states);
+      assert.equal((await db.query("select count(*)::int n from public.mapping_publication_event where site_id=1 and area_id=1")).rows[0].n, before.eventCount);
+
+      const audits = (await db.query("select old_values,new_values from public.audit_log where record_id in ($1,$2,$3)", [first.id, second.id, atomicTarget.id])).rows;
+      assert.doesNotMatch(JSON.stringify(audits), /PRIVATE APPROVAL NOTE|geometry|device|chunk_bytes|package_reference|source_plan|raw/i);
+      const receipts = (await asOwner(db, async () => (await db.query(`select operation,response from gis_private.gis_mutation_request
+        where operation in ('staff_review_mapping_release','staff_publish_mapping_release','staff_rollback_mapping_release') and response is not null`)).rows));
+      assert.doesNotMatch(JSON.stringify(receipts), /PRIVATE APPROVAL NOTE|geometry|device|chunk_bytes|source_plan|raw/i);
+    });
+
+    await t.test("full scope and malformed pilot memberships fail every gate without effects", async () => {
+      const full = await createRelease(db, releaseValues({ scope_kind: "full", pilot_area_id: null, release_code: `full-${randomUUID()}` }));
+      const before = async () => ({
+        selector: (await db.query("select count(*)::int n from public.mapping_publication")).rows[0].n,
+        events: (await db.query("select count(*)::int n from public.mapping_publication_event")).rows[0].n,
+        audits: (await db.query("select count(*)::int n from public.audit_log where record_id=$1", [full.id])).rows[0].n,
+      });
+      const baseline = await before();
+      await assert.rejects(reviewRelease(db, full.id, 1), /pilot|scope/i);
+      await assert.rejects(publishRelease(db, full.id, 1, 0), /pilot|scope/i);
+      await assert.rejects(rollbackRelease(db, full.id, 1, 0), /pilot|scope/i);
+      await asOwner(db, async () => assert.rejects(db.query("select gis_private.activate_release($1,1,0,'publish')", [full.id]), /pilot|scope/i));
+      assert.deepEqual(await before(), baseline);
+
+      const malformed = await seedPublicationReadyRelease(db, { code: `malformed-${randomUUID()}` });
+      await assert.rejects(asOwner(db, async () => db.query(
+        "insert into public.mapping_release_area(release_id,site_id,area_id) values($1,1,2)", [malformed.id])),
+      /duplicate|unique|mapping_release_area|protected scope/i);
+      for (const corruption of [
+        "delete from public.mapping_release_area where release_id=$1",
+        "update public.mapping_release_area set area_id=2 where release_id=$1",
+        "update public.mapping_release set pilot_area_id=2 where release_id=$1",
+      ]) await withOwnerTransaction(db, async () => {
+        await db.exec("set session_replication_role=replica");
+        await db.query(corruption, [malformed.id]);
+        await db.exec("set session_replication_role=origin");
+        for (const operation of [
+          () => reviewRelease(db, malformed.id, 3),
+          () => publishRelease(db, malformed.id, 3, 0),
+          () => rollbackRelease(db, malformed.id, 3, 0),
+          () => db.query("select gis_private.activate_release($1,3,0,'publish')", [malformed.id]),
+        ]) await rejectsAtSavepoint(db, operation, /pilot|scope|area|membership/i);
+      });
+    });
+
+    await t.test("live changes, illegal states, direct writes and non-admin actors fail safely", async () => {
+      const stale = await seedPublicationReadyRelease(db, { code: `stale-${randomUUID()}` });
+      const approved = await reviewRelease(db, stale.id, 3);
+      await asOwner(db, async () => db.query("update public.lot set deleted_at=now() where lot_id=$1", [stale.lotId]));
+      await assert.rejects(publishRelease(db, stale.id, approved.revision, 3), /live|dependency|lot|stale/i);
+      assert.equal((await db.query("select status from public.mapping_release where release_id=$1", [stale.id])).rows[0].status, "approved");
+
+      for (const [actor, role] of [[gisActors.manager, "authenticated"], [gisActors.inactive, "authenticated"], [null, "anon"], [gisActors.admin, "service_role"]]) {
+        await gisLogin(db, actor, role);
+        await assert.rejects(publishRelease(db, stale.id, approved.revision, 3), /administrator|permission denied|admin/i);
+      }
+      await gisLogin(db);
+      await assert.rejects(db.query("update public.mapping_release set status='published',revision=revision+1 where release_id=$1", [stale.id]), /permission denied/i);
+      await assert.rejects(db.exec("select gis_private.activate_release(gen_random_uuid(),1,0,'publish')"), /permission denied/i);
+
+      const rejected = await seedPublicationReadyRelease(db, { code: `rejected-${randomUUID()}` });
+      await reviewRelease(db, rejected.id, 3, "reject", {}, "Synthetic rejection");
+      await assert.rejects(reviewRelease(db, rejected.id, 4), /terminal|reject|state|transition|validated/i);
+      await assert.rejects(publishRelease(db, rejected.id, 4, 3), /rejected|approved|state/i);
+      await assert.rejects(rollbackRelease(db, rejected.id, 4, 3), /rejected|superseded|eligible|state/i);
+    });
+
+    await t.test("migration and operator runbook contain no automatic publication path", async () => {
+      const migration = await readFile(new URL(`../supabase/migrations/${M09}`, import.meta.url), "utf8");
+      const runbook = await readFile(new URL("../docs/gis/import-and-publication.md", import.meta.url), "utf8");
+      assert.doesNotMatch(migration, /after\s+update[^;]+execute[^;]+publish/is);
+      assert.doesNotMatch(runbook, /--publish|auto.?publish|automatic publication/i);
+      for (const token of ["staff_review_mapping_release", "staff_publish_mapping_release", "staff_rollback_mapping_release", "request UUID", "expected revision"])
+        assert.match(runbook, new RegExp(token, "i"));
     });
   } finally { await db.close(); }
 });

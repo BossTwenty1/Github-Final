@@ -2312,6 +2312,36 @@ export type Database = {
         }
         Returns: Json
       }
+      staff_review_mapping_release: {
+        Args: {
+          p_release_id: string
+          p_expected_revision: number
+          p_decision: string
+          p_acknowledgements: Json
+          p_notes: string | null
+          p_request_id: string
+        }
+        Returns: Json
+      }
+      staff_publish_mapping_release: {
+        Args: {
+          p_release_id: string
+          p_expected_revision: number
+          p_expected_scope_revision: number
+          p_request_id: string
+        }
+        Returns: Json
+      }
+      staff_rollback_mapping_release: {
+        Args: {
+          p_release_id: string
+          p_expected_revision: number
+          p_expected_scope_revision: number
+          p_reason: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
       admin_activate_account: {
         Args: { p_account_id: string }
         Returns: {
